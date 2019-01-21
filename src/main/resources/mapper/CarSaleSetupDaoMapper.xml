@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarSaleSetupDao">
+	<resultMap type="cm.lx.bean.CarSaleSetup" id="CarSaleSetupMap">
+		<result property="id" column="id" />
+		<result property="carCostId" column="car_cost_id" />
+		<result property="setupType" column="setup_type" />
+		<result property="setupName" column="setup_name" />
+		<result property="setupFee" column="setup_fee" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, car_cost_id, setup_type, setup_name, setup_fee, ctime, utime
+	</sql>
+
+	<select id="getCarSaleSetupAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_car_sale_setup'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarSaleSetup">
+		insert into cm_car_sale_setup
+		(id, car_cost_id, setup_type, setup_name, setup_fee, ctime, utime)
+		values
+		(#{id},#{carCostId},#{setupType},#{setupName},#{setupFee},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="CarSaleSetupMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_sale_setup where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_sale_setup where id = #{id}
+	</delete>
+
+	<delete id="deleteByMap" parameterType="Map">
+		delete from cm_car_sale_setup where 1=1
+		<if test="linkId != null">
+			and car_cost_id = #{linkId}
+		</if>
+		<if test="type != null">
+			and setup_type = #{type}
+		</if>
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarSaleSetup">
+		update cm_car_sale_setup
+		 <set>
+			 <if test="carCostId != null">
+				 car_cost_id = #{carCostId},
+			 </if>
+			 <if test="setupType != null">
+				 setup_type = #{setupType},
+			 </if>
+			 <if test="setupName != null">
+				 setup_name = #{setupName},
+			 </if>
+			 <if test="setupFee != null">
+				 setup_fee = #{setupFee},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getByCarCostId" resultMap="CarSaleSetupMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_sale_setup where car_cost_id = #{carCostId} and setup_type = #{setupType};
+	</select>
+</mapper>

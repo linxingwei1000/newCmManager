@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.MoneyManagerDao">
+	<resultMap type="cm.lx.bean.MoneyManager" id="MoneyManagerMap">
+		<result property="id" column="id" />
+		<result property="actionDate" column="action_date" />
+		<result property="actionEndDate" column="action_end_date" />
+		<result property="actionPerson" column="action_person" />
+		<result property="actionDesc" column="action_desc" />
+		<result property="actionFee" column="action_fee" />
+		<result property="actionType" column="action_type" />
+		<result property="moneyType" column="money_type" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, action_date, action_end_date, action_person, action_desc, action_fee, action_type, money_type, ctime, utime
+	</sql>
+
+	<select id="getMoneyOtherAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_money_manager'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.MoneyManager">
+		insert into cm_money_manager
+		(action_date, action_end_date, action_person, action_desc, action_fee, action_type, money_type, ctime, utime)
+		values
+		(#{actionDate},#{actionEndDate},#{actionPerson},#{actionDesc},#{actionFee},#{actionType},#{moneyType},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="MoneyManagerMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_money_manager where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_money_manager where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.MoneyManager">
+		update cm_money_manager
+		 <set>
+			 <if test="actionDate != null">
+				 action_date = #{actionDate},
+			 </if>
+			 <if test="actionEndDate != null">
+				 action_end_date = #{actionEndDate},
+			 </if>
+			 <if test="actionPerson != null">
+				 action_person = #{actionPerson},
+			 </if>
+			 <if test="actionDesc != null">
+				 action_desc = #{actionDesc},
+			 </if>
+			 <if test="actionFee != null">
+				 action_fee = #{actionFee},
+			 </if>
+			 <if test="actionType != null">
+				 action_type = #{actionType},
+			 </if>
+			 <if test="moneyType != null">
+				 money_type = #{moneyType},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getMoneyManagerList" resultMap="MoneyManagerMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_money_manager where 1=1
+		<if test="moneyType != null">
+			and money_type = #{moneyType}
+		</if>
+		order by ctime desc
+	</select>
+</mapper>

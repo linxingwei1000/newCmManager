@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarDepositDao">
+	<resultMap type="cm.lx.bean.CarDeposit" id="CarDepositMap">
+		<result property="id" column="id" />
+		<result property="salePerson" column="sale_person" />
+		<result property="depositDate" column="deposit_date" />
+		<result property="carModel" column="car_model" />
+		<result property="carColor" column="car_color" />
+		<result property="carYear" column="car_year" />
+		<result property="budget" column="budget" />
+		<result property="carConfig" column="car_config" />
+		<result property="giveCarDate" column="give_car_date" />
+		<result property="deposit" column="deposit" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, sale_person, deposit_date, car_model, car_color, car_year, budget, car_config, give_car_date, deposit, ctime, utime
+	</sql>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarDeposit">
+		insert into cm_car_deposit
+		(sale_person, deposit_date, car_model, car_color, car_year, budget, car_config, give_car_date, deposit, ctime, utime)
+		values
+		(#{salePerson},#{depositDate},#{carModel},#{carColor},#{carYear},#{budget},#{carConfig},#{giveCarDate},#{deposit},#{ctime},#{utime})
+	</insert>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_deposit where id = #{id}
+	</delete>
+
+	<select id="getById" resultMap="CarDepositMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_deposit where id = #{id};
+	</select>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarDeposit">
+		update cm_car_deposit
+		<set>
+			<if test="salePerson != null" >
+				sale_person = #{salePerson},
+			</if>
+			<if test="depositDate != null" >
+				deposit_date = #{depositDate},
+			</if>
+			<if test="carModel != null" >
+				car_model = #{carModel},
+			</if>
+			<if test="carColor != null" >
+				car_color = #{carColor},
+			</if>
+			<if test="carYear != null" >
+				car_year = #{carYear},
+			</if>
+			<if test="carConfig != null" >
+				car_config = #{carConfig},
+			</if>
+			<if test="budget != null" >
+				budget = #{budget},
+			</if>
+			<if test="giveCarDate != null" >
+				give_car_date = #{giveCarDate},
+			</if>
+			<if test="deposit != null" >
+				deposit = #{deposit},
+			</if>
+			<if test="utime != null" >
+				utime = #{utime},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<select id="getCarDepositListByKey" resultMap="CarDepositMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_deposit where 1=1
+		<if test="salePerson != null" >
+			and sale_person = #{salePerson}
+		</if>
+
+	</select>
+
+</mapper>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarCostDao">
+	<resultMap type="cm.lx.bean.CarCost" id="CarCostMap">
+		<result property="id" column="id" />
+		<result property="carRecordId" column="car_record_id" />
+		<result property="carPickPerson" column="car_pick_person" />
+		<result property="mentionFee" column="mention_fee" />
+		<result property="mentionSubsidy" column="mention_subsidy" />
+		<result property="travelFee" column="travel_fee" />
+		<result property="putFee" column="put_fee" />
+		<result property="putSubsidy" column="put_subsidy" />
+		<result property="crossingFee" column="crossing_fee" />
+		<result property="mailFee" column="mail_fee" />
+		<result property="freightFee" column="freight_fee" />
+		<result property="billingFee" column="billing_fee" />
+		<result property="oilFee" column="oil_fee" />
+		<result property="cattleFee" column="cattle_fee" />
+		<result property="expenseFee" column="expense_fee" />
+		<result property="otherFee" column="other_fee" />
+		<result property="preSaleFee" column="pre_sale_fee" />
+		<result property="afterSaleFee" column="after_sale_fee" />
+		<result property="otherIncomeFee" column="other_income_fee" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, car_record_id, car_pick_person, mention_fee, mention_subsidy, travel_fee, put_fee, put_subsidy, crossing_fee, mail_fee, freight_fee,
+		billing_fee, oil_fee, cattle_fee, expense_fee, other_fee, pre_sale_fee, after_sale_fee, other_income_fee, ctime, utime
+	</sql>
+
+	<select id="getCarCostAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_car_cost'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarCost">
+		insert into cm_car_cost
+		(id, car_record_id, car_pick_person, mention_fee, mention_subsidy, travel_fee, put_fee, put_subsidy, crossing_fee, mail_fee, freight_fee,
+		billing_fee, oil_fee, cattle_fee, expense_fee, other_fee, pre_sale_fee, after_sale_fee, other_income_fee, ctime, utime)
+		values
+		(#{id},#{carRecordId},#{carPickPerson},#{mentionFee},#{mentionSubsidy},#{travelFee},#{putFee},#{putSubsidy},#{crossingFee},#{mailFee},#{freightFee},
+		#{billingFee},#{oilFee},#{cattleFee},#{expenseFee},#{otherFee},#{preSaleFee},#{afterSaleFee},#{otherIncomeFee},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="CarCostMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_cost where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_cost where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarCost">
+		update cm_car_cost
+		 <set>
+			 <if test="carRecordId != null">
+				 car_record_id = #{carRecordId},
+			 </if>
+			 <if test="carPickPerson != null">
+				 car_pick_person = #{carPickPerson},
+			 </if>
+			 <if test="mentionFee != null">
+				 mention_fee = #{mentionFee},
+			 </if>
+			 <if test="mentionSubsidy != null">
+				 mention_subsidy = #{mentionSubsidy},
+			 </if>
+			 <if test="travelFee != null">
+				 travel_fee = #{travelFee},
+			 </if>
+			 <if test="putFee != null">
+				 put_fee = #{putFee},
+			 </if>
+			 <if test="putSubsidy != null">
+				 put_subsidy = #{putSubsidy},
+			 </if>
+			 <if test="crossingFee != null">
+				 crossing_fee = #{crossingFee},
+			 </if>
+			 <if test="mailFee != null">
+				 mail_fee = #{mailFee},
+			 </if>
+			 <if test="freightFee != null">
+				 freight_fee = #{freightFee},
+			 </if>
+			 <if test="billingFee != null">
+				 billing_fee = #{billingFee},
+			 </if>
+			 <if test="oilFee != null">
+				 oil_fee = #{oilFee},
+			 </if>
+			 <if test="cattleFee != null">
+				 cattle_fee = #{cattleFee},
+			 </if>
+			 <if test="expenseFee != null">
+				 expense_fee = #{expenseFee},
+			 </if>
+			 <if test="otherFee != null">
+				 other_fee = #{otherFee},
+			 </if>
+			 <if test="preSaleFee != null">
+				 pre_sale_fee = #{preSaleFee},
+			 </if>
+			 <if test="afterSaleFee != null">
+				 after_sale_fee = #{afterSaleFee},
+			 </if>
+			 <if test="otherIncomeFee != null">
+				 other_income_fee = #{otherIncomeFee},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+</mapper>

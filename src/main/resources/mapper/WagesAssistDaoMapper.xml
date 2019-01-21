@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.WagesAssistDao">
+	<resultMap type="cm.lx.bean.WagesAssist" id="WagesAssistMap">
+		<result property="id" column="id" />
+		<result property="saleDate" column="sale_date" />
+		<result property="soldDate" column="sold_date" />
+		<result property="salePerson" column="sale_person" />
+		<result property="purchasePerson" column="purchase_person" />
+		<result property="insidePerson" column="inside_person" />
+		<result property="carCommission" column="car_commission" />
+		<result property="purchaseCommission" column="purchase_commission" />
+		<result property="shareDividends" column="share_dividends" />
+		<result property="carRecordId" column="car_record_id" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, sale_date, sold_date, sale_person, purchase_person, inside_person, car_commission, purchase_commission, share_dividends, car_record_id, ctime, utime
+	</sql>
+
+	<select id="getWagesAssistAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_wages_assist'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.WagesAssist">
+		insert into cm_wages_assist
+		(id, sale_date, sold_date, sale_person, purchase_person, inside_person, car_commission, purchase_commission, share_dividends, car_record_id, ctime, utime)
+		values
+		(#{id},#{saleDate},#{soldDate},#{salePerson},#{purchasePerson},#{insidePerson},#{carCommission},#{purchaseCommission},#{shareDividends},#{carRecordId},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="WagesAssistMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_wages_assist where id = #{id};
+	</select>
+
+	<select id="getByCarRecordId" resultMap="WagesAssistMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_wages_assist where car_record_id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_wages_assist where id = #{id}
+	</delete>
+
+	<delete id="deleteByMap" parameterType="Map">
+		delete from cm_wages_assist where 1=1
+		<if test="linkId != null">
+			and car_record_id = #{linkId}
+		</if>
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.WagesAssist">
+		update cm_wages_assist
+		 <set>
+			 <if test="saleDate != null">
+				 sale_date = #{saleDate},
+			 </if>
+			 <if test="soldDate != null">
+				 sold_date = #{soldDate},
+			 </if>
+			 <if test="salePerson != null">
+				 sale_person = #{salePerson},
+			 </if>
+			 <if test="purchasePerson != null">
+				 purchase_person = #{purchasePerson},
+			 </if>
+			 <if test="insidePerson != null">
+				 inside_person = #{insidePerson},
+			 </if>
+			 <if test="carCommission != null">
+				 car_commission = #{carCommission},
+			 </if>
+			 <if test="purchaseCommission != null">
+				 purchase_commission = #{purchaseCommission},
+			 </if>
+			 <if test="shareDividends != null">
+				 share_dividends = #{shareDividends},
+			 </if>
+			 <if test="carRecordId != null">
+				 car_record_id = #{carRecordId},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getListByMap" resultMap="WagesAssistMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_wages_assist where 1=1
+		<if test="st != null" >
+			and sale_date >= #{st}
+		</if>
+		<if test="et != null" >
+			and #{et} >= sale_date
+		</if>
+		<if test="soldt != null" >
+			and #{soldt} >= sold_date
+		</if>
+	</select>
+</mapper>

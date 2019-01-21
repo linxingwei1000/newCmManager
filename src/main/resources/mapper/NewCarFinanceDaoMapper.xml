@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.NewCarFinanceDao">
+	<resultMap type="cm.lx.bean.NewCarFinance" id="NewCarFinanceMap">
+		<result property="id" column="id" />
+		<result property="financeCompany" column="finance_company" />
+		<result property="carBrand" column="car_brand" />
+		<result property="carModel" column="car_model" />
+		<result property="carConfig" column="car_config" />
+		<result property="guidancePrice" column="guidance_price" />
+		<result property="downPayments" column="down_payments" />
+		<result property="monthMortgage" column="month_mortgage" />
+		<result property="serviceFee" column="service_fee" />
+		<result property="otherFee" column="other_fee" />
+		<result property="otherCost" column="other_cost" />
+		<result property="consumerProperty" column="consumer_property" />
+		<result property="consumerResource" column="consumer_resource" />
+		<result property="purchaseUse" column="purchase_use" />
+		<result property="consumerName" column="consumer_name" />
+		<result property="consumerSex" column="consumer_sex" />
+		<result property="consumerAge" column="consumer_age" />
+		<result property="consumerAddress" column="consumer_address" />
+		<result property="consumerPhone" column="consumer_phone" />
+		<result property="displayStatus" column="display_status" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, finance_company, car_brand, car_model, car_config, guidance_price, down_payments, month_mortgage, service_fee, other_fee, other_cost, consumer_property,
+		consumer_resource, purchase_use, consumer_name, consumer_sex, consumer_age,consumer_address, consumer_phone, display_status, ctime, utime
+	</sql>
+
+	<select id="getNewCarFinanceAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_new_car_finance'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.NewCarFinance">
+		insert into cm_new_car_finance
+		(finance_company, car_brand, car_model, car_config, guidance_price, down_payments, month_mortgage, service_fee, other_fee, other_cost, consumer_property,
+		consumer_resource, purchase_use, consumer_name, consumer_sex, consumer_age,consumer_address, consumer_phone, display_status, ctime, utime)
+		values
+		(#{financeCompany},#{carBrand},#{carModel},#{carConfig},#{guidancePrice},#{downPayments},#{monthMortgage},#{serviceFee},#{otherFee},#{otherCost},#{consumerProperty},
+		#{consumerResource},#{purchaseUse},#{consumerName},#{consumerSex},#{consumerAge},#{consumerAddress},#{consumerPhone},#{displayStatus},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="NewCarFinanceMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_new_car_finance where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_new_car_finance where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.NewCarFinance">
+		update cm_new_car_finance
+		 <set>
+			 <if test="financeCompany != null">
+				 finance_company = #{financeCompany},
+			 </if>
+			 <if test="carBrand != null">
+				 car_brand = #{carBrand},
+			 </if>
+			 <if test="carModel != null">
+				 car_model = #{carModel},
+			 </if>
+			 <if test="carConfig != null">
+				 car_config = #{carConfig},
+			 </if>
+			 <if test="guidancePrice != null">
+				 guidance_price = #{guidancePrice},
+			 </if>
+			 <if test="downPayments != null">
+				 down_payments = #{downPayments},
+			 </if>
+			 <if test="monthMortgage != null">
+				 month_mortgage = #{monthMortgage},
+			 </if>
+			 <if test="serviceFee != null">
+				 service_fee = #{serviceFee},
+			 </if>
+			 <if test="otherFee != null">
+				 other_fee = #{otherFee},
+			 </if>
+			 <if test="otherCost != null">
+				 other_cost = #{otherCost},
+			 </if>
+			 <if test="consumerProperty != null">
+				 consumer_property = #{consumerProperty},
+			 </if>
+			 <if test="consumerResource != null">
+				 consumer_resource = #{consumerResource},
+			 </if>
+			 <if test="purchaseUse != null">
+				 purchase_use = #{purchaseUse},
+			 </if>
+			 <if test="consumerName != null">
+				 consumer_name = #{consumerName},
+			 </if>
+			 <if test="consumerSex != null">
+				 consumer_sex = #{consumerSex},
+			 </if>
+			 <if test="consumerAge != null">
+				 consumer_age = #{consumerAge},
+			 </if>
+			 <if test="consumerAddress != null">
+				 consumer_address = #{consumerAddress},
+			 </if>
+			 <if test="consumerPhone != null">
+				 consumer_phone = #{consumerPhone},
+			 </if>
+			 <if test="displayStatus != null">
+				 display_status = #{displayStatus},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getNewCarFinanceList" resultMap="NewCarFinanceMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_new_car_finance where 1=1;
+	</select>
+</mapper>

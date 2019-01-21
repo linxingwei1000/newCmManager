@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.InsuranceDao">
+	<resultMap type="cm.lx.bean.Insurance" id="InsuranceMap">
+		<result property="id" column="id" />
+		<result property="businessPerson" column="business_person" />
+		<result property="carBrand" column="car_brand" />
+		<result property="carModel" column="car_model" />
+		<result property="consumerName" column="consumer_name" />
+		<result property="consumerSex" column="consumer_sex" />
+		<result property="consumerBirth" column="consumer_birth" />
+		<result property="consumerPhone" column="consumer_phone" />
+		<result property="travelRegister" column="travel_register" />
+		<result property="travelLssuing" column="travel_lssuing" />
+		<result property="consumerType" column="consumer_type" />
+		<result property="renewalFee" column="renewal_fee" />
+		<result property="dealRenewal" column="deal_renewal" />
+		<result property="renewalDesc" column="renewal_desc" />
+		<result property="displayStatus" column="display_status" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, business_person, car_brand, car_model, consumer_name, consumer_sex, consumer_birth, consumer_phone, travel_register,
+		travel_lssuing, consumer_type, renewal_fee, deal_renewal, renewal_desc, display_status, ctime, utime
+	</sql>
+
+	<select id="getInsuranceAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_insurance'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.Insurance">
+		insert into cm_insurance
+		(id, business_person, car_brand, car_model, consumer_name, consumer_sex, consumer_birth, consumer_phone, travel_register,
+		travel_lssuing, consumer_type, renewal_fee, deal_renewal, renewal_desc, display_status, ctime, utime)
+		values
+		(#{id},#{businessPerson},#{carBrand},#{carModel},#{consumerName},#{consumerSex},#{consumerBirth},#{consumerPhone},#{travelRegister},
+		#{travelLssuing},#{consumerType},#{renewalFee},#{dealRenewal},#{renewalDesc},#{displayStatus},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="InsuranceMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_insurance where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_insurance where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.Insurance">
+		update cm_insurance
+		 <set>
+			 <if test="businessPerson != null">
+				 business_person = #{businessPerson},
+			 </if>
+			 <if test="carBrand != null">
+				 car_brand = #{carBrand},
+			 </if>
+			 <if test="carModel != null">
+				 car_model = #{carModel},
+			 </if>
+			 <if test="consumerName != null">
+				 consumer_name = #{consumerName},
+			 </if>
+			 <if test="consumerSex != null">
+				 consumer_sex = #{consumerSex},
+			 </if>
+			 <if test="consumerBirth != null">
+				 consumer_birth = #{consumerBirth},
+			 </if>
+			 <if test="consumerPhone != null">
+				 consumer_phone = #{consumerPhone},
+			 </if>
+			 <if test="travelRegister != null">
+				 travel_register = #{travelRegister},
+			 </if>
+			 <if test="travelLssuing != null">
+				 travel_lssuing = #{travelLssuing},
+			 </if>
+			 <if test="consumerType != null">
+				 consumer_type = #{consumerType},
+			 </if>
+			 <if test="renewalFee != null">
+				 renewal_fee = #{renewalFee},
+			 </if>
+			 <if test="dealRenewal != null">
+				 deal_renewal = #{dealRenewal},
+			 </if>
+			 <if test="renewalDesc != null">
+				 renewal_desc = #{renewalDesc},
+			 </if>
+			 <if test="displayStatus != null">
+				 display_status = #{displayStatus},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getInsuranceByMap" resultMap="InsuranceMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_insurance where 1=1
+		<if test="displayStatus != null" >
+			and display_status = #{displayStatus}
+		</if>
+	</select>
+</mapper>

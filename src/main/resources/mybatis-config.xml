@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC
+    "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<mappers>
+		<mapper resource="mapper/AccountDaoMapper.xml"/>
+		<mapper resource="mapper/DepartmentAuthorityDaoMapper.xml"/>
+		<mapper resource="mapper/CarDepositDaoMapper.xml"/>
+		<mapper resource="mapper/CarRecordDaoMapper.xml"/>
+		<mapper resource="mapper/CarRemarkDaoMapper.xml"/>
+		<mapper resource="mapper/CarPropertyDaoMapper.xml"/>
+		<mapper resource="mapper/CarBathDaoMapper.xml"/>
+		<mapper resource="mapper/CarCostDaoMapper.xml"/>
+		<mapper resource="mapper/CarSaleSetupDaoMapper.xml"/>
+		<mapper resource="mapper/CarPaidRecordDaoMapper.xml"/>
+		<mapper resource="mapper/CarPayMoneyAssistDaoMapper.xml"/>
+		<mapper resource="mapper/CarSaleInfoDaoMapper.xml"/>
+		<mapper resource="mapper/CarSfDaoMapper.xml"/>
+		<mapper resource="mapper/MortgageRecordDaoMapper.xml"/>
+		<mapper resource="mapper/MortgageLogDaoMapper.xml"/>
+		<mapper resource="mapper/InsuranceDaoMapper.xml"/>
+		<mapper resource="mapper/InsuranceBusinessDaoMapper.xml"/>
+		<mapper resource="mapper/ServiceFundDaoMapper.xml"/>
+		<mapper resource="mapper/NewCarDaoMapper.xml"/>
+		<mapper resource="mapper/NewCarFinanceDaoMapper.xml"/>
+		<mapper resource="mapper/MoneyManagerDaoMapper.xml"/>
+		<mapper resource="mapper/WagesAssistDaoMapper.xml"/>
+		<mapper resource="mapper/WagesDaoMapper.xml"/>
+		<mapper resource="mapper/CarDossierDaoMapper.xml"/>
+		<mapper resource="mapper/MortgageRebateDaoMapper.xml"/>
+	</mappers>
+</configuration>

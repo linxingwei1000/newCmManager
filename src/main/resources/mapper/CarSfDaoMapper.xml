@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarSfDao">
+	<resultMap type="cm.lx.bean.CarSf" id="CarSfMap">
+		<result property="id" column="id" />
+		<result property="carRecordId" column="car_record_id" />
+		<result property="transferFee" column="transfer_fee" />
+		<result property="transferSubsidy" column="transfer_subsidy" />
+		<result property="transferCrossingFee" column="transfer_crossing_fee" />
+		<result property="transferBillingFee" column="transfer_billing_fee" />
+		<result property="transferOilFee" column="transfer_oil_fee" />
+		<result property="rubbing" column="rubbing" />
+		<result property="removeCard" column="remove_card" />
+		<result property="cattleFee" column="cattle_fee" />
+		<result property="saleFee" column="sale_fee" />
+		<result property="isProduce" column="is_produce" />
+		<result property="serviceFee" column="service_fee" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, car_record_id, transfer_fee, transfer_subsidy, transfer_crossing_fee, transfer_billing_fee, transfer_oil_fee,
+		rubbing, remove_card, cattle_fee, sale_fee, is_produce, service_fee, ctime, utime
+	</sql>
+
+	<select id="getCarSfAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_car_sf'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarSf">
+		insert into cm_car_sf
+		(id, car_record_id, transfer_fee, transfer_subsidy, transfer_crossing_fee, transfer_billing_fee, transfer_oil_fee,
+		rubbing, remove_card, cattle_fee, sale_fee, is_produce, service_fee, ctime, utime)
+		values
+		(#{id},#{carRecordId},#{transferFee},#{transferSubsidy},#{transferCrossingFee},#{transferBillingFee},#{transferOilFee},
+		#{rubbing},#{removeCard},#{cattleFee},#{saleFee},#{isProduce},#{serviceFee},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="CarSfMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_sf where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_sf where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarSf">
+		update cm_car_sf
+		 <set>
+			 <if test="carRecordId != null">
+				 car_record_id = #{carRecordId},
+			 </if>
+			 <if test="transferFee != null">
+				 transfer_fee = #{transferFee},
+			 </if>
+			 <if test="transferSubsidy != null">
+				 transfer_subsidy = #{transferSubsidy},
+			 </if>
+			 <if test="transferCrossingFee != null">
+				 transfer_crossing_fee = #{transferCrossingFee},
+			 </if>
+			 <if test="transferBillingFee != null">
+				 transfer_billing_fee = #{transferBillingFee},
+			 </if>
+			 <if test="transferOilFee != null">
+				 transfer_oil_fee = #{transferOilFee},
+			 </if>
+			 <if test="rubbing != null">
+				 rubbing = #{rubbing},
+			 </if>
+			 <if test="removeCard != null">
+				 remove_card = #{removeCard},
+			 </if>
+			 <if test="cattleFee != null">
+				 cattle_fee = #{cattleFee},
+			 </if>
+			 <if test="saleFee != null">
+				 sale_fee = #{saleFee},
+			 </if>
+			 <if test="isProduce != null">
+				 is_produce = #{isProduce},
+			 </if>
+			 <if test="serviceFee != null">
+				 service_fee = #{serviceFee},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getServiceMoney" resultType="Integer">
+		select sum(service_fee) from cm_car_sf;
+	</select>
+</mapper>

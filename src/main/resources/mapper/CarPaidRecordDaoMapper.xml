@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarPaidRecordDao">
+	<resultMap type="cm.lx.bean.CarPaidRecord" id="CarPaidRecordMap">
+		<result property="id" column="id" />
+		<result property="carRecordId" column="car_record_id" />
+		<result property="recordStatus" column="record_status" />
+		<result property="paidMoney" column="paid_money" />
+		<result property="paidReason" column="paid_reason" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, car_record_id, record_status, paid_money, paid_reason, ctime, utime
+	</sql>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarPaidRecord">
+		insert into cm_car_paid_record
+		(car_record_id, record_status, paid_money, paid_reason, ctime, utime)
+		values
+		(#{carRecordId},#{recordStatus},#{paidMoney},#{paidReason},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="CarPaidRecordMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_paid_record where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_paid_record where id = #{id}
+	</delete>
+
+	<delete id="deleteByMap" parameterType="Map">
+		delete from cm_car_paid_record where 1=1
+		<if test="linkId != null">
+			and car_record_id = #{linkId}
+		</if>
+		<if test="recordStatus != null">
+			and record_status = #{recordStatus}
+		</if>
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarPaidRecord">
+		update cm_car_paid_record
+		 <set>
+			 <if test="carRecordId != null">
+				 car_record_id = #{carRecordId},
+			 </if>
+			 <if test="recordStatus != null">
+				 record_status = #{recordStatus},
+			 </if>
+			 <if test="paidMoney != null">
+				 paid_money = #{paidMoney},
+			 </if>
+			 <if test="paidReason != null">
+				 paid_reason = #{paidReason},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getByMap" resultMap="CarPaidRecordMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_paid_record where 1=1
+		<if test="linkId != null">
+			and car_record_id = #{linkId}
+		</if>
+		<if test="recordStatus != null">
+			and record_status = #{recordStatus}
+		</if>
+	</select>
+</mapper>

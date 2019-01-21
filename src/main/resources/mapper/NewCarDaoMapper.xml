@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.NewCarDao">
+
+	<resultMap type="cm.lx.bean.NewCar" id="NewCarMap">
+		<result property="id" column="id" />
+		<result property="carBrand" column="car_brand" />
+		<result property="carModel" column="car_model" />
+		<result property="carConfig" column="car_config" />
+		<result property="guidancePrice" column="guidance_price" />
+		<result property="purchasePerson" column="purchase_person" />
+		<result property="purchaseMoney" column="purchase_money" />
+		<result property="salePerson" column="sale_person" />
+		<result property="saleDate" column="sale_date" />
+		<result property="saleMoney" column="sale_money" />
+		<result property="expenseCompany" column="expense_company" />
+		<result property="businessExpenseFee" column="business_expense_fee" />
+		<result property="forceExpenseFee" column="force_expense_fee" />
+		<result property="expenseRebate" column="expense_rebate" />
+		<result property="agencyFee" column="agency_fee" />
+		<result property="payMoney" column="pay_money" />
+		<result property="paidMoney" column="paid_money" />
+		<result property="consumerProperty" column="consumer_property" />
+		<result property="consumerResource" column="consumer_resource" />
+		<result property="purchaseUse" column="purchase_use" />
+		<result property="consumerName" column="consumer_name" />
+		<result property="consumerSex" column="consumer_sex" />
+		<result property="consumerAge" column="consumer_age" />
+		<result property="consumerAddress" column="consumer_address" />
+		<result property="consumerPhone" column="consumer_phone" />
+		<result property="saleType" column="sale_type" />
+		<result property="otherCost" column="other_cost" />
+		<result property="otherIncome" column="other_income" />
+		<result property="mortgageId" column="mortgage_id" />
+		<result property="recordStatus" column="record_status" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, car_brand, car_model, car_config, guidance_price, purchase_person, purchase_money, sale_person, sale_date, sale_money, expense_company,
+		business_expense_fee, force_expense_fee, expense_rebate, agency_fee, pay_money, paid_money, consumer_property, consumer_resource, purchase_use,
+		consumer_name, consumer_sex, consumer_age, consumer_address, consumer_phone, sale_type, other_cost, other_income, mortgage_id, record_status, ctime, utime
+	</sql>
+
+	<select id="getNewCarAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_new_car'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.NewCar">
+		insert into cm_new_car
+		(id, car_brand, car_model, car_config, guidance_price, purchase_person, purchase_money, sale_person, sale_date, sale_money, expense_company,
+		business_expense_fee, force_expense_fee, expense_rebate, agency_fee, pay_money, paid_money, consumer_property, consumer_resource, purchase_use,
+		consumer_name, consumer_sex, consumer_age, consumer_address, consumer_phone, sale_type, other_cost, other_income, mortgage_id, record_status, ctime, utime)
+		values
+		(#{id},#{carBrand},#{carModel},#{carConfig},#{guidancePrice},#{purchasePerson},#{purchaseMoney},#{salePerson},#{saleDate},#{saleMoney},#{expenseCompany},
+		#{businessExpenseFee},#{forceExpenseFee},#{expenseRebate},#{agencyFee},#{payMoney},#{paidMoney},#{consumerProperty},#{consumerResource},#{purchaseUse},
+		#{consumerName},#{consumerSex},#{consumerAge},#{consumerAddress},#{consumerPhone},#{saleType},#{otherCost},#{otherIncome},#{mortgageId},#{recordStatus},#{ctime},#{utime})
+	</insert>
+
+	<update id="updateById" parameterType="cm.lx.bean.NewCar">
+		update cm_new_car
+		<set>
+			<if test="carBrand != null" >
+				car_brand = #{carBrand},
+			</if>
+			<if test="carModel != null" >
+				car_model = #{carModel},
+			</if>
+			<if test="carConfig != null" >
+				car_config = #{carConfig},
+			</if>
+			<if test="guidancePrice != null" >
+				guidance_price = #{guidancePrice},
+			</if>
+			<if test="purchasePerson != null" >
+				purchase_person = #{purchasePerson},
+			</if>
+			<if test="purchaseMoney != null" >
+				purchase_money = #{purchaseMoney},
+			</if>
+			<if test="salePerson != null" >
+				sale_person = #{salePerson},
+			</if>
+			<if test="saleDate != null" >
+				sale_date = #{saleDate},
+			</if>
+			<if test="saleMoney != null" >
+				sale_money = #{saleMoney},
+			</if>
+			<if test="expenseCompany != null">
+				expense_company = #{expenseCompany},
+			</if>
+			<if test="businessExpenseFee != null">
+				business_expense_fee = #{businessExpenseFee},
+			</if>
+			<if test="forceExpenseFee != null">
+				force_expense_fee = #{forceExpenseFee},
+			</if>
+			<if test="expenseRebate != null">
+				expense_rebate = #{expenseRebate},
+			</if>
+			<if test="agencyFee != null">
+				agency_fee = #{agencyFee},
+			</if>
+			<if test="payMoney != null">
+				pay_money = #{payMoney},
+			</if>
+			<if test="paidMoney != null">
+				paid_money = #{paidMoney},
+			</if>
+			<if test="consumerProperty != null">
+				consumer_property = #{consumerProperty},
+			</if>
+			<if test="consumerResource != null">
+				consumer_resource = #{consumerResource},
+			</if>
+			<if test="purchaseUse != null">
+				purchase_use = #{purchaseUse},
+			</if>
+			<if test="consumerName != null">
+				consumer_name = #{consumerName},
+			</if>
+			<if test="consumerSex != null">
+				consumer_sex = #{consumerSex},
+			</if>
+			<if test="consumerAge != null">
+				consumer_age = #{consumerAge},
+			</if>
+			<if test="consumerAddress != null">
+				consumer_address = #{consumerAddress},
+			</if>
+			<if test="consumerPhone != null">
+				consumer_phone = #{consumerPhone},
+			</if>
+			<if test="saleType != null">
+				sale_type = #{saleType},
+			</if>
+			<if test="otherCost != null">
+				other_cost = #{otherCost},
+			</if>
+			<if test="otherIncome != null">
+				other_income = #{otherIncome},
+			</if>
+			<if test="mortgageId != null">
+				mortgage_id = #{mortgageId},
+			</if>
+			<if test="recordStatus != null">
+				record_status = #{recordStatus},
+			</if>
+			<if test="utime != null" >
+				utime = #{utime},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_new_car where id = #{id}
+	</delete>
+
+	<select id="getById" resultMap="NewCarMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_new_car where id = #{ id, jdbcType=INTEGER };
+	</select>
+
+
+	<select id="getNewCarList" resultMap="NewCarMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_new_car where 1=1
+		<if test="recordStatus != null" >
+			and record_status = #{recordStatus}
+		</if>
+	</select>
+
+</mapper>

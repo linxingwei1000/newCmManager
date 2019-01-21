@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.DepartmentAuthorityDao">
+
+	<resultMap type="cm.lx.bean.DepartmentAuthority" id="DepartmentAuthorityMap">
+		<result property="id" column="id" /> 
+		<result property="departmentName" column="department_name" />
+		<result property="accountAble" column="account_page" />
+		<result property="carAble" column="car_page" />
+		<result property="insuranceAble" column="insurance_page" />
+		<result property="mortgageAble" column="mortgage_page" />
+		<result property="newCarAble" column="new_car_page" />
+		<result property="moneyAble" column="money_page" />
+		<result property="statAble" column="stat_page" />
+		<result property="dossierAble" column="dossier_page" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, department_name, account_page, car_page, insurance_page, mortgage_page, new_car_page, money_page, stat_page, dossier_page
+	</sql>
+
+	<insert id="insert" parameterType="cm.lx.bean.DepartmentAuthority">
+		insert into cm_department_authority
+		(department_name,account_page,car_page,insurance_page, mortgage_page, new_car_page, money_page, stat_page, dossier_page)
+		values
+		(#{departmentName},#{accountAble},#{carAble},#{insuranceAble},#{mortgageAble},#{newCarAble},#{moneyAble},#{statAble},#{dossierAble})
+	</insert>
+
+	<update id="updateById" parameterType="cm.lx.bean.DepartmentAuthority">
+		update cm_department_authority set
+		department_name = #{departmentName},account_page = #{accountAble},car_page = #{carAble},
+		insurance_page = #{insuranceAble},mortgage_page = #{mortgageAble},new_car_page = #{newCarAble},money_page = #{moneyAble},stat_page = #{statAble},dossier_page = #{dossierAble}
+		where id = #{id}
+	</update>
+
+	<select id="getById" resultMap="DepartmentAuthorityMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_department_authority where id = #{ id, jdbcType=INTEGER };
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_department_authority where id = #{id}
+	</delete>
+
+	<select id="getByName" resultMap="DepartmentAuthorityMap" parameterType="String">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_department_authority where department_name = #{ name };
+	</select>
+
+
+	<select id="getDepartmentAuthorityList" resultMap="DepartmentAuthorityMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_department_authority;
+	</select>
+
+</mapper>

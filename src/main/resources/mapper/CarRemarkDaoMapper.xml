@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarRemarkDao">
+	<resultMap type="cm.lx.bean.CarRemark" id="CarRemarkMap">
+		<result property="id" column="id" />
+		<result property="carRecordId" column="car_record_id" />
+		<result property="remarkType" column="record_type" />
+		<result property="remarkDate" column="remark_date" />
+		<result property="remark" column="remark" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, car_record_id, record_type, remark_date, remark, ctime, utime
+	</sql>
+
+	<select id="getCarRemarkAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_car_remark'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarRemark">
+		insert into cm_car_remark
+		(car_record_id, record_type, remark_date, remark, ctime, utime)
+		values
+		(#{carRecordId},#{remarkType},#{remarkDate},#{remark},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="CarRemarkMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_remark where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_remark where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarRemark">
+		update cm_car_remark
+		 <set>
+			 <if test="carRecordId != null">
+				 car_record_id = #{carRecordId},
+			 </if>
+			 <if test="remarkType != null">
+				 record_type = #{remarkType},
+			 </if>
+			 <if test="remarkDate != null">
+				 remark_date = #{remarkDate},
+			 </if>
+			 <if test="remark != null">
+				 remark = #{remark},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getCarRemarkList" resultMap="CarRemarkMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_remark where 1=1
+		<if test="linkId != null">
+			and car_record_id = #{linkId}
+		</if>
+		<if test="remarkType != null">
+			and record_type = #{remarkType}
+		</if>
+	</select>
+</mapper>

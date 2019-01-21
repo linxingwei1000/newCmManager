@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.InsuranceBusinessDao">
+	<resultMap type="cm.lx.bean.InsuranceBusiness" id="InsuranceBusinessMap">
+		<result property="id" column="id" />
+		<result property="businessType" column="business_type" />
+		<result property="insuranceDate" column="insurance_date" />
+		<result property="qzxDate" column="qzx_date" />
+		<result property="qzxCompany" column="qzx_company" />
+		<result property="qzxFee" column="qzx_fee" />
+		<result property="syxDate" column="syx_date" />
+		<result property="syxCompany" column="syx_company" />
+		<result property="syxFee" column="syx_fee" />
+		<result property="syxDiscount" column="syx_discount" />
+		<result property="expenseRebate" column="expense_rebate" />
+		<result property="rebateFee" column="rebate_fee" />
+		<result property="returnFee" column="return_fee" />
+		<result property="businessDesc" column="business_desc" />
+		<result property="insuranceId" column="insurance_id" />
+		<result property="displayStatus" column="display_status" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, business_type, insurance_date, qzx_date, qzx_company, qzx_fee, syx_date, syx_company, syx_fee, syx_discount, expense_rebate, rebate_fee,
+		 return_fee, business_desc, insurance_id, display_status, ctime, utime
+	</sql>
+
+	<select id="getInsuranceAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_insurance_business'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.InsuranceBusiness">
+		insert into cm_insurance_business
+		(id, business_type, insurance_date, qzx_date, qzx_company, qzx_fee, syx_date, syx_company, syx_fee, syx_discount, expense_rebate, rebate_fee,
+		 return_fee, business_desc, insurance_id, display_status, ctime, utime)
+		values
+		(#{id},#{businessType},#{insuranceDate},#{qzxDate},#{qzxCompany},#{qzxFee},#{syxDate},#{syxCompany},#{syxFee},#{syxDiscount},#{expenseRebate},#{rebateFee},
+		#{returnFee},#{businessDesc},#{insuranceId},#{displayStatus},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="InsuranceBusinessMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_insurance_business where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_insurance_business where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.InsuranceBusiness">
+		update cm_insurance_business
+		 <set>
+			 <if test="businessType != null">
+				 business_type = #{businessType},
+			 </if>
+			 <if test="insuranceDate != null">
+				 insurance_date = #{insuranceDate},
+			 </if>
+			 <if test="qzxDate != null">
+				 qzx_date = #{qzxDate},
+			 </if>
+			 <if test="qzxCompany != null">
+				 qzx_company = #{qzxCompany},
+			 </if>
+			 <if test="qzxFee != null">
+				 qzx_fee = #{qzxFee},
+			 </if>
+			 <if test="syxDate != null">
+				 syx_date = #{syxDate},
+			 </if>
+			 <if test="syxCompany != null">
+				 syx_company = #{syxCompany},
+			 </if>
+			 <if test="syxFee != null">
+				 syx_fee = #{syxFee},
+			 </if>
+			 <if test="syxDiscount != null">
+				 syx_discount = #{syxDiscount},
+			 </if>
+			 <if test="expenseRebate != null">
+				 expense_rebate = #{expenseRebate},
+			 </if>
+			 <if test="rebateFee != null">
+				 rebate_fee = #{rebateFee},
+			 </if>
+			 <if test="returnFee != null">
+				 return_fee = #{returnFee},
+			 </if>
+			 <if test="businessDesc != null">
+				 business_desc = #{businessDesc},
+			 </if>
+			 <if test="insuranceId != null">
+				 insurance_id = #{insuranceId},
+			 </if>
+			 <if test="displayStatus != null">
+				 display_status = #{displayStatus},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getInsuranceBusinessByMap" resultMap="InsuranceBusinessMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_insurance_business where 1=1
+		<if test="insuranceId != null" >
+			and insurance_id = #{insuranceId}
+		</if>
+		<if test="displayStatus != null" >
+			and display_status = #{displayStatus}
+		</if>;
+	</select>
+
+	<delete id="deleteByInsuranceId" parameterType="Map">
+		delete from cm_insurance_business where insurance_id = #{insuranceId}
+	</delete>
+</mapper>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/jsp/templates">
+    <!-- 排除 -->
+    <excludes>
+        <pattern>*/ajax*</pattern>
+    </excludes>
+
+
+    <!-- 登录模板页 -->
+    <decorator name="login" page="login.jsp">
+        <pattern>/index*</pattern>
+        <pattern>/login*</pattern>
+        <pattern>/logout*</pattern>
+    </decorator>
+
+    <!-- 后台页 -->
+    <decorator name="manager" page="manager.jsp">
+        <pattern>/main*</pattern>
+        <pattern>/user*</pattern>
+        <pattern>/car*</pattern>
+        <pattern>/insurance*</pattern>
+        <pattern>/mortgage*</pattern>
+        <pattern>/newCar*</pattern>
+        <pattern>/money*</pattern>
+        <pattern>/stat*</pattern>
+        <pattern>/dossier*</pattern>
+    </decorator>
+
+</decorators>

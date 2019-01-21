@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.MortgageLogDao">
+	<resultMap type="cm.lx.bean.MortgageLog" id="MortgageLogMap">
+		<result property="id" column="id" />
+		<result property="actionPerson" column="action_person" />
+		<result property="consumerName" column="consumer_name" />
+		<result property="consumerPhone" column="consumer_phone" />
+		<result property="carBrand" column="car_brand" />
+		<result property="carModel" column="car_model" />
+		<result property="mortgageCommissioner" column="mortgage_commissioner" />
+		<result property="mortgageCompany" column="mortgage_company" />
+		<result property="loanFee" column="loan_fee" />
+		<result property="interestRate" column="interest_rate" />
+		<result property="mortgageRebate" column="mortgage_rebate" />
+		<result property="backFee" column="back_fee" />
+		<result property="payBackFee" column="pay_back_fee" />
+		<result property="assessmentFee" column="assessment_fee" />
+		<result property="renewalFee" column="renewal_fee" />
+		<result property="signBillFee" column="sign_bill_fee" />
+		<result property="overYearFee" column="over_year_fee" />
+		<result property="riskFee" column="risk_fee" />
+		<result property="padFee" column="pad_fee" />
+		<result property="doorFee" column="door_fee" />
+		<result property="stampDuty" column="stamp_duty" />
+		<result property="otherFee" column="other_fee" />
+		<result property="expenseCompany" column="expense_company" />
+		<result property="businessExpenseFee" column="business_expense_fee" />
+		<result property="forceExpenseFee" column="force_expense_fee" />
+		<result property="businessExpenseRebate" column="business_expense_rebate" />
+		<result property="businessExpenseBack" column="business_expense_back" />
+		<result property="mortgageDate" column="mortgage_date" />
+		<result property="mortgageMoney" column="mortgage_money" />
+		<result property="grossProfit" column="gross_profit" />
+		<result property="needPayConsumer" column="need_pay_consumer" />
+		<result property="agentPayFee" column="agent_pay_fee" />
+		<result property="mortgageType" column="mortgage_type" />
+		<result property="displayStatus" column="display_status" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, action_person, consumer_name, consumer_phone, car_brand, car_model, mortgage_commissioner, mortgage_company, loan_fee, interest_rate,
+		mortgage_rebate, back_fee, pay_back_fee, assessment_fee, renewal_fee, sign_bill_fee, over_year_fee, risk_fee, pad_fee, door_fee, stamp_duty, other_fee,
+		expense_company, business_expense_fee, force_expense_fee, business_expense_rebate, business_expense_back, mortgage_date, mortgage_money,
+		gross_profit, need_pay_consumer, agent_pay_fee, mortgage_type, display_status, ctime, utime
+	</sql>
+
+	<select id="getAutoId" resultType="Integer">
+		select auto_increment from information_schema.TABLES where
+		TABLE_SCHEMA='cm' and TABLE_NAME='cm_mortgage_log'
+	</select>
+
+	<insert id="insert" parameterType="cm.lx.bean.MortgageLog">
+		insert into cm_mortgage_log
+		(action_person, consumer_name, consumer_phone, car_brand, car_model, mortgage_commissioner, mortgage_company, loan_fee, interest_rate,
+		mortgage_rebate, back_fee, pay_back_fee, assessment_fee, renewal_fee, sign_bill_fee, over_year_fee, risk_fee, pad_fee, door_fee, stamp_duty, other_fee,
+		expense_company, business_expense_fee, force_expense_fee, business_expense_rebate, business_expense_back, mortgage_date, mortgage_money,
+		gross_profit, need_pay_consumer, agent_pay_fee, mortgage_type, display_status, ctime, utime)
+		values
+		(#{actionPerson},#{consumerName},#{consumerPhone},#{carBrand},#{carModel},#{mortgageCommissioner},#{mortgageCompany},#{loanFee},#{interestRate},
+		#{mortgageRebate},#{backFee},#{payBackFee},#{assessmentFee},#{renewalFee},#{signBillFee},#{overYearFee},#{riskFee},#{padFee},#{doorFee},#{stampDuty},#{otherFee},
+		#{expenseCompany},#{businessExpenseFee},#{forceExpenseFee},#{businessExpenseRebate},#{businessExpenseBack},#{mortgageDate},#{mortgageMoney},
+		#{grossProfit},#{needPayConsumer},#{agentPayFee},#{mortgageType},#{displayStatus},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="MortgageLogMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_mortgage_log where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_mortgage_log where id = #{id}
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.MortgageLog">
+		update cm_mortgage_log
+		 <set>
+			 <if test="actionPerson != null">
+				 action_person = #{actionPerson},
+			 </if>
+			 <if test="consumerName != null">
+				 consumer_name = #{consumerName},
+			 </if>
+			 <if test="consumerPhone != null">
+				 consumer_phone = #{consumerPhone},
+			 </if>
+			 <if test="carBrand != null">
+				 car_brand = #{carBrand},
+			 </if>
+			 <if test="carModel != null">
+				 car_model = #{carModel},
+			 </if>
+			 <if test="mortgageCommissioner != null">
+				 mortgage_commissioner = #{mortgageCommissioner},
+			 </if>
+			 <if test="mortgageCompany != null">
+				 mortgage_company = #{mortgageCompany},
+			 </if>
+			 <if test="loanFee != null">
+				 loan_fee = #{loanFee},
+			 </if>
+			 <if test="interestRate != null">
+				 interest_rate = #{interestRate},
+			 </if>
+			 <if test="mortgageRebate != null">
+				 mortgage_rebate = #{mortgageRebate},
+			 </if>
+			 <if test="backFee != null">
+				 back_fee = #{backFee},
+			 </if>
+			 <if test="payBackFee != null">
+				 pay_back_fee = #{payBackFee},
+			 </if>
+			 <if test="assessmentFee != null">
+				 assessment_fee = #{assessmentFee},
+			 </if>
+			 <if test="renewalFee != null">
+				 renewal_fee = #{renewalFee},
+			 </if>
+			 <if test="signBillFee != null">
+				 sign_bill_fee = #{signBillFee},
+			 </if>
+			 <if test="overYearFee != null">
+				 over_year_fee = #{overYearFee},
+			 </if>
+			 <if test="riskFee != null">
+				 risk_fee = #{riskFee},
+			 </if>
+			 <if test="padFee != null">
+				 pad_fee = #{padFee},
+			 </if>
+			 <if test="doorFee != null">
+				 door_fee = #{doorFee},
+			 </if>
+			 <if test="stampDuty != null">
+				 stamp_duty = #{stampDuty},
+			 </if>
+			 <if test="otherFee != null">
+				 other_fee = #{otherFee},
+			 </if>
+			 <if test="expenseCompany != null">
+				 expense_company = #{expenseCompany},
+			 </if>
+			 <if test="businessExpenseFee != null">
+				 business_expense_fee = #{businessExpenseFee},
+			 </if>
+			 <if test="forceExpenseFee != null">
+				 force_expense_fee = #{forceExpenseFee},
+			 </if>
+			 <if test="businessExpenseRebate != null">
+				 business_expense_rebate = #{businessExpenseRebate},
+			 </if>
+			 <if test="businessExpenseBack != null">
+				 business_expense_back = #{businessExpenseBack},
+			 </if>
+			 <if test="mortgageDate != null">
+				 mortgage_date = #{mortgageDate},
+			 </if>
+			 <if test="mortgageMoney != null">
+				 mortgage_money = #{mortgageMoney},
+			 </if>
+			 <if test="grossProfit != null">
+				 gross_profit = #{grossProfit},
+			 </if>
+			 <if test="needPayConsumer != null">
+				 need_pay_consumer = #{needPayConsumer},
+			 </if>
+			 <if test="agentPayFee != null">
+				 agent_pay_fee = #{agentPayFee},
+			 </if>
+			 <if test="displayStatus != null">
+				 display_status = #{displayStatus},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getMortgageLogList" resultMap="MortgageLogMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_mortgage_log where 1=1
+		<if test="mortgageType != null" >
+			and mortgage_type = #{mortgageType}
+		</if>
+		<if test="displayStatus != null" >
+			and display_status = #{displayStatus}
+		</if>
+	</select>
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarPayMoneyAssistDao">
+	<resultMap type="cm.lx.bean.CarPayMoneyAssist" id="CarPayMoneyAssistMap">
+		<result property="id" column="id" />
+		<result property="carSaleInfoId" column="car_sale_info_id" />
+		<result property="oldPayMoney" column="old_pay_money" />
+		<result property="newPayMoney" column="new_pay_money" />
+		<result property="difference" column="difference" />
+		<result property="modReason" column="mod_reason" />
+		<result property="ctime" column="ctime" />
+		<result property="utime" column="utime" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, car_sale_info_id, old_pay_money, new_pay_money, difference, mod_reason, ctime, utime
+	</sql>
+
+	<insert id="insert" parameterType="cm.lx.bean.CarPayMoneyAssist">
+		insert into cm_car_pay_money_assist
+		(car_sale_info_id, old_pay_money, new_pay_money, difference, mod_reason, ctime, utime)
+		values
+		(#{carSaleInfoId},#{oldPayMoney},#{newPayMoney},#{difference},#{modReason},#{ctime},#{utime})
+	</insert>
+
+	<select id="getById" resultMap="CarPayMoneyAssistMap" parameterType="Integer">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_pay_money_assist where id = #{id};
+	</select>
+
+	<delete id="deleteById" parameterType="Integer">
+		delete from cm_car_pay_money_assist where id = #{id}
+	</delete>
+
+	<delete id="deleteByMap" parameterType="Map">
+		delete from cm_car_pay_money_assist where 1=1
+		<if test="linkId != null">
+			and car_sale_info_id = #{linkId}
+		</if>
+	</delete>
+
+	<update id="updateById" parameterType="cm.lx.bean.CarPayMoneyAssist">
+		update cm_car_pay_money_assist
+		 <set>
+			 <if test="carSaleInfoId != null">
+				 car_sale_info_id = #{carSaleInfoId},
+			 </if>
+			 <if test="oldPayMoney != null">
+				 old_pay_money = #{oldPayMoney},
+			 </if>
+			 <if test="newPayMoney != null">
+				 new_pay_money = #{newPayMoney},
+			 </if>
+			 <if test="difference != null">
+				 difference = #{difference},
+			 </if>
+			 <if test="modReason != null">
+				 mod_reason = #{modReason},
+			 </if>
+			 <if test="utime != null">
+				 utime = #{utime},
+			 </if>
+		 </set>
+		where id = #{id}
+	</update>
+
+	<select id="getByCarSaleInfoId" resultMap="CarPayMoneyAssistMap" parameterType="Map">
+		select
+		<include refid="Base_Column_List"/>
+		from cm_car_pay_money_assist where 1=1
+		<if test="linkId != null">
+			and car_sale_info_id = #{linkId}
+		</if>
+	</select>
+</mapper>
