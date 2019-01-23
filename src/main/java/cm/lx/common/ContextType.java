@@ -41,6 +41,7 @@ public class ContextType {
     public final static Integer PAY_RECORD_DEPOSIT = 5;                    //订金记录
     public final static Integer PAY_RECORD_MORTGAGE_LOG = 6;         //代办按揭放款记录
     public final static Integer PAY_RECORD_BUDGET = 7;                //档案预算记录
+    public final static Integer PAY_RECORD_NEW_CAR_MORTGAGE = 8;                //新车按揭放款记录
 
     public final static Integer PRE_SETUP_TYPE = 1;                             //车辆售前整备
     public final static Integer AFTER_SETUP_TYPE = 2;                           //车辆售后整备

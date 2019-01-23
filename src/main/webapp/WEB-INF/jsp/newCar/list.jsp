@@ -296,11 +296,11 @@
                             </div>
                         </td>
                         <td>${cp.paidMoney}/${cp.payMoney}</td>
-                        <td><c:if test="${cp.saleType == 1}">    -</c:if><c:if test="${cp.saleType == 2}">${cp.mortgageRecord.aMortgageMoney}/${cp.mortgageRecord.mortgageMoney}</c:if></td>
+                        <td><c:if test="${cp.saleType == 1}">    -</c:if><c:if test="${cp.saleType == 2}">${cp.mortgageRecord.mortgageMoney}/${cp.mortgageRecord.aMortgageMoney}</c:if></td>
                         <td>
                             <a href="#paidDialog" data-toggle="modal" data-url="newCarPaid?id=${cp.id }" data-title="收账" data-need="${cp.payMoney - cp.paidMoney}" class="paid-trigger"><i class="icon-trash"></i> 付款</a>
                             <c:if test="${cp.saleType == 2}">
-                                <a href="#paidDialog" data-toggle="modal" data-url="mortgagePaid?id=${cp.mortgageRecord.id }" data-title="放款" data-need="${cp.mortgageRecord.mortgageMoney - cp.mortgageRecord.aMortgageMoney }" class="paid-trigger"><i class="icon-trash"></i> 放款</a>
+                                <a href="#paidDialog" data-toggle="modal" data-url="mortgageNewCarPaid?id=${cp.mortgageRecord.id }" data-title="放款" data-need="${cp.mortgageRecord.aMortgageMoney - cp.mortgageRecord.mortgageMoney }" class="paid-trigger"><i class="icon-trash"></i> 放款</a>
                             </c:if>
                             <a href="newCarAction?id=${cp.id }&action=2"><i class="icon-lock"></i> 编辑</a>
                             <a href="#confirmDialog" data-toggle="modal" data-url="newCarDelete?id=${cp.id }" data-title="删除记录"

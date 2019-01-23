@@ -1,7 +1,7 @@
 package cm.lx.filter;
 
 
-import cm.lx.bean.DepartmentAuthority;
+import cm.lx.bean.entity.DepartmentAuthority;
 import cm.lx.util.UriUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

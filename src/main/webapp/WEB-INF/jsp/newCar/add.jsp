@@ -181,10 +181,10 @@
                 <input class="form-control  col-xs-3" type="text" name="otherFee" id="otherFee" placeholder="请输入" value="${otherFee}"  autocomplete="off"/>
             </div>
             <div class="form-group form-inline row">
-                <label class="control-label col-xs-2" for="mortgageMoney">放款金额：</label>
+                <label class="control-label col-xs-2" for="mortgageMoney">已放款：</label>
                 <input class="form-control col-xs-3" type="text" name="mortgageMoney" id="mortgageMoney" value="${mortgageMoney}" placeholder="请输入" autocomplete="off"/>
                 <div class="col-xs-1"></div>
-                <label class="control-label col-xs-2" for="aMortgageMoney">已放款：</label>
+                <label class="control-label col-xs-2" for="aMortgageMoney">总放款金额：</label>
                 <input class="form-control col-xs-3" type="text" name="aMortgageMoney" id="aMortgageMoney" value="${aMortgageMoney}" placeholder="请输入" autocomplete="off"/>
             </div>
         </div>

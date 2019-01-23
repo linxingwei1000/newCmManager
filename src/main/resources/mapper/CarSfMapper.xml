@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cm.lx.dao.CarSfMapper">
+
+	<select id="getServiceMoney" resultType="double">
+		select sum(service_fee) from cm_car_sf;
+	</select>
+</mapper>

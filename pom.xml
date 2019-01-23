@@ -88,6 +88,12 @@
       <artifactId>c3p0</artifactId>
       <version>0.9.5.2</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.21</version>
+    </dependency>
     <!-- xlms文档读取 -->
     <dependency>
       <groupId>net.sourceforge.jexcelapi</groupId>

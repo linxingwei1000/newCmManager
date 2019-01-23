@@ -1,7 +1,12 @@
 package cm.lx.business;
 
-import cm.lx.bean.*;
+import cm.lx.bean.stat.MoneyFlowStat;
+import cm.lx.bean.stat.MoneyStat;
+import cm.lx.bean.stat.OtherStat;
+import cm.lx.bean.stat.PropertyStat;
 import cm.lx.common.ContextType;
+import cm.lx.bean.entity.*;
+import cm.lx.service.*;
 import cm.lx.util.TimeUtils;
 import cm.lx.util.Utils;
 
@@ -14,7 +19,10 @@ import java.util.Map;
 
 public class StatCenter {
 
-    public static MoneyStat statMoneyData(DaoCenter daoCenter, List<CarRecord> list, List<MoneyStat> moneyStatList) {
+    public static MoneyStat statMoneyData(CarCostService carCostService,
+                                          CarSfService carSfService,
+                                          CarSaleInfoService carSaleInfoService,
+                                          List<CarRecord> list, List<MoneyStat> moneyStatList) {
         int allCarNum = list.size();
         double grossProfit = 0;             //车均毛利润
         double vehiclePremium = 0;          //车均溢价
@@ -34,7 +42,7 @@ public class StatCenter {
 
         for (CarRecord carRecord : list) {
             double tempGrossProfit = Double.valueOf(carRecord.getGrossProfit());
-            CarSaleInfo carSaleInfo = daoCenter.getCarSaleInfoById(carRecord.getSaleId());
+            CarSaleInfo carSaleInfo = carSaleInfoService.getCarSaleInfoById(carRecord.getSaleId());
 
             MoneyStat moneyStat = new MoneyStat();
             moneyStat.setCarModel(carRecord.getCarModel());
@@ -70,7 +78,7 @@ public class StatCenter {
                 moneyStat.setSaleAgent("是");
             }
 
-            CarCost carCost = daoCenter.getCarCostById(carRecord.getCostId());
+            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
             moneyStat.setPreSetup(carCost.getPreSaleFee());
             moneyStat.setAfterSetup(carCost.getAfterSaleFee());
             preSetup += carCost.getPreSaleFee();
@@ -81,7 +89,7 @@ public class StatCenter {
                     carCost.getCattleFee() + carCost.getExpenseFee() + carCost.getOtherFee());
             purchaseCost += moneyStat.getPurchaseCost();
 
-            CarSf carSf = daoCenter.getCarSfById(carRecord.getSfId());
+            CarSf carSf = carSfService.getCarSfById(carRecord.getSfId());
             moneyStat.setSaleSetup(carSf.getSaleFee());
             saleSetup += carSf.getSaleFee();
 
@@ -111,22 +119,27 @@ public class StatCenter {
         return moneyStat;
     }
 
-    public static void statMoneyFlowData(DaoCenter daoCenter, CacheCenter cacheCenter, MoneyFlowStat moneyFlowStat, Long et) {
+    public static void statMoneyFlowData(MortgageRebateService mortgageRebateService,
+                                         MoneyManagerService moneyManagerService,
+                                         CarRecordService carRecordService,
+                                         CarCostService carCostService,
+                                         CarSfService carSfService,
+                                         CarSaleInfoService carSaleInfoService,
+                                         MortgageRecordService mortgageRecordService,
+                                         CacheCenter cacheCenter, MoneyFlowStat moneyFlowStat, Long et) {
 
-        moneyFlowStat.setCash(statDifferentMoneyType(ContextType.MONEY_TYPE_CASH, daoCenter));
-        moneyFlowStat.setBank(statDifferentMoneyType(ContextType.MONEY_TYPE_BANK, daoCenter));
-        moneyFlowStat.setPoss(statDifferentMoneyType(ContextType.MONEY_TYPE_POSS, daoCenter));
-        moneyFlowStat.setBasic(statDifferentMoneyType(ContextType.MONEY_TYPE_BASIC, daoCenter));
-        moneyFlowStat.setReceivable(statDifferentMoneyType(ContextType.MONEY_TYPE_RECEIVABLE, daoCenter));
-        moneyFlowStat.setCooperate(statDifferentMoneyType(ContextType.MONEY_TYPE_COOPERATE, daoCenter));
+        moneyFlowStat.setCash(statDifferentMoneyType(ContextType.MONEY_TYPE_CASH, moneyManagerService));
+        moneyFlowStat.setBank(statDifferentMoneyType(ContextType.MONEY_TYPE_BANK, moneyManagerService));
+        moneyFlowStat.setPoss(statDifferentMoneyType(ContextType.MONEY_TYPE_POSS, moneyManagerService));
+        moneyFlowStat.setBasic(statDifferentMoneyType(ContextType.MONEY_TYPE_BASIC, moneyManagerService));
+        moneyFlowStat.setReceivable(statDifferentMoneyType(ContextType.MONEY_TYPE_RECEIVABLE, moneyManagerService));
+        moneyFlowStat.setCooperate(statDifferentMoneyType(ContextType.MONEY_TYPE_COOPERATE, moneyManagerService));
 
         //借款特殊处理
-        statLoanData(ContextType.MONEY_TYPE_LOAN, daoCenter, moneyFlowStat, et);
+        statLoanData(ContextType.MONEY_TYPE_LOAN, moneyManagerService, moneyFlowStat, et);
 
         Double house = 0.0;
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("moneyType", ContextType.MONEY_TYPE_HOUSE);
-        List<MoneyManager> list = daoCenter.getMoneyManagerList(map);
+        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(ContextType.MONEY_TYPE_HOUSE);
         for (MoneyManager moneyManager : list) {
             if (moneyManager.getActionDate() <= et && et <= moneyManager.getActionEndDate()) {
                 Double durationTime = (double) (moneyManager.getActionEndDate() - et);
@@ -138,7 +151,7 @@ public class StatCenter {
 
         //返点金额
         Double backMoney = 0.0;
-        List<MortgageRebate> mortgageRebateList = daoCenter.getMortgageRebateList(null);
+        List<MortgageRebate> mortgageRebateList = mortgageRebateService.getMortgageRebateList();
         for (MortgageRebate mortgageRebate : mortgageRebateList) {
             backMoney += mortgageRebate.getBackMoney();
         }
@@ -150,25 +163,35 @@ public class StatCenter {
 
         //计算商品库存
         Double purchaseMoney = 0.0;
-        List<CarRecord> carList = daoCenter.getCarRecordListByRecordStatus(ContextType.RECORD_STATUS_PURCHASE);
+        List<CarRecord> carList = carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_PURCHASE);
         for (CarRecord carRecord : carList) {
-            if (carRecord.getPurchaseType() == 0) continue;
-            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售")) continue;
+            if (carRecord.getPurchaseType() == 0) {
+                continue;
+            }
+            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售")) {
+                continue;
+            }
             purchaseMoney += carRecord.getPaidMoney();
         }
 
         Double stockMoney = 0.0;
         Integer dayNum = 0;
-        carList = daoCenter.getCarRecordListByRecordStatus(ContextType.RECORD_STATUS_STOCK);
+        carList = carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_STOCK);
         int i = 0;
         for (CarRecord carRecord : carList) {
             dayNum += TimeUtils.dayBetweenTwoTime(carRecord.getPurchaseDate(), et);
-            if (carRecord.getPurchaseType() == 0) continue;
-            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售") ||
-                    cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("帮卖"))
+            if (carRecord.getPurchaseType() == 0) {
                 continue;
-            CarCost carCost = daoCenter.getCarCostById(carRecord.getCostId());
-            if (carCost == null) continue;
+            }
+            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售") ||
+                    cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("帮卖")) {
+                continue;
+            }
+
+            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
+            if (carCost == null) {
+                continue;
+            }
             stockMoney += carRecord.getPaidMoney() + carCost.getMentionFee() + carCost.getMentionSubsidy() + carCost.getTravelFee() + carCost.getPutFee() + carCost.getPutSubsidy() +
                     carCost.getCrossingFee() + carCost.getMailFee() + carCost.getFreightFee() + carCost.getBillingFee() + carCost.getOilFee() + carCost.getCattleFee() +
                     carCost.getExpenseFee() + carCost.getOtherFee() + carCost.getPreSaleFee();
@@ -178,31 +201,35 @@ public class StatCenter {
         moneyFlowStat.setStockTime(Utils.saveTwoSeat(carList.size() == 0 ? dayNum.doubleValue() : dayNum.doubleValue() / i));
 
         Double saleMoney = 0.0;
-        carList = daoCenter.getCarRecordListByRecordStatus(ContextType.RECORD_STATUS_SALE);
+        carList = carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_SALE);
         for (CarRecord carRecord : carList) {
-            if (carRecord.getPurchaseType() == 0) continue;
-            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售") ||
-                    cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("帮卖"))
+            if (carRecord.getPurchaseType() == 0) {
                 continue;
-            CarCost carCost = daoCenter.getCarCostById(carRecord.getCostId());
+            }
+            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售") ||
+                    cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("帮卖")) {
+                continue;
+            }
+
+            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
             if (carCost != null) {
                 saleMoney += carRecord.getPaidMoney() + carCost.getMentionFee() + carCost.getMentionSubsidy() + carCost.getTravelFee() + carCost.getPutFee() + carCost.getPutSubsidy() +
                         carCost.getCrossingFee() + carCost.getMailFee() + carCost.getFreightFee() + carCost.getBillingFee() + carCost.getOilFee() + carCost.getCattleFee() +
                         carCost.getExpenseFee() + carCost.getOtherFee() + carCost.getPreSaleFee();
             }
 
-            CarSf carSf = daoCenter.getCarSfById(carRecord.getSfId());
+            CarSf carSf = carSfService.getCarSfById(carRecord.getSfId());
             if (carSf != null) {
                 carSf.addAll();
                 saleMoney += carSf.getAllSf() + carSf.getSaleFee();
             }
 
 
-            CarSaleInfo carSaleInfo = daoCenter.getCarSaleInfoById(carRecord.getSaleId());
+            CarSaleInfo carSaleInfo = carSaleInfoService.getCarSaleInfoById(carRecord.getSaleId());
             if (carSaleInfo != null) {
                 saleMoney -= carSaleInfo.getPaidMoney();
                 if (carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ)) {
-                    MortgageRecord mortgageRecord = daoCenter.getMortgageRecordById(carSaleInfo.getMortgageId());
+                    MortgageRecord mortgageRecord = mortgageRecordService.getMortgageRecordById(carSaleInfo.getMortgageId());
                     saleMoney -= mortgageRecord.getaMortgageMoney();
                 }
             }
@@ -212,11 +239,9 @@ public class StatCenter {
                 moneyFlowStat.getHouse() + moneyFlowStat.getBackMoney() + moneyFlowStat.getReceivable())).add(moneyFlowStat.getGoods()));
     }
 
-    public static Double statDifferentMoneyType(Integer type, DaoCenter daoCenter) {
+    public static Double statDifferentMoneyType(Integer type, MoneyManagerService moneyManagerService) {
         Double temp = 0.0;
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("moneyType", type);
-        List<MoneyManager> list = daoCenter.getMoneyManagerList(map);
+        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(type);
         for (MoneyManager moneyManager : list) {
             if (moneyManager.getActionType().equals(ContextType.MONEY_MANAGER_IN)) {
                 temp += moneyManager.getActionFee();
@@ -227,12 +252,11 @@ public class StatCenter {
         return Utils.saveTwoSeat(temp);
     }
 
-    private static void statLoanData(Integer type, DaoCenter daoCenter, MoneyFlowStat moneyFlowStat, long et) {
+    private static void statLoanData(Integer type, MoneyManagerService moneyManagerService, MoneyFlowStat moneyFlowStat, long et) {
         Double temp = 0.0;
         Double lx = 0.0;
-        Map<String, Integer> map = new HashMap<String, Integer>();
-        map.put("moneyType", type);
-        List<MoneyManager> list = daoCenter.getMoneyManagerList(map);
+
+        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(type);
         for (MoneyManager moneyManager : list) {
             if (moneyManager.getActionType().equals(ContextType.MONEY_MANAGER_IN)) {
                 temp += moneyManager.getActionFee();
@@ -246,7 +270,8 @@ public class StatCenter {
         moneyFlowStat.setInterest(Utils.saveTwoSeat(lx));
     }
 
-    public static void statProperty(CacheCenter cacheCenter, DaoCenter daoCenter, List<CarRecord> list, PropertyStat propertyStat) {
+    public static void statProperty(CarSaleInfoService carSaleInfoService,
+                                    CacheCenter cacheCenter, List<CarRecord> list, PropertyStat propertyStat) {
         Map<Integer, Double> carLevelMap = new HashMap<Integer, Double>();
         Map<Integer, Double> carTakeTypeMap = new HashMap<Integer, Double>();
         Map<Integer, Double> purchaseTypeMap = new HashMap<Integer, Double>();
@@ -278,7 +303,7 @@ public class StatCenter {
             //品牌
             carBrandMap.put(carRecord.getCarBrand(), removeNull(carBrandMap.get(carRecord.getCarBrand())) + 1);
 
-            CarSaleInfo carSaleInfo = daoCenter.getCarSaleInfoById(carRecord.getSaleId());
+            CarSaleInfo carSaleInfo = carSaleInfoService.getCarSaleInfoById(carRecord.getSaleId());
             //客户属性
             consumerPropertyMap.put(carSaleInfo.getConsumerProperty(), removeNull(consumerPropertyMap.get(carSaleInfo.getConsumerProperty())) + 1);
 
@@ -314,13 +339,15 @@ public class StatCenter {
         propertyStat.setSaleTypeMap(installStringKey(saleTypeMap.entrySet().iterator(), list.size()));
     }
 
-    public static void statMortgageCompanyData(DaoCenter daoCenter, List<CarRecord> list, OtherStat otherStat) {
-        Map<String, Double> map = new HashMap<String, Double>();
+    public static void statMortgageCompanyData(CarSaleInfoService carSaleInfoService,
+                                               MortgageRecordService mortgageRecordService,
+                                               List<CarRecord> list, OtherStat otherStat) {
+        Map<String, Double> map = new HashMap<>();
         Double allMoney = 0.0;
         for (CarRecord carRecord : list) {
-            CarSaleInfo carSaleInfo = daoCenter.getCarSaleInfoById(carRecord.getSaleId());
+            CarSaleInfo carSaleInfo = carSaleInfoService.getCarSaleInfoById(carRecord.getSaleId());
             if (carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ)) {
-                MortgageRecord mortgageRecord = daoCenter.getMortgageRecordById(carSaleInfo.getMortgageId());
+                MortgageRecord mortgageRecord = mortgageRecordService.getMortgageRecordById(carSaleInfo.getMortgageId());
                 map.put(mortgageRecord.getMortgageCompany(), removeNull(map.get(mortgageRecord.getMortgageCompany())) + mortgageRecord.getLoanFee());
                 allMoney += mortgageRecord.getLoanFee();
             }

@@ -82,6 +82,8 @@ create table cm.cm_car_record(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间',
   index index_frame_num(frame_num))ENGINE=MyISAM DEFAULT CHARSET=utf8;
+Alter table cm.cm_car_record add index index_purchase_date (purchase_date);
+Alter table cm.cm_car_record add index index_sold_date (sold_date);
 
 create table cm.cm_car_remark(
   id int(8) primary key auto_increment,

@@ -114,7 +114,7 @@
                     <th>全款权限底价</th>
                     <th>按揭权限底价</th>
                     <th>车辆信息</th>
-                    <th>提车费用</th>
+                    <th>提车成本</th>
                     <th>售前整备</th>
                     <th>其他收入</th>
                     <th>操作</th>
@@ -246,7 +246,7 @@
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                    <h4 class="modal-title" id="myCostLabel">提车费用信息</h4>
+                                                    <h4 class="modal-title" id="myCostLabel">提车成本信息</h4>
                                                 </div>
                                                 <div class="modal-body">
                                                     <div class="form-group row">

@@ -1,8 +1,9 @@
 package cm.lx.controller;
 
-import cm.lx.bean.Account;
-import cm.lx.bean.DepartmentAuthority;
-import cm.lx.business.DaoCenter;
+import cm.lx.bean.entity.Account;
+import cm.lx.bean.entity.DepartmentAuthority;
+import cm.lx.service.AccountService;
+import cm.lx.service.DepartmentAuthorityService;
 import cm.lx.util.MD5Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
@@ -21,19 +21,23 @@ import javax.servlet.http.HttpSession;
 public class LoginController extends BaseController {
 
     @Resource
-    DaoCenter daoCenter;
+    AccountService accountService;
+
+    @Resource
+    DepartmentAuthorityService departmentAuthorityService;
 
     @RequestMapping(value = "/login")
     public ModelAndView login(@RequestParam(value = "accountNum", required = false, defaultValue = "") String accountNum,
                               @RequestParam(value = "password", required = false, defaultValue = "") String password,
                               @RequestParam(value = "code", required = false, defaultValue = "") String code,
-                              HttpSession session,
-                              HttpServletRequest request) {
+                              HttpSession session) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("index");
 
         //初始化界面没有传参数
-        if(StringUtils.isEmpty(accountNum)&&StringUtils.isEmpty(password)&&StringUtils.isEmpty(code)) return mav;
+        if(StringUtils.isEmpty(accountNum)&&StringUtils.isEmpty(password)&&StringUtils.isEmpty(code)) {
+            return mav;
+        }
 
         accountNum = StringUtils.trim(accountNum);
         password = StringUtils.trim(password);
@@ -62,13 +66,13 @@ public class LoginController extends BaseController {
         }
 
         try {
-            Account account = daoCenter.getAccountByName(accountNum);
+            Account account = accountService.getAccountByName(accountNum);
             if (account == null || !account.getPassword().equals(MD5Utils.compute(password))) {
                 mav.addObject(TIP, "用户密码不正确");
                 return mav;
             }
 
-            DepartmentAuthority departmentAuthority = daoCenter.getDepartmentAuthorityById(account.getDepartment());
+            DepartmentAuthority departmentAuthority = departmentAuthorityService.getDepartmentAuthorityById(account.getDepartment());
 
             session.setAttribute("account", account);
             session.setAttribute("myDepartmentAuthority", departmentAuthority);

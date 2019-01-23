@@ -1,5 +1,7 @@
 package cm.lx.bean;
 
+import cm.lx.bean.entity.*;
+
 import java.util.List;
 
 public class ContextBean {
