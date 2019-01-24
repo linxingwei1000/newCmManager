@@ -49,6 +49,7 @@ public class MoneyManagerServiceImpl implements MoneyManagerService {
         if (type != null) {
             query.eq("money_type", type);
         }
+        query.orderByDesc("ctime");
         return moneyManagerMapper.selectList(query);
     }
 }

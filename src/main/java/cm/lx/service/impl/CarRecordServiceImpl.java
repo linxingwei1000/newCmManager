@@ -130,7 +130,13 @@ public class CarRecordServiceImpl implements CarRecordService {
         }
 
         //按已售倒叙
-        list.sort((o1, o2) -> (int) (o2.getSoldDate() - o1.getSoldDate()));
+        list.sort((o1, o2) -> {
+            if(o2.getSoldDate() >= o1.getSoldDate()){
+                return 1;
+            }else{
+               return -1;
+            }
+        });
         return list;
     }
 }

@@ -1,12 +1,10 @@
 package cm.lx.controller.money;
 
 import cm.lx.bean.entity.MoneyManager;
-import cm.lx.bean.entity.MortgageRebate;
 import cm.lx.business.StatCenter;
 import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
 import cm.lx.service.MoneyManagerService;
-import cm.lx.service.MortgageRebateService;
 import cm.lx.util.TimeUtils;
 import cm.lx.util.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,9 +24,6 @@ public class MoneyController extends BaseController {
 
     @Resource
     MoneyManagerService moneyManagerService;
-
-    @Resource
-    MortgageRebateService mortgageRebateService;
 
     private List<MoneyManager> cacheList = new ArrayList<>();
 
