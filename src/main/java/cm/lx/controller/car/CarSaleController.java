@@ -677,11 +677,6 @@ public class CarSaleController extends BaseController {
             return mav;
         }
 
-        update.setUtime(System.currentTimeMillis());
-        carSaleInfoService.updateCarSaleInfo(update);
-
-        session.setAttribute("tip", "ok 付款成功！");
-
         //创建付款记录
         if (goonPaid != 0.0) {
             CarPaidRecord carPaidRecord = new CarPaidRecord();
@@ -692,25 +687,31 @@ public class CarSaleController extends BaseController {
             carPaidRecordService.create(carPaidRecord);
         }
 
+        update.setUtime(System.currentTimeMillis());
+        carSaleInfoService.updateCarSaleInfo(update);
+
+        session.setAttribute("tip", "ok 付款成功！");
+
+        //清缓存
+        cacheCenter.deleteCarRecordInfo(carSaleInfo.getCarRecordId());
+
         //判断转已售条件
         boolean isSaleAble = paidMoney.equals(carSaleInfo.getPayMoney());
         if (isSaleAble) {
             //判断销售成本是否录入
             CarRecord carRecord = carRecordService.getCarRecordById(carSaleInfo.getCarRecordId());
             if (carRecord.getIsSf() == 0) {
-                session.setAttribute("tip", "销售成本未填写，不能转已售！");
+                session.setAttribute("tip", "付款成功，销售成本未填写，不能转已售！");
                 return mav;
             }
             if (carRecord.getSoldDate() == 0) {
-                session.setAttribute("tip", "转已售日期未填写，不能转已售！");
+                session.setAttribute("tip", "付款成功，转已售日期未填写，不能转已售！");
                 return mav;
             }
             changeCarStatus(carSaleInfo);
-            session.setAttribute("tip", "ok 车辆达到标准，转已售！");
+            session.setAttribute("tip", "ok 付款成功，车辆达到标准，转已售！");
         }
 
-        //清缓存
-        cacheCenter.deleteCarRecordInfo(carSaleInfo.getCarRecordId());
         return mav;
     }
 
