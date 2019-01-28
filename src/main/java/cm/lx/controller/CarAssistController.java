@@ -2,6 +2,7 @@ package cm.lx.controller;
 
 import cm.lx.business.CacheCenter;
 import cm.lx.business.CommonAction;
+import cm.lx.business.ToolUtil;
 import cm.lx.common.ContextType;
 import cm.lx.bean.entity.*;
 import cm.lx.service.*;
@@ -73,7 +74,7 @@ public class CarAssistController extends BaseController {
 
         //清缓存
         cacheCenter.deleteCarRecordInfo(carRecordId);
-        setMavView(mav, remarkType);
+        ToolUtil.setMavView(mav, remarkType);
         return mav;
     }
 
@@ -84,28 +85,14 @@ public class CarAssistController extends BaseController {
         ModelAndView mav = new ModelAndView();
 
         CarRemark carRemark = carRemarkService.getCarRemarkById(id);
-        if(carRemark!=null){
+        if (carRemark != null) {
             //清缓存
             cacheCenter.deleteCarRecordInfo(carRemark.getCarRecordId());
         }
         carRemarkService.deleteCarRemarkById(id);
 
-        setMavView(mav, remarkType);
+        ToolUtil.setMavView(mav, remarkType);
         return mav;
-    }
-
-    private void setMavView(ModelAndView mav, Integer remarkType){
-
-
-        if (remarkType.equals(ContextType.REMARK_TYPE_PURCHASE)) {
-            mav.setViewName("redirect:/carPurchaseView");
-        } else if (remarkType.equals(ContextType.REMARK_TYPE_STOCK)) {
-            mav.setViewName("redirect:/carStockView");
-        } else if (remarkType.equals(ContextType.REMARK_TYPE_SALE)) {
-            mav.setViewName("redirect:/carSaleView");
-        } else if (remarkType.equals(ContextType.REMARK_TYPE_DOSSIER)) {
-            mav.setViewName("redirect:/dossierView");
-        }
     }
 
     @RequestMapping(value = "/carPurchasePaid", method = RequestMethod.GET)

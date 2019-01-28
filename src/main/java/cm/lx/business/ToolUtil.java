@@ -27,4 +27,21 @@ public class ToolUtil {
         mav.addObject(ContextType.CONSUMER_GENERATION, cacheCenter.getCarPropertyByKey(ContextType.CONSUMER_GENERATION));
     }
 
+    /**
+     * 设置返回的view
+     * @param mav
+     * @param remarkType
+     */
+    public static void setMavView(ModelAndView mav, Integer remarkType){
+        if (remarkType.equals(ContextType.REMARK_TYPE_PURCHASE)) {
+            mav.setViewName("redirect:/carPurchaseView");
+        } else if (remarkType.equals(ContextType.REMARK_TYPE_STOCK)) {
+            mav.setViewName("redirect:/carStockView");
+        } else if (remarkType.equals(ContextType.REMARK_TYPE_SALE)) {
+            mav.setViewName("redirect:/carSaleView");
+        } else if (remarkType.equals(ContextType.REMARK_TYPE_DOSSIER)) {
+            mav.setViewName("redirect:/dossierView");
+        }
+    }
+
 }

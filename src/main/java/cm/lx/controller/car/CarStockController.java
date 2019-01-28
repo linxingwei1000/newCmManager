@@ -2,6 +2,7 @@ package cm.lx.controller.car;
 
 import cm.lx.bean.ContextBean;
 import cm.lx.business.CacheCenter;
+import cm.lx.business.ToolUtil;
 import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
 import cm.lx.bean.entity.CarCost;
@@ -156,7 +157,8 @@ public class CarStockController extends BaseController {
 
                 session.setAttribute("tip", "ok 车辆成本修改成功！");
             }
-            mav.setViewName("redirect:/carStockView");
+
+            ToolUtil.setMavView(mav, recordStatus);
             return mav;
         }
     }

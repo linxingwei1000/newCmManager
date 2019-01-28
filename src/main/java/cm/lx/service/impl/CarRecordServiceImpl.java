@@ -9,6 +9,7 @@ import cm.lx.bean.entity.CarSaleInfo;
 import cm.lx.service.CarRecordService;
 import cm.lx.util.TimeUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.enums.SqlLike;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -75,10 +76,10 @@ public class CarRecordServiceImpl implements CarRecordService {
     public List<CarRecord> getCarRecordByRecordStatus(Integer recordStatus) {
         QueryWrapper<CarRecord> query = new QueryWrapper<>();
         query.eq("record_status", recordStatus);
-        if(recordStatus.equals(ContextType.RECORD_STATUS_SOLD)){
+        if (recordStatus.equals(ContextType.RECORD_STATUS_SOLD)) {
             query.orderByDesc("sold_date");
-        }else{
-            query.orderByDesc( "ctime");
+        } else {
+            query.orderByDesc("ctime");
         }
         return carRecordMapper.selectList(query);
     }
@@ -88,8 +89,10 @@ public class CarRecordServiceImpl implements CarRecordService {
 
         Long bt = StringUtils.isEmpty(btime) ? 0L : TimeUtils.transformDateToTimetag(btime, TimeUtils.FORMAT_ONE);
         Long et = StringUtils.isEmpty(etime) ? System.currentTimeMillis() : TimeUtils.transformDateToTimetag(etime, TimeUtils.FORMAT_ONE);
+
+
         Long zbt = StringUtils.isEmpty(zbtime) ? 0L : TimeUtils.transformDateToTimetag(zbtime, TimeUtils.FORMAT_ONE);
-        Long zet = StringUtils.isEmpty(zetime) ? System.currentTimeMillis() : TimeUtils.transformDateToTimetag(zetime, TimeUtils.FORMAT_ONE);
+        Long zet = StringUtils.isEmpty(zetime) ? System.currentTimeMillis() + 365 * 24 * 60 * 60 * 1000 : TimeUtils.transformDateToTimetag(zetime, TimeUtils.FORMAT_ONE);
 
         QueryWrapper<CarRecord> query = new QueryWrapper<>();
         query.eq("record_status", recordStatus);
@@ -123,7 +126,7 @@ public class CarRecordServiceImpl implements CarRecordService {
 
             list = resultList;
         } else {
-            if(!StringUtils.isEmpty(searchKey)){
+            if (!StringUtils.isEmpty(searchKey)) {
                 query.like(searchKey, searchValue);
             }
             list = carRecordMapper.selectList(query);
@@ -131,10 +134,10 @@ public class CarRecordServiceImpl implements CarRecordService {
 
         //按已售倒叙
         list.sort((o1, o2) -> {
-            if(o2.getSoldDate() >= o1.getSoldDate()){
+            if (o2.getSoldDate() >= o1.getSoldDate()) {
                 return 1;
-            }else{
-               return -1;
+            } else {
+                return -1;
             }
         });
         return list;
