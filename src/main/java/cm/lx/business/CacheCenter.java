@@ -410,7 +410,7 @@ public class CacheCenter implements InitializingBean {
         }
         //获取每辆车售后工资相关信息
         if (carRecord.getExpenseId() != null && carRecord.getExpenseId() != 0) {
-            contextBean.setWagesAssist(wagesAssistService.getWagesAssistByCid(carRecord.getExpenseId()));
+            contextBean.setWagesAssist(wagesAssistService.getWagesAssistById(carRecord.getExpenseId()));
         }
 
         //插入各种付款记录
