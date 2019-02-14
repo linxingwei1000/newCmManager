@@ -61,9 +61,6 @@ public class DossierController extends BaseController {
 
     @RequestMapping(value = "/dossierView")
     public ModelAndView dossierView(HttpSession session) {
-        //同步数据
-        syncCarRecord();
-
         ModelAndView mav = new ModelAndView();
         mav.setViewName("dossier/list");
         mav.addObject(DATA, prepareData(carDossierService.getCarDossierListByDisplayStatus(ContextType.DISPLAY_STATUS_SHOW)));
@@ -74,12 +71,9 @@ public class DossierController extends BaseController {
 
     @RequestMapping(value = "/dossierDoneView")
     public ModelAndView dossierDoneView(HttpSession session) {
-        //同步数据
-        syncCarRecord();
-
         ModelAndView mav = new ModelAndView();
         mav.setViewName("dossier/list");
-        mav.addObject(DATA, prepareData(carDossierService.getCarDossierListByDisplayStatus(ContextType.DISPLAY_STATUS_SHOW)));
+        mav.addObject(DATA, prepareData(carDossierService.getCarDossierListByDisplayStatus(ContextType.DISPLAY_STATUS_DONE)));
         mav.addObject(TIP, session.getAttribute("tip"));
         mav.addObject("displayStatus", ContextType.DISPLAY_STATUS_DONE);
         return mav;
@@ -297,28 +291,5 @@ public class DossierController extends BaseController {
         carDossierService.updateCarDossierById(update);
         session.setAttribute("tip", "ok 车辆状态修改成功！");
         return mav;
-    }
-
-    private void syncCarRecord() {
-        List<CarDossier> list = carDossierService.getCarDossierListByDisplayStatus(null);
-        for (CarDossier carDossier : list) {
-            CarRecord carRecord = carRecordService.getCarRecordById(carDossier.getCarRecordId());
-            //判断车辆销售状态
-            if (carRecord.getRecordStatus().equals(ContextType.RECORD_STATUS_SOLD)) {
-                if (!carDossier.getDisplayStatus().equals(ContextType.DISPLAY_STATUS_HIDE)) {
-                    CarDossier update = new CarDossier();
-                    update.setId(carDossier.getId());
-                    update.setDisplayStatus(ContextType.DISPLAY_STATUS_HIDE);
-                    carDossierService.updateCarDossierById(update);
-                }
-            } else {
-                if (carDossier.getDisplayStatus().equals(ContextType.DISPLAY_STATUS_HIDE)) {
-                    CarDossier update = new CarDossier();
-                    update.setId(carDossier.getId());
-                    update.setDisplayStatus(ContextType.DISPLAY_STATUS_SHOW);
-                    carDossierService.updateCarDossierById(update);
-                }
-            }
-        }
     }
 }
