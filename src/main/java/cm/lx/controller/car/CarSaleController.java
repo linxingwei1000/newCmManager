@@ -85,7 +85,10 @@ public class CarSaleController extends BaseController {
         List<CarRecord> list = carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_SOLD);
         mav.addObject("carNum", list.size());
 
-        mav.addObject("list", cacheCenter.getCarRecordCombinationInfo(list.subList(0, 10)));
+        if(list.size()>10){
+            list = list.subList(0,10);
+        }
+        mav.addObject("list", cacheCenter.getCarRecordCombinationInfo(list));
         mav.addObject(TIP, session.getAttribute("tip"));
         return mav;
     }
