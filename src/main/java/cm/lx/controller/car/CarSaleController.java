@@ -7,6 +7,8 @@ import cm.lx.business.ToolUtil;
 import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
 import cm.lx.bean.entity.*;
+import cm.lx.enums.CarPropertyEnum;
+import cm.lx.enums.SearchCacheEnum;
 import cm.lx.service.*;
 import cm.lx.util.TimeUtils;
 import cm.lx.util.Utils;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,9 +35,6 @@ public class CarSaleController extends BaseController {
     CacheCenter cacheCenter;
 
     @Resource
-    CarBathService carBathService;
-
-    @Resource
     CarRecordService carRecordService;
 
     @Resource
@@ -45,12 +45,6 @@ public class CarSaleController extends BaseController {
 
     @Resource
     CarPaidRecordService carPaidRecordService;
-
-    @Resource
-    CarSfService carSfService;
-
-    @Resource
-    CarCostService carCostService;
 
     @Resource
     MortgageRecordService mortgageRecordService;
@@ -67,6 +61,9 @@ public class CarSaleController extends BaseController {
     @Resource
     CarDossierService carDossierService;
 
+    @Resource
+    CarMoneyRecordService carMoneyRecordService;
+
     //车辆销售操作
     @RequestMapping(value = "/carSaleView", method = {RequestMethod.GET, RequestMethod.POST})
     public ModelAndView carSaleView(HttpSession session) {
@@ -82,14 +79,37 @@ public class CarSaleController extends BaseController {
     public ModelAndView carSoldView(HttpSession session) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("car/soldList");
-        List<CarRecord> list = carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_SOLD);
-        mav.addObject("carNum", list.size());
 
-        if(list.size()>10){
-            list = list.subList(0,10);
+        Account account = (Account) session.getAttribute("account");
+        String key = SearchCacheEnum.STOCK_SEARCH_CACHE.getCode() + "-" + account.getId();
+        List<Integer> ids = cacheCenter.getUserSearchResult(key);
+
+        List<ContextBean> list;
+        if(ids!=null){
+            list = cacheCenter.getCarRecordCombinationInfoByIds(ids);
+            mav.addObject("carNum", list.size());
+        }else{
+            list = cacheCenter.getCarRecordCombinationInfo(carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_STOCK));
+            mav.addObject("carNum", list.size());
+
+            if (list.size() > 10) {
+                list = list.subList(0, 10);
+            }
         }
-        mav.addObject("list", cacheCenter.getCarRecordCombinationInfo(list));
+
+        mav.addObject("list", list);
         mav.addObject(TIP, session.getAttribute("tip"));
+        return mav;
+    }
+
+    @RequestMapping(value = "/carSoldReset", method = {RequestMethod.GET, RequestMethod.POST})
+    public ModelAndView carSoldReset(HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+
+        Account account = (Account) session.getAttribute("account");
+        String key = SearchCacheEnum.SOLD_SEARCH_CACHE.getCode() + "-" + account.getId();
+        cacheCenter.delUserSearchResult(key);
+        mav.setViewName("redirect:/carSoldView");
         return mav;
     }
 
@@ -107,7 +127,6 @@ public class CarSaleController extends BaseController {
             @RequestParam(value = "unearnedInsurance", required = false, defaultValue = "") Double unearnedInsurance,
             @RequestParam(value = "consumerProperty", required = false, defaultValue = "") Integer consumerProperty,
             @RequestParam(value = "consumerResource", required = false, defaultValue = "") Integer consumerResource,
-            @RequestParam(value = "purchaseUse", required = false, defaultValue = "") Integer purchaseUse,
             @RequestParam(value = "consumerName", required = false, defaultValue = "") String consumerName,
             @RequestParam(value = "consumerSex", required = false, defaultValue = "") Integer consumerSex,
             @RequestParam(value = "consumerAge", required = false, defaultValue = "") Integer consumerAge,
@@ -127,6 +146,7 @@ public class CarSaleController extends BaseController {
             @RequestParam(value = "doorFee", required = false, defaultValue = "") Double doorFee,
             @RequestParam(value = "stampDuty", required = false, defaultValue = "") Double stampDuty,
             @RequestParam(value = "otherFee", required = false, defaultValue = "") Double otherFee,
+            @RequestParam(value = "isProduce", required = false, defaultValue = "") Integer isProduce,
             HttpSession session) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("car/saleInfoAdd");
@@ -141,7 +161,6 @@ public class CarSaleController extends BaseController {
         mav.addObject("unearnedInsurance", unearnedInsurance);
         mav.addObject("consumerProperty", consumerProperty);
         mav.addObject("consumerResource", consumerResource);
-        mav.addObject("purchaseUse", purchaseUse);
         mav.addObject("consumerName", consumerName);
         mav.addObject("consumerSex", consumerSex);
         mav.addObject("consumerAge", consumerAge);
@@ -161,6 +180,7 @@ public class CarSaleController extends BaseController {
         mav.addObject("doorFee", doorFee);
         mav.addObject("stampDuty", stampDuty);
         mav.addObject("otherFee", otherFee);
+        mav.addObject("isProduce", isProduce);
 
         if (over == null) {
             if (id != null) {
@@ -174,13 +194,13 @@ public class CarSaleController extends BaseController {
                 mav.addObject("unearnedInsurance", carSaleInfo.getUnearnedInsurance());
                 mav.addObject("consumerProperty", carSaleInfo.getConsumerProperty());
                 mav.addObject("consumerResource", carSaleInfo.getConsumerResource());
-                mav.addObject("purchaseUse", carSaleInfo.getPurchaseUse());
                 mav.addObject("consumerName", carSaleInfo.getConsumerName());
                 mav.addObject("consumerSex", carSaleInfo.getConsumerSex());
                 mav.addObject("consumerAge", carSaleInfo.getConsumerAge());
                 mav.addObject("consumerAddress", carSaleInfo.getConsumerAddress());
                 mav.addObject("consumerPhone", carSaleInfo.getConsumerPhone());
                 mav.addObject("saleType", carSaleInfo.getSaleType());
+                mav.addObject("isProduce", carSaleInfo.getIsProduce());
 
                 if (carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ)) {
                     MortgageRecord mortgageRecord = mortgageRecordService.getMortgageRecordById(carSaleInfo.getMortgageId());
@@ -236,11 +256,6 @@ public class CarSaleController extends BaseController {
                 return mav;
             }
 
-            if (purchaseUse == 0) {
-                mav.addObject(TIP, "购车用途必选！");
-                return mav;
-            }
-
             if (consumerSex == null) {
                 mav.addObject(TIP, "客户性别必选！");
                 return mav;
@@ -268,7 +283,6 @@ public class CarSaleController extends BaseController {
             carSaleInfo.setAgencyFee(agencyFee == null ? 0.0 : agencyFee);
             carSaleInfo.setConsumerProperty(consumerProperty);
             carSaleInfo.setConsumerResource(consumerResource);
-            carSaleInfo.setPurchaseUse(purchaseUse);
             carSaleInfo.setConsumerName(consumerName);
             carSaleInfo.setConsumerSex(consumerSex);
             carSaleInfo.setConsumerAge(consumerAge);
@@ -276,6 +290,8 @@ public class CarSaleController extends BaseController {
             carSaleInfo.setConsumerPhone(consumerPhone);
             carSaleInfo.setSaleType(saleType);
             carSaleInfo.setUnearnedInsurance(unearnedInsurance == null ? 0.0 : unearnedInsurance);
+            carSaleInfo.setIsProduce(isProduce);
+            carSaleInfo.setServiceFee(0.0);
 
             mav.clear();
             if (action.equals(CREATE_ACTION)) {
@@ -332,7 +348,7 @@ public class CarSaleController extends BaseController {
                 carRecordService.updateCarRecord(carRecord);
 
                 //按揭更新linkID
-                if(mortgageRecord!=null){
+                if (mortgageRecord != null) {
                     mortgageRecord.setIsSale(1);
                     mortgageRecord.setSaleId(carSaleInfo.getId());
                     mortgageRecordService.updateMortgageRecord(mortgageRecord);
@@ -524,95 +540,6 @@ public class CarSaleController extends BaseController {
         }
     }
 
-    //车辆销售成本录入相关操作
-    @RequestMapping(value = "/carSfAction", method = {RequestMethod.GET, RequestMethod.POST})
-    public ModelAndView carSfAction(
-            @RequestParam(value = "action", required = true, defaultValue = "") Integer action,
-            @RequestParam(value = "over", required = false, defaultValue = "") Integer over,
-            @RequestParam(value = "id", required = false, defaultValue = "") Integer id,
-            @RequestParam(value = "recordId", required = false, defaultValue = "") Integer recordId,
-            @RequestParam(value = "transferFee", required = false, defaultValue = "") Double transferFee,
-            @RequestParam(value = "transferSubsidy", required = false, defaultValue = "") Double transferSubsidy,
-            @RequestParam(value = "transferCrossingFee", required = false, defaultValue = "") Double transferCrossingFee,
-            @RequestParam(value = "transferBillingFee", required = false, defaultValue = "") Double transferBillingFee,
-            @RequestParam(value = "transferOilFee", required = false, defaultValue = "") Double transferOilFee,
-            @RequestParam(value = "rubbing", required = false, defaultValue = "") Double rubbing,
-            @RequestParam(value = "removeCard", required = false, defaultValue = "") Double removeCard,
-            @RequestParam(value = "cattleFee", required = false, defaultValue = "") Double cattleFee,
-            @RequestParam(value = "isProduce", required = false, defaultValue = "") Integer isProduce,
-            HttpSession session) {
-
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("car/sfAdd");
-        mav.addObject("action", action);
-        mav.addObject("recordId", recordId);
-
-        mav.addObject("transferFee", transferFee == null ? 0.0 : transferFee);
-        mav.addObject("transferSubsidy", transferSubsidy == null ? 0.0 : transferSubsidy);
-        mav.addObject("transferCrossingFee", transferCrossingFee == null ? 0.0 : transferCrossingFee);
-        mav.addObject("transferBillingFee", transferBillingFee == null ? 0.0 : transferBillingFee);
-        mav.addObject("transferOilFee", transferOilFee == null ? 0.0 : transferOilFee);
-        mav.addObject("rubbing", rubbing == null ? 0.0 : rubbing);
-        mav.addObject("removeCard", removeCard == null ? 0.0 : removeCard);
-        mav.addObject("cattleFee", cattleFee == null ? 0.0 : cattleFee);
-        mav.addObject("isProduce", isProduce);
-
-        if (over == null) {
-            if (id != null) {
-                CarSf carSf = carSfService.getCarSfById(id);
-                mav.addObject("id", id);
-
-                mav.addObject("transferFee", carSf.getTransferFee());
-                mav.addObject("transferSubsidy", carSf.getTransferSubsidy());
-                mav.addObject("transferCrossingFee", carSf.getTransferCrossingFee());
-                mav.addObject("transferBillingFee", carSf.getTransferBillingFee());
-                mav.addObject("transferOilFee", carSf.getTransferOilFee());
-                mav.addObject("rubbing", carSf.getRubbing());
-                mav.addObject("removeCard", carSf.getRemoveCard());
-                mav.addObject("cattleFee", carSf.getCattleFee());
-                mav.addObject("isProduce", carSf.getIsProduce());
-            }
-            return mav;
-        } else {
-            CarSf carSf = new CarSf();
-            carSf.setTransferFee(transferFee);
-            carSf.setTransferSubsidy(transferSubsidy);
-            carSf.setTransferCrossingFee(transferCrossingFee);
-            carSf.setTransferBillingFee(transferBillingFee);
-            carSf.setTransferOilFee(transferOilFee);
-            carSf.setRubbing(rubbing);
-            carSf.setRemoveCard(removeCard);
-            carSf.setCattleFee(cattleFee);
-            carSf.setIsProduce(isProduce == null ? 0 : isProduce);
-
-            mav.clear();
-            if (action.equals(CREATE_ACTION)) {
-                carSf.setCarRecordId(recordId);
-                carSf.setSaleFee(0.0);
-                carSf.setServiceFee(0.0);
-                carSfService.createCarSf(carSf);
-                session.setAttribute("tip", "ok 车辆销售成本录入成功！");
-
-                //绑定成本录入ID
-                CarRecord carRecord = new CarRecord();
-                carRecord.setId(recordId);
-                carRecord.setIsSf(1);
-                carRecord.setSfId(carSf.getId());
-                carRecordService.updateCarRecord(carRecord);
-            } else if (action.equals(MOD_ACTION)) {
-                carSf.setId(id);
-                carSfService.updateCarSf(carSf);
-
-                //刷新缓存
-                cacheCenter.deleteCarRecordInfo(recordId);
-
-                session.setAttribute("tip", "ok 车辆销售成本修改成功！");
-            }
-            mav.setViewName("redirect:/carSaleView");
-            return mav;
-        }
-    }
-
     //设置转已售时间
     @RequestMapping(value = "/carSoldDate", method = RequestMethod.GET)
     public ModelAndView carSoldDate(
@@ -641,12 +568,6 @@ public class CarSaleController extends BaseController {
             return mav;
         }
         if (carSaleInfo.getPayMoney().equals(carSaleInfo.getPaidMoney())) {
-            //判断销售成本是否录入
-            if (carRecord.getIsSf() == 0) {
-                session.setAttribute("tip", "销售成本未填写！");
-                return mav;
-            }
-
             //改变订单状态
             changeCarStatus(carSaleInfo);
             session.setAttribute("tip", "ok 车辆达到标准，转已售！");
@@ -703,10 +624,6 @@ public class CarSaleController extends BaseController {
         if (isSaleAble) {
             //判断销售成本是否录入
             CarRecord carRecord = carRecordService.getCarRecordById(carSaleInfo.getCarRecordId());
-            if (carRecord.getIsSf() == 0) {
-                session.setAttribute("tip", "付款成功，销售成本未填写，不能转已售！");
-                return mav;
-            }
             if (carRecord.getSoldDate() == 0) {
                 session.setAttribute("tip", "付款成功，转已售日期未填写，不能转已售！");
                 return mav;
@@ -799,25 +716,10 @@ public class CarSaleController extends BaseController {
         }
 
         CarRecord carRecord = carRecordService.getCarRecordById(id);
-        //批量采购操作
-        if (carRecord.getIsBath() == 1) {
-            carBathService.modCarRecordId(carRecord.getBathId(), carRecord.getId(), 0);
-        }
 
-        //删除成本信息
-        if (carRecord.getIsCost() == 1) {
-            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
-            if (carCost.getPreSaleFee() != null && carCost.getPreSaleFee() != 0) {
-                carSaleSetupService.deleteCarSaleSetupByIdAndType(carCost.getId(), ContextType.PRE_SETUP_TYPE);
-            }
-            if (carCost.getAfterSaleFee() != null && carCost.getAfterSaleFee() != 0) {
-                carSaleSetupService.deleteCarSaleSetupByIdAndType(carCost.getId(), ContextType.AFTER_SETUP_TYPE);
-            }
-            if (carCost.getOtherIncomeFee() != null && carCost.getOtherIncomeFee() != 0) {
-                carSaleSetupService.deleteCarSaleSetupByIdAndType(carCost.getId(), ContextType.OTHER_INCOME);
-            }
-            carCostService.deleteCarCostById(carRecord.getCostId());
-        }
+
+        //删除费用相关
+        carMoneyRecordService.deleteByCarRecordId(id);
 
         //删除销售信息
         if (carRecord.getIsSale() == 1) {
@@ -832,13 +734,7 @@ public class CarSaleController extends BaseController {
         }
 
         //删除销售成本信息
-        if (carRecord.getIsSf() == 1) {
-            CarSf carSf = carSfService.getCarSfById(carRecord.getSfId());
-            if (carSf.getSaleFee() != null && carSf.getSaleFee() != 0) {
-                carSaleSetupService.deleteCarSaleSetupByIdAndType(carSf.getId(), ContextType.SALE_TYPE);
-            }
-            carSfService.deleteCarSfById(carRecord.getSfId());
-        }
+        carSaleSetupService.deleteCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
 
         //删除工资辅助记录表
         wagesAssistService.deleteWagesAssistByCid(carRecord.getId());
@@ -881,6 +777,15 @@ public class CarSaleController extends BaseController {
         List<CarRecord> list = carRecordService.searchCarRecord(recordStatus, searchKey, searchValue, btime, etime, zbtime, zetime);
         mav.addObject("carNum", list.size());
 
+        List<Integer> ids = new ArrayList<>();
+        list.forEach(e -> ids.add(e.getId()));
+
+        //缓存当前用户搜索结果
+        Account account = (Account) session.getAttribute("account");
+        Integer code = recordStatus.equals(ContextType.RECORD_STATUS_STOCK) ? SearchCacheEnum.STOCK_SEARCH_CACHE.getCode() : SearchCacheEnum.SOLD_SEARCH_CACHE.getCode();
+        String key = code + "-" + account.getId();
+        cacheCenter.setUserSearchResult(key, ids);
+
         if (recordStatus.equals(ContextType.RECORD_STATUS_PURCHASE)) {
             mav.addObject("list", cacheCenter.getCarRecordInfo(list));
             mav.setViewName("car/purchaseList");
@@ -891,10 +796,7 @@ public class CarSaleController extends BaseController {
             mav.addObject("list", cacheCenter.getCarRecordCombinationInfo(list));
             mav.setViewName("car/saleList");
         } else if (recordStatus.equals(ContextType.RECORD_STATUS_SOLD)) {
-            List<ContextBean> contextBeans = cacheCenter.getCarRecordCombinationInfo(list);
-
-            cacheCenter.setContextBeanList(contextBeans);
-            mav.addObject("list", contextBeans);
+            mav.addObject("list", cacheCenter.getCarRecordCombinationInfo(list));
             mav.setViewName("car/soldList");
         }
         return mav;
@@ -916,10 +818,6 @@ public class CarSaleController extends BaseController {
         if (changeType.equals(ContextType.CAR_STATUS_FROM_STOCK_TO_SALE)) {
             mav.setViewName("redirect:/carStockView");
 
-            if (old.getIsCost() == 0) {
-                session.setAttribute("tip", "成本未录入，无法转销售！");
-                return mav;
-            }
             carRecord.setRecordStatus(ContextType.RECORD_STATUS_SALE);
             Double oldDeposit = old.getDeposit() == null ? 0.0 : old.getDeposit();
             carRecord.setDeposit(deposit == null ? 0.0 : deposit + oldDeposit);
@@ -949,13 +847,10 @@ public class CarSaleController extends BaseController {
                     carRecord.setSaleId(0);
                 }
 
-                if (old.getIsSf() == 1) {
-                    carSaleSetupService.deleteCarSaleSetupByIdAndType(old.getSfId(), ContextType.SALE_TYPE);
-                    carSfService.deleteCarSfById(old.getSfId());
+                //删除销售费用相关
+                carMoneyRecordService.deleteByCarRecordIdAndType(id, CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
+                carSaleSetupService.deleteCarSaleSetupByIdAndType(old.getId(), ContextType.SALE_TYPE);
 
-                    carRecord.setIsSf(0);
-                    carRecord.setSfId(0);
-                }
                 carRecord.setSoldDate(0L);
             }
             carRecord.setRecordStatus(ContextType.RECORD_STATUS_STOCK);
@@ -985,14 +880,11 @@ public class CarSaleController extends BaseController {
         carRecord.setRecordStatus(ContextType.RECORD_STATUS_SOLD);
 
         //更新服务基金费
-        CarSf carSf = carSfService.getCarSfById(old.getSfId());
-        carSf.setServiceFee(0.0);
-        if (carSf.getIsProduce() == 1) {
-            carSf.setServiceFee(ContextType.SERVICE_MONEY);
+        if (carSaleInfo.getIsProduce() == 1) {
+            carSaleInfo.setServiceFee(ContextType.SERVICE_MONEY);
         }
-        carSfService.updateCarSf(carSf);
 
-        CarCost carCost = carCostService.getCarCostById(old.getCostId());
+        carSaleInfoService.updateCarSaleInfo(carSaleInfo);
 
         //计算车辆毛利润
         Double ajMoney = 0.0;
@@ -1002,19 +894,49 @@ public class CarSaleController extends BaseController {
                     mortgageRecord.getDoorFee() + mortgageRecord.getStampDuty() + mortgageRecord.getOtherFee() - 1500;
         }
 
-        Double grossProfit = ajMoney + carSaleInfo.getSaleMoney() + carCost.getOtherIncomeFee() - carSaleInfo.getAgencyFee() -
-                carCost.getMentionFee() - carCost.getMentionSubsidy() - carCost.getCrossingFee() - carCost.getTravelFee() -
-                carCost.getPutFee() - carCost.getPutSubsidy() - carCost.getMailFee() - carCost.getFreightFee() - carCost.getBillingFee() -
-                carCost.getOilFee() - carCost.getCattleFee() - carCost.getExpenseFee() - carCost.getOtherFee() - carCost.getPreSaleFee() -
-                carSf.getTransferFee() - carSf.getTransferSubsidy() - carSf.getTransferCrossingFee() - carSf.getTransferBillingFee() -
-                carSf.getTransferOilFee() - carSf.getRubbing() - carSf.getCattleFee() - carSf.getRemoveCard() - carSf.getServiceFee() -
-                old.getPurchaseMoney() - old.getAgencyFee() - carSf.getSaleFee();
+        Double otherAllFee = 0.0;
+        List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.OTHER_INCOME);
+        for (CarSaleSetup carSaleSetup : carSaleSetups) {
+            otherAllFee += carSaleSetup.getSetupFee();
+        }
+
+        Double allCost = 0.0;
+        List<CarMoneyRecord> list = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
+        for (CarMoneyRecord carMoneyRecord : list) {
+            if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                allCost += carMoneyRecord.getMoney();
+            }
+        }
+        //获取售前整备明细
+        Double preAllFee = 0.0;
+        carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
+        for (CarSaleSetup carSaleSetup : carSaleSetups) {
+            preAllFee += carSaleSetup.getSetupFee();
+        }
+
+        Double allSf = 0.0;
+        List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
+        for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
+            if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                allSf += carMoneyRecord.getMoney();
+            }
+        }
+
+        Double saleAllFee = 0.0;
+        carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
+        for (CarSaleSetup carSaleSetup : carSaleSetups) {
+            saleAllFee += carSaleSetup.getSetupFee();
+        }
+
+        Double grossProfit = ajMoney + carSaleInfo.getSaleMoney() - carSaleInfo.getAgencyFee() + otherAllFee -
+                allCost - preAllFee - allSf - carSaleInfo.getServiceFee() -
+                old.getPurchaseMoney() - old.getAgencyFee() - saleAllFee;
 
         carRecord.setGrossProfit(String.valueOf(Utils.saveTwoSeat(grossProfit + carSaleInfo.getAllUnearnedInsurance() - carSaleInfo.getPayCompanyFee())));
 
         //计算车溢价
         Double vehiclePremium = carSaleInfo.getSaleMoney() + carSaleInfo.getExpenseRebate() * carSaleInfo.getBusinessExpenseFee() -
-                carSaleInfo.getAgencyFee() - carSf.getSaleFee();
+                carSaleInfo.getAgencyFee() - saleAllFee;
         if (carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ)) {
             vehiclePremium = vehiclePremium - old.getaAuthorityMoney() + ajMoney;
         } else {
@@ -1029,7 +951,7 @@ public class CarSaleController extends BaseController {
         Double carCommission;
         if (carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ)) {
             MortgageRecord mortgageRecord = mortgageRecordService.getMortgageRecordById(carSaleInfo.getMortgageId());
-            Double temp = (carSaleInfo.getSaleMoney() - old.getaAuthorityMoney() - carSf.getSaleFee() - carSaleInfo.getAgencyFee()
+            Double temp = (carSaleInfo.getSaleMoney() - old.getaAuthorityMoney() - saleAllFee - carSaleInfo.getAgencyFee()
                     + mortgageRecord.getRiskFee() + mortgageRecord.getPadFee()) * 0.25;
             if (temp <= 0) {
                 carCommission = 500.0;
@@ -1037,7 +959,7 @@ public class CarSaleController extends BaseController {
                 carCommission = 500.0 + temp;
             }
         } else {
-            Double temp = (carSaleInfo.getSaleMoney() - old.getqAuthorityMoney() - carSf.getSaleFee() - carSaleInfo.getAgencyFee()
+            Double temp = (carSaleInfo.getSaleMoney() - old.getqAuthorityMoney() - saleAllFee - carSaleInfo.getAgencyFee()
                     + carSaleInfo.getExpenseRebate() * carSaleInfo.getBusinessExpenseFee()) * 0.2;
             if (temp <= 0) {
                 carCommission = 200.0;
@@ -1053,9 +975,6 @@ public class CarSaleController extends BaseController {
         }
 
         Double shareDividends = 0.0;
-        if (!StringUtils.isEmpty(old.getInsideProportion())) {
-            shareDividends = Utils.saveTwoSeat((Double.valueOf(carRecord.getGrossProfit()) - carCommission - purchaseCommission) * (Double.valueOf(old.getInsideProportion())));
-        }
 
         //计算工资提成相关
         boolean needCreate = false;
@@ -1068,7 +987,7 @@ public class CarSaleController extends BaseController {
         wagesAssist.setSoldDate(old.getSoldDate());
         wagesAssist.setSalePerson(carSaleInfo.getSalePerson());
         wagesAssist.setPurchasePerson(old.getPurchasePerson());
-        wagesAssist.setInsidePerson(old.getInsidePerson() == null ? "" : old.getInsidePerson());
+        wagesAssist.setInsidePerson("");
         wagesAssist.setCarCommission(carCommission);
         wagesAssist.setPurchaseCommission(purchaseCommission);
         wagesAssist.setShareDividends(shareDividends);

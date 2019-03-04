@@ -34,12 +34,6 @@ public class StatController extends BaseController {
     CarRecordService carRecordService;
 
     @Resource
-    CarCostService carCostService;
-
-    @Resource
-    CarSfService carSfService;
-
-    @Resource
     CarSaleInfoService carSaleInfoService;
 
     @Resource
@@ -56,6 +50,12 @@ public class StatController extends BaseController {
 
     @Resource
     MortgageRebateService mortgageRebateService;
+
+    @Resource
+    CarSaleSetupService carSaleSetupService;
+
+    @Resource
+    CarMoneyRecordService carMoneyRecordService;
 
     @RequestMapping(value = "/statMoneyView")
     public ModelAndView statMoneyView() {
@@ -114,7 +114,7 @@ public class StatController extends BaseController {
 
         mav.setViewName("stat/moneyStat");
         List<MoneyStat> moneyStatList = new ArrayList<>();
-        MoneyStat moneyStat = StatCenter.statMoneyData(carCostService, carSfService, carSaleInfoService, resultList, moneyStatList);
+        MoneyStat moneyStat = StatCenter.statMoneyData(carSaleSetupService, carMoneyRecordService, carSaleInfoService, resultList, moneyStatList);
         mav.addObject("moneyStat", moneyStat);
         mav.addObject("moneyStatList", moneyStatList);
         return mav;
@@ -126,8 +126,8 @@ public class StatController extends BaseController {
         mav.setViewName("stat/moneyFlowStat");
         Long et = System.currentTimeMillis() / (1000 * 3600 * 24) * (1000 * 3600 * 24) - TimeZone.getDefault().getRawOffset();
         MoneyFlowStat moneyFlowStat = new MoneyFlowStat();
-        StatCenter.statMoneyFlowData(mortgageRebateService, moneyManagerService, carRecordService, carCostService,
-                carSfService, carSaleInfoService, mortgageRecordService, cacheCenter, moneyFlowStat, et);
+        StatCenter.statMoneyFlowData(mortgageRebateService, moneyManagerService, carRecordService, carSaleSetupService,
+                carMoneyRecordService, carSaleInfoService, mortgageRecordService, cacheCenter, moneyFlowStat, et);
         mav.addObject("moneyFlowStat", moneyFlowStat);
         return mav;
     }

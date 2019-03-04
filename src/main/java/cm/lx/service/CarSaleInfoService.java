@@ -16,7 +16,11 @@ public interface CarSaleInfoService {
 
     CarSaleInfo getCarSaleInfoById(Integer id);
 
-
-
+    /**
+     * 统计总服务基金
+     *
+     * @return
+     */
+    Double getServiceMoney();
 
 }

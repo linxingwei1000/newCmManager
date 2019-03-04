@@ -9,7 +9,7 @@ import cm.lx.bean.export.NewCarExport;
 import cm.lx.business.CacheCenter;
 import cm.lx.common.ContextType;
 import cm.lx.bean.entity.*;
-import cm.lx.service.CarBathService;
+import cm.lx.enums.SearchCacheEnum;
 import cm.lx.util.ExportExcel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,9 +35,6 @@ public class ExportController extends BaseController {
     @Resource
     CacheCenter cacheCenter;
 
-    @Resource
-    CarBathService carBathService;
-
     /**
      * 车辆业务导出表格
      *
@@ -55,14 +52,15 @@ public class ExportController extends BaseController {
         //组装头部
         List<String> headers = new ArrayList<>();
         CarRecord.installHeaders(headers);
-        CarBath.installHeaders(headers);
-        CarCost.installHeaders(headers);
         CarSaleInfo.installHeaders(headers);
         MortgageRecord.installHeaders(headers, 2);
-        CarSf.installHeaders(headers);
+
+        Account account = (Account) session.getAttribute("account");
+        String key = SearchCacheEnum.STOCK_SEARCH_CACHE.getCode() + "-" + account.getId();
+        List<Integer> ids = cacheCenter.getUserSearchResult(key);
 
         List<CarRecordExport> list = new ArrayList<>();
-        for (ContextBean contextBean : cacheCenter.getContextBeanList()) {
+        for (ContextBean contextBean : cacheCenter.getCarRecordCombinationInfoByIds(ids)) {
             CarRecordExport carRecordExport = new CarRecordExport();
 
             //组装车辆信息
@@ -70,18 +68,7 @@ public class ExportController extends BaseController {
                 contextBean.getCarRecord().install(carRecordExport);
             }
 
-            //组装批量操作信息
-            if (contextBean.getCarRecord().getIsBath() == 1) {
-                CarBath carBath = carBathService.getCarBathById(contextBean.getCarRecord().getBathId());
-                if (carBath != null) {
-                    carBath.install(carRecordExport);
-                }
-            }
-
-            //组装成本录入
-            if (contextBean.getCarCost() != null) {
-                contextBean.getCarCost().install(carRecordExport);
-            }
+            //todo 后面看看：组装成本录入
 
             //组装销售信息
             if (contextBean.getCarSaleInfo() != null) {
@@ -96,10 +83,7 @@ public class ExportController extends BaseController {
                 }
             }
 
-            //组装销售成本
-            if (contextBean.getCarSf() != null) {
-                contextBean.getCarSf().install(carRecordExport);
-            }
+            //todo  如何组装销售成本
 
             list.add(carRecordExport);
         }

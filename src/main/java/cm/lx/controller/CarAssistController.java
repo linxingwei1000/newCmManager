@@ -5,6 +5,7 @@ import cm.lx.business.CommonAction;
 import cm.lx.business.ToolUtil;
 import cm.lx.common.ContextType;
 import cm.lx.bean.entity.*;
+import cm.lx.enums.CarPropertyEnum;
 import cm.lx.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,9 +35,6 @@ public class CarAssistController extends BaseController {
     CarRecordService carRecordService;
 
     @Resource
-    CarCostService carCostService;
-
-    @Resource
     CarRemarkService carRemarkService;
 
     @Resource
@@ -49,13 +47,13 @@ public class CarAssistController extends BaseController {
     CarSaleSetupService carSaleSetupService;
 
     @Resource
-    CarSfService carSfService;
-
-    @Resource
     NewCarService newCarService;
 
     @Resource
     NewCarFinanceService newCarFinanceService;
+
+    @Resource
+    CarMoneyRecordService carMoneyRecordService;
 
     @RequestMapping(value = "/carRemarkAdd", method = RequestMethod.GET)
     public ModelAndView carRemarkAdd(
@@ -132,6 +130,155 @@ public class CarAssistController extends BaseController {
         carRecordService.updateCarRecord(update);
         session.setAttribute("tip", "ok 付款成功！");
 
+        return mav;
+    }
+
+    //车辆费用相关操作
+    @RequestMapping(value = "/carMoneyAction", method = {RequestMethod.GET, RequestMethod.POST})
+    public ModelAndView carMoneyAction(HttpServletRequest request, HttpServletResponse response,
+                                       @RequestParam(value = "action", required = true, defaultValue = "") Integer action,
+                                       @RequestParam(value = "over", required = false, defaultValue = "") Integer over,
+                                       @RequestParam(value = "carRecordId", required = false, defaultValue = "") Integer carRecordId,
+                                       @RequestParam(value = "setupType", required = false, defaultValue = "") Integer setupType,
+                                       @RequestParam(value = "recordStatus", required = false, defaultValue = "") Integer recordStatus,
+                                       HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("car/carMoneyAdd");
+        ToolUtil.initCarPropertyData(mav, cacheCenter);
+
+        CarPropertyEnum curEnum = CarPropertyEnum.findEnum(setupType);
+
+        List<CarProperty> carProperties = cacheCenter.getCarPropertyByKey(curEnum.getDesc());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (CarProperty carProperty : carProperties) {
+            stringBuilder.append(carProperty.getId()).append(",").append(carProperty.getPropertyValue()).append(";");
+        }
+        mav.addObject("jsCp", stringBuilder.substring(0, stringBuilder.length() - 1));
+
+        mav.addObject("action", action);
+        mav.addObject("carRecordId", carRecordId);
+        mav.addObject("setupType", setupType);
+        mav.addObject("recordStatus", recordStatus);
+        if (over == null) {
+            return mav;
+        }
+
+        // 得到所有的请求参数名称
+        Enumeration parameterNames = request.getParameterNames();
+        // 用来装所有的参数名称的后缀(即下划线后面的)
+        List<String> parameterNamesSuffix = new ArrayList<>();
+        List<String> newParameterNamesSuffix = new ArrayList<>();
+        // 用来装所有的参数名称和参数值
+        Map<String, String> parameterNamesAndValues = new HashMap<>();
+        while (parameterNames.hasMoreElements()) {
+            // 得到请求参数的名称
+            String parameterName = (String) parameterNames.nextElement();
+            if (ContextType.SETUP_SKIP_PARAM.contains(parameterName)) {
+                continue;
+            }
+            // 根据下划线拆分
+            String[] myParameterName = parameterName.split("_");
+            // 得到下划线后面的部分
+            parameterNamesSuffix.add(myParameterName[myParameterName.length - 1]);
+            // 保存参数名称和参数值
+            parameterNamesAndValues.put(parameterName, request.getParameter(parameterName));
+        }
+
+        // 去重
+        Set<String> set = new HashSet<>();
+        for (String parameterNameSuffix : parameterNamesSuffix) {
+            if (set.add(parameterNameSuffix)) {
+                newParameterNamesSuffix.add(parameterNameSuffix);
+            }
+        }
+
+        Set<Map.Entry<String, String>> entrySetParameterNamesAndValues = parameterNamesAndValues.entrySet();
+
+        Iterator<Map.Entry<String, String>> it = entrySetParameterNamesAndValues.iterator();
+        String[] fieldNames = new String[parameterNamesAndValues.size()];
+        String[] fieldValues = new String[parameterNamesAndValues.size()];
+        int elementIndex = 0;
+        while (it.hasNext()) {
+            Map.Entry<String, String> entry = it.next();
+            fieldNames[elementIndex] = entry.getKey();
+            fieldValues[elementIndex] = entry.getValue();
+            elementIndex++;
+        }
+
+        Integer successNum = 0;
+        for (int i = 0; i < newParameterNamesSuffix.size(); i++) {
+            CarMoneyRecord carMoneyRecord = new CarMoneyRecord();
+            for (int index = 0; index < fieldNames.length; index++) {
+                try {
+                    String[] field = fieldNames[index].split("_");
+                    if (newParameterNamesSuffix.get(i).equals(field[field.length - 1])) {
+                        if ("moneyId".equals(field[0])) {
+                            carMoneyRecord.setLinkId(Integer.valueOf(fieldValues[index]));
+                        } else if ("moneyFee".equals(field[0])) {
+                            carMoneyRecord.setMoney(Double.valueOf(fieldValues[index]));
+                        } else if ("moneyDesc".equals(field[0])) {
+                            carMoneyRecord.setMoneyDesc(fieldValues[index]);
+                        }
+                    }
+                } catch (Exception e) {
+                    System.out.println("e" + e.getMessage());
+                }
+            }
+            carMoneyRecord.setCarRecordId(carRecordId);
+            carMoneyRecord.setLinkType(curEnum.getDesc());
+
+            if (carMoneyRecord.getLinkId() == null) {
+                continue;
+            }
+            carMoneyRecordService.createCarMoneyRecord(carMoneyRecord);
+            ++successNum;
+        }
+
+        mav.clear();
+        if (setupType.equals(CarPropertyEnum.MONEY_RECORD_COST.getCode())) {
+            mav.setViewName("redirect:/carStockView");
+        } else {
+            mav.setViewName("redirect:/carSaleView");
+        }
+        //清缓存
+        cacheCenter.deleteCarRecordInfo(carRecordId);
+
+        if (recordStatus != null && recordStatus.equals(ContextType.RECORD_STATUS_SALE)) {
+            mav.setViewName("redirect:/carSaleView");
+        } else {
+            mav.setViewName("redirect:/carStockView");
+        }
+
+        session.setAttribute("tip", "ok 成功插入" + successNum + "条数据！");
+        return mav;
+    }
+
+    @RequestMapping(value = "/carMoneyDelete", method = RequestMethod.GET)
+    public ModelAndView carMoneyDelete(
+            @RequestParam(value = "id", required = false, defaultValue = "") Integer id,
+            @RequestParam(value = "carRecordId", required = false, defaultValue = "") Integer carRecordId,
+            @RequestParam(value = "setupType", required = false, defaultValue = "") Integer setupType,
+            @RequestParam(value = "recordStatus", required = false, defaultValue = "") Integer recordStatus,
+            HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+
+        carMoneyRecordService.deleteCarMoneyRecord(id);
+
+        if (setupType.equals(CarPropertyEnum.MONEY_RECORD_COST.getCode())) {
+            mav.setViewName("redirect:/carStockView");
+        } else {
+            mav.setViewName("redirect:/carSaleView");
+        }
+        //清缓存
+        cacheCenter.deleteCarRecordInfo(carRecordId);
+
+        if (recordStatus != null && recordStatus.equals(ContextType.RECORD_STATUS_SALE)) {
+            mav.setViewName("redirect:/carSaleView");
+        } else {
+            mav.setViewName("redirect:/carStockView");
+        }
+        session.setAttribute("tip", "ok 删除成功！");
         return mav;
     }
 
@@ -231,37 +378,23 @@ public class CarAssistController extends BaseController {
             if (setupType.equals(ContextType.PRE_SETUP_TYPE)
                     || setupType.equals(ContextType.AFTER_SETUP_TYPE)
                     || setupType.equals(ContextType.OTHER_INCOME)) {
-                CarCost carCost = carCostService.getCarCostById(carCostId);
-                CarCost update = new CarCost();
-                update.setId(carCostId);
                 if (setupType.equals(ContextType.PRE_SETUP_TYPE)) {
-                    update.setPreSaleFee(carCost.getPreSaleFee() + d);
                     if (recordStatus != null && recordStatus.equals(ContextType.RECORD_STATUS_SALE)) {
                         mav.setViewName("redirect:/carSaleView");
                     } else {
                         mav.setViewName("redirect:/carStockView");
                     }
                 } else if (setupType.equals(ContextType.AFTER_SETUP_TYPE)) {
-                    update.setAfterSaleFee(carCost.getAfterSaleFee() + d);
                     mav.setViewName("redirect:/carSoldView");
                 } else if (setupType.equals(ContextType.OTHER_INCOME)) {
-                    update.setOtherIncomeFee(carCost.getOtherIncomeFee() + d);
                     mav.setViewName("redirect:/carStockView");
                 }
-                carCostService.updateCarCost(update);
-
                 //清缓存
-                cacheCenter.deleteCarRecordInfo(carCost.getCarRecordId());
+                cacheCenter.deleteCarRecordInfo(carCostId);
             } else if (setupType.equals(ContextType.SALE_TYPE)) {
-                CarSf carSf = carSfService.getCarSfById(carCostId);
-                CarSf sfUpdate = new CarSf();
-                sfUpdate.setId(carCostId);
-                sfUpdate.setSaleFee(carSf.getSaleFee() + d);
-                carSfService.updateCarSf(sfUpdate);
                 mav.setViewName("redirect:/carSaleView");
-
                 //清缓存
-                cacheCenter.deleteCarRecordInfo(carSf.getCarRecordId());
+                cacheCenter.deleteCarRecordInfo(carCostId);
             } else if (setupType.equals(ContextType.NEW_CAR_COST_TYPE)
                     || setupType.equals(ContextType.NEW_CAR_INCOME_TYPE)) {
                 NewCar newCar = newCarService.getNewCarById(carCostId);
@@ -307,38 +440,24 @@ public class CarAssistController extends BaseController {
         if (setupType.equals(ContextType.PRE_SETUP_TYPE)
                 || setupType.equals(ContextType.AFTER_SETUP_TYPE)
                 || setupType.equals(ContextType.OTHER_INCOME)) {
-            CarCost carCost = carCostService.getCarCostById(carCostId);
-            CarCost update = new CarCost();
-            update.setId(carCostId);
             if (setupType.equals(ContextType.PRE_SETUP_TYPE)) {
                 if (recordStatus != null && recordStatus.equals(ContextType.RECORD_STATUS_SALE)) {
                     mav.setViewName("redirect:/carSaleView");
                 } else {
                     mav.setViewName("redirect:/carStockView");
                 }
-                update.setPreSaleFee(carCost.getPreSaleFee() - carSaleSetup.getSetupFee());
             } else if (setupType.equals(ContextType.AFTER_SETUP_TYPE)) {
                 mav.setViewName("redirect:/carSoldView");
-                update.setAfterSaleFee(carCost.getAfterSaleFee() - carSaleSetup.getSetupFee());
             } else if (setupType.equals(ContextType.OTHER_INCOME)) {
                 mav.setViewName("redirect:/carStockView");
-                update.setOtherIncomeFee(carCost.getOtherIncomeFee() - carSaleSetup.getSetupFee());
             }
-            carCostService.updateCarCost(update);
-
             //清缓存
-            cacheCenter.deleteCarRecordInfo(carCost.getCarRecordId());
+            cacheCenter.deleteCarRecordInfo(carCostId);
 
         } else if (setupType.equals(ContextType.SALE_TYPE)) {
-            CarSf carSf = carSfService.getCarSfById(carCostId);
-            CarSf sfUpdate = new CarSf();
-            sfUpdate.setId(carCostId);
-            sfUpdate.setSaleFee(carSf.getSaleFee() - carSaleSetup.getSetupFee());
-            carSfService.updateCarSf(sfUpdate);
             mav.setViewName("redirect:/carSaleView");
-
             //清缓存
-            cacheCenter.deleteCarRecordInfo(carSf.getCarRecordId());
+            cacheCenter.deleteCarRecordInfo(carCostId);
 
         } else if (setupType.equals(ContextType.NEW_CAR_COST_TYPE)
                 || setupType.equals(ContextType.NEW_CAR_INCOME_TYPE)) {

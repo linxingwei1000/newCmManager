@@ -125,6 +125,7 @@
                     <button type="submit" class="btn btn-primary">
                         <i class="icon-search icon-white"></i> 查询
                     </button>
+                    <a href="moneyReset?moneyType=${moneyType}"><i class="icon-trash"></i> 重置</a>
                 </div>
             </div>
         </form>

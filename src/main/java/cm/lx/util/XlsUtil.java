@@ -90,7 +90,6 @@ public class XlsUtil {
     }
 
     public static void readTxt(InputStream is) throws IOException {
-        // TODO Auto-generated method stub
         Reader reader = null;
         BufferedReader buffer = null;
         try {
@@ -110,7 +109,6 @@ public class XlsUtil {
                 if (buffer != null) buffer.close();
                 if (reader != null) reader.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }

@@ -13,7 +13,6 @@ public class PropertyStat {
     Map<String, Double> consumerAgeMap;
     Map<String, Double> consumerSexMap;
     Map<String, Double> consumerResourceMap;
-    Map<String, Double> purchaseUseMap;
     Map<String, Double> saleTypeMap;
 
 
@@ -95,14 +94,6 @@ public class PropertyStat {
 
     public void setConsumerResourceMap(Map<String, Double> consumerResourceMap) {
         this.consumerResourceMap = consumerResourceMap;
-    }
-
-    public Map<String, Double> getPurchaseUseMap() {
-        return purchaseUseMap;
-    }
-
-    public void setPurchaseUseMap(Map<String, Double> purchaseUseMap) {
-        this.purchaseUseMap = purchaseUseMap;
     }
 
     public Map<String, Double> getSaleTypeMap() {

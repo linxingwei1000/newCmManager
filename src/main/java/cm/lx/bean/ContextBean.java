@@ -8,16 +8,22 @@ public class ContextBean {
 
     CarRecord carRecord;
 
-    CarCost carCost;
+    Double allCost;
+    List<CarMoneyRecord> costList;
 
+    Double preAllFee;
     List<CarSaleSetup> preList;
 
+    Double otherAllFee;
     List<CarSaleSetup> otherList;
 
-    CarSf carSf;
+    Double allSf;
+    List<CarMoneyRecord> sfList;
 
+    Double saleAllFee;
     List<CarSaleSetup> saleList;
 
+    Double afterAllFee;
     List<CarSaleSetup> afterList;
 
     CarSaleInfo carSaleInfo;
@@ -40,12 +46,28 @@ public class ContextBean {
         this.carRecord = carRecord;
     }
 
-    public CarCost getCarCost() {
-        return carCost;
+    public Double getAllCost() {
+        return allCost;
     }
 
-    public void setCarCost(CarCost carCost) {
-        this.carCost = carCost;
+    public void setAllCost(Double allCost) {
+        this.allCost = allCost;
+    }
+
+    public List<CarMoneyRecord> getCostList() {
+        return costList;
+    }
+
+    public void setCostList(List<CarMoneyRecord> costList) {
+        this.costList = costList;
+    }
+
+    public Double getPreAllFee() {
+        return preAllFee;
+    }
+
+    public void setPreAllFee(Double preAllFee) {
+        this.preAllFee = preAllFee;
     }
 
     public List<CarSaleSetup> getPreList() {
@@ -56,6 +78,14 @@ public class ContextBean {
         this.preList = preList;
     }
 
+    public Double getOtherAllFee() {
+        return otherAllFee;
+    }
+
+    public void setOtherAllFee(Double otherAllFee) {
+        this.otherAllFee = otherAllFee;
+    }
+
     public List<CarSaleSetup> getOtherList() {
         return otherList;
     }
@@ -64,12 +94,28 @@ public class ContextBean {
         this.otherList = otherList;
     }
 
-    public CarSf getCarSf() {
-        return carSf;
+    public Double getAllSf() {
+        return allSf;
     }
 
-    public void setCarSf(CarSf carSf) {
-        this.carSf = carSf;
+    public void setAllSf(Double allSf) {
+        this.allSf = allSf;
+    }
+
+    public List<CarMoneyRecord> getSfList() {
+        return sfList;
+    }
+
+    public void setSfList(List<CarMoneyRecord> sfList) {
+        this.sfList = sfList;
+    }
+
+    public Double getSaleAllFee() {
+        return saleAllFee;
+    }
+
+    public void setSaleAllFee(Double saleAllFee) {
+        this.saleAllFee = saleAllFee;
     }
 
     public List<CarSaleSetup> getSaleList() {
@@ -78,6 +124,14 @@ public class ContextBean {
 
     public void setSaleList(List<CarSaleSetup> saleList) {
         this.saleList = saleList;
+    }
+
+    public Double getAfterAllFee() {
+        return afterAllFee;
+    }
+
+    public void setAfterAllFee(Double afterAllFee) {
+        this.afterAllFee = afterAllFee;
     }
 
     public List<CarSaleSetup> getAfterList() {

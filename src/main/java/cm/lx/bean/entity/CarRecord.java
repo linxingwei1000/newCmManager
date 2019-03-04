@@ -26,17 +26,11 @@ public class CarRecord {
     @TableField(value = "purchase_person")
     String purchasePerson;
 
-    @TableField(value = "inside_person")
-    String insidePerson;
-
-    @TableField(value = "inside_proportion")
-    String insideProportion;
-
     @TableField(value = "outside_person")
     String outsidePerson;
 
-    @TableField(value = "outside_proportion")
-    String outsideProportion;
+    @TableField(value = "outside_money")
+    Double outsideMoney;
 
     @TableField(value = "car_line")
     Integer carLine;
@@ -126,30 +120,6 @@ public class CarRecord {
     Integer  recordStatus;
 
     /**
-     * 是否批量采购,0：否，1：是
-     */
-    @TableField(value = "is_bath")
-    Integer isBath;
-
-    /**
-     * 批量采购id
-     */
-    @TableField(value = "bath_id")
-    Integer bathId;
-
-    /**
-     * 是否录入成本
-     */
-    @TableField(value = "is_cost")
-    Integer isCost;
-
-    /**
-     * 对应成本录入id
-     */
-    @TableField(value = "cost_id")
-    Integer costId;
-
-    /**
      * 是否已售
      */
     @TableField(value = "is_sale")
@@ -160,18 +130,6 @@ public class CarRecord {
      */
     @TableField(value = "sale_id")
     Integer saleId;
-
-    /**
-     * 是否填写销售成本
-     */
-    @TableField(value = "is_sf")
-    Integer isSf;
-
-    /**
-     * 对应销售成本表id
-     */
-    @TableField(value = "sf_id")
-    Integer sfId;
 
     /**
      * 对应保险id
@@ -269,22 +227,6 @@ public class CarRecord {
         this.purchasePerson = purchasePerson;
     }
 
-    public String getInsidePerson() {
-        return insidePerson;
-    }
-
-    public void setInsidePerson(String insidePerson) {
-        this.insidePerson = insidePerson;
-    }
-
-    public String getInsideProportion() {
-        return insideProportion;
-    }
-
-    public void setInsideProportion(String insideProportion) {
-        this.insideProportion = insideProportion;
-    }
-
     public String getOutsidePerson() {
         return outsidePerson;
     }
@@ -293,12 +235,12 @@ public class CarRecord {
         this.outsidePerson = outsidePerson;
     }
 
-    public String getOutsideProportion() {
-        return outsideProportion;
+    public Double getOutsideMoney() {
+        return outsideMoney;
     }
 
-    public void setOutsideProportion(String outsideProportion) {
-        this.outsideProportion = outsideProportion;
+    public void setOutsideMoney(Double outsideMoney) {
+        this.outsideMoney = outsideMoney;
     }
 
     public Integer getCarLine() {
@@ -525,46 +467,6 @@ public class CarRecord {
         this.recordStatus = recordStatus;
     }
 
-    public Integer getIsBath() {
-        return isBath;
-    }
-
-    public void setIsBath(Integer isBath) {
-        this.isBath = isBath;
-    }
-
-    public Integer getBathId() {
-        return bathId;
-    }
-
-    public void setBathId(Integer bathId) {
-        this.bathId = bathId;
-    }
-
-    public Integer getCostId() {
-        return costId;
-    }
-
-    public void setCostId(Integer costId) {
-        this.costId = costId;
-    }
-
-    public Integer getIsSf() {
-        return isSf;
-    }
-
-    public void setIsSf(Integer isSf) {
-        this.isSf = isSf;
-    }
-
-    public Integer getSfId() {
-        return sfId;
-    }
-
-    public void setSfId(Integer sfId) {
-        this.sfId = sfId;
-    }
-
     public Integer getExpenseId() {
         return expenseId;
     }
@@ -661,14 +563,6 @@ public class CarRecord {
         this.strCarChannel = strCarChannel;
     }
 
-    public Integer getIsCost() {
-        return isCost;
-    }
-
-    public void setIsCost(Integer isCost) {
-        this.isCost = isCost;
-    }
-
     public Integer getIsSale() {
         return isSale;
     }
@@ -739,10 +633,8 @@ public class CarRecord {
         headers.add("车架号");
         headers.add("钥匙编号");
         headers.add("采购人");
-        headers.add("内部合伙人");
-        headers.add("内部合伙比例");
         headers.add("外部合伙人");
-        headers.add("外部合伙比例");
+        headers.add("外部合伙金额");
         headers.add("车系");
         headers.add("车辆级别");
         headers.add("车辆品牌");
@@ -775,10 +667,8 @@ public class CarRecord {
         carRecordExport.setFrameNum(this.frameNum);
         carRecordExport.setKeyNum(this.keyNum);
         carRecordExport.setPurchasePerson(this.purchasePerson);
-        carRecordExport.setInsidePerson(this.insidePerson);
-        carRecordExport.setInsideProportion(this.insideProportion);
         carRecordExport.setOutsidePerson(this.outsidePerson);
-        carRecordExport.setOutsideProportion(this.outsideProportion);
+        carRecordExport.setOutsideMoney(this.outsideMoney);
         carRecordExport.setCarLine(this.strCarLine);
         carRecordExport.setCarLevel(this.strCarLevel);
         carRecordExport.setCarBrand(this.carBrand);

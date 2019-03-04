@@ -6,7 +6,6 @@ import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
 import cm.lx.bean.entity.CarDossier;
 import cm.lx.bean.entity.CarRecord;
-import cm.lx.service.CarBathService;
 import cm.lx.service.CarDossierService;
 import cm.lx.service.CarRecordService;
 import cm.lx.util.TimeUtils;
@@ -35,9 +34,6 @@ public class CarPurchaseController extends BaseController {
     CarRecordService carRecordService;
 
     @Resource
-    CarBathService carBathService;
-
-    @Resource
     CarDossierService carDossierService;
 
     @RequestMapping(value = "/carPurchaseView", method = RequestMethod.GET)
@@ -59,10 +55,8 @@ public class CarPurchaseController extends BaseController {
             @RequestParam(value = "purchaseType", required = false, defaultValue = "") Integer purchaseType,
             @RequestParam(value = "purchaseDate", required = false, defaultValue = "") String purchaseDate,
             @RequestParam(value = "purchasePerson", required = false, defaultValue = "") String purchasePerson,
-            @RequestParam(value = "insidePerson", required = false, defaultValue = "") String insidePerson,
-            @RequestParam(value = "insideProportion", required = false, defaultValue = "") String insideProportion,
             @RequestParam(value = "outsidePerson", required = false, defaultValue = "") String outsidePerson,
-            @RequestParam(value = "outsideProportion", required = false, defaultValue = "") String outsideProportion,
+            @RequestParam(value = "outsideMoney", required = false, defaultValue = "") Double outsideMoney,
             @RequestParam(value = "carNewSale", required = false, defaultValue = "") Double carNewSale,
             @RequestParam(value = "hallMoney", required = false, defaultValue = "") Double hallMoney,
             @RequestParam(value = "purchaseMoney", required = false, defaultValue = "") Double purchaseMoney,
@@ -89,8 +83,6 @@ public class CarPurchaseController extends BaseController {
             @RequestParam(value = "carStatus", required = false, defaultValue = "") Integer carStatus,
             @RequestParam(value = "carStatusDesc", required = false, defaultValue = "") String carStatusDesc,
             @RequestParam(value = "carConfig", required = false, defaultValue = "") String carConfig,
-            @RequestParam(value = "isBath", required = false, defaultValue = "") Integer isBath,
-            @RequestParam(value = "bathId", required = false, defaultValue = "") Integer bathId,
             HttpSession session) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("car/purchaseAdd");
@@ -98,16 +90,11 @@ public class CarPurchaseController extends BaseController {
         mav.addObject("recordStatus", recordStatus);
         ToolUtil.initCarPropertyData(mav, cacheCenter);
 
-        //批量采购加入页面
-        mav.addObject(ContextType.CAR_BATH_IDS, carBathService.getCarBathListByAccount(null));
-
         mav.addObject("purchaseType", purchaseType);
         mav.addObject("purchaseDate", purchaseDate);
         mav.addObject("purchasePerson", purchasePerson);
-        mav.addObject("insidePerson", insidePerson);
-        mav.addObject("insideProportion", insideProportion);
         mav.addObject("outsidePerson", outsidePerson);
-        mav.addObject("outsideProportion", outsideProportion);
+        mav.addObject("outsideMoney", outsideMoney);
         mav.addObject("carNewSale", carNewSale);
         mav.addObject("hallMoney", hallMoney);
         mav.addObject("purchaseMoney", purchaseMoney);
@@ -134,8 +121,6 @@ public class CarPurchaseController extends BaseController {
         mav.addObject("carStatus", carStatus);
         mav.addObject("carStatusDesc", carStatusDesc);
         mav.addObject("carConfig", carConfig);
-        mav.addObject("isBath", isBath);
-        mav.addObject("bathId", bathId);
 
         if (over == null) {
             if (id != null) {
@@ -144,10 +129,8 @@ public class CarPurchaseController extends BaseController {
                 mav.addObject("purchaseType", carRecord.getPurchaseType());
                 mav.addObject("purchaseDate", TimeUtils.transformTimetagToDate(carRecord.getPurchaseDate(), TimeUtils.FORMAT_ONE));
                 mav.addObject("purchasePerson", carRecord.getPurchasePerson());
-                mav.addObject("insidePerson", carRecord.getInsidePerson());
-                mav.addObject("insideProportion", carRecord.getInsideProportion());
                 mav.addObject("outsidePerson", carRecord.getOutsidePerson());
-                mav.addObject("outsideProportion", carRecord.getOutsideProportion());
+                mav.addObject("outsideMoney", carRecord.getOutsideMoney());
                 mav.addObject("carNewSale", carRecord.getCarNewSale());
                 mav.addObject("hallMoney", carRecord.getHallMoney());
                 mav.addObject("purchaseMoney", carRecord.getPurchaseMoney());
@@ -174,8 +157,6 @@ public class CarPurchaseController extends BaseController {
                 mav.addObject("carStatus", carRecord.getCarStatus());
                 mav.addObject("carStatusDesc", carRecord.getCarStatusDesc());
                 mav.addObject("carConfig", carRecord.getCarConfig());
-                mav.addObject("isBath", carRecord.getIsBath());
-                mav.addObject("bathId", carRecord.getBathId());
             }
             return mav;
         } else {
@@ -208,27 +189,6 @@ public class CarPurchaseController extends BaseController {
                 mav.addObject(TIP, "车型不能为空！");
                 return mav;
             }
-            if (!StringUtils.isEmpty(insideProportion)) {
-                try {
-                    double a = Double.valueOf(insideProportion);
-                } catch (Exception e) {
-                    mav.addObject(TIP, "内部比例格式错误！");
-                    return mav;
-                }
-            }
-            if (!StringUtils.isEmpty(outsideProportion)) {
-                try {
-                    double a = Double.valueOf(outsideProportion);
-                } catch (Exception e) {
-                    mav.addObject(TIP, "外部比例格式错误！");
-                    return mav;
-                }
-            }
-
-            if (isBath == 1 && bathId == 0) {
-                mav.addObject(TIP, "批量采购必填批量采购标题参数！");
-                return mav;
-            }
 
             CarRecord carRecord = new CarRecord();
             carRecord.setPurchaseDate(TimeUtils.transformDateToTimetag(purchaseDate, TimeUtils.FORMAT_ONE));
@@ -253,10 +213,8 @@ public class CarPurchaseController extends BaseController {
             carRecord.setCarChannel(carChannel);
             carRecord.setPurchaseType(purchaseType);
             carRecord.setCarTakeType(carTakeType);
-            carRecord.setInsidePerson(insidePerson);
-            carRecord.setInsideProportion(insideProportion);
             carRecord.setOutsidePerson(outsidePerson);
-            carRecord.setOutsideProportion(outsideProportion);
+            carRecord.setOutsideMoney(outsideMoney == null ? 0 : outsideMoney);
             carRecord.setPaidMoney(paidMoney);
             carRecord.setCarNewSale(carNewSale == null ? 0 : carNewSale);
             carRecord.setHallMoney(hallMoney == null ? 0 : hallMoney);
@@ -269,14 +227,8 @@ public class CarPurchaseController extends BaseController {
             if (action.equals(CREATE_ACTION)) {
                 carRecord.setSoldDate(0L);
                 carRecord.setRecordStatus(ContextType.RECORD_STATUS_PURCHASE);
-                carRecord.setIsBath(isBath);
-                carRecord.setBathId(isBath == 0 ? 0 : bathId);
-                carRecord.setIsCost(0);
-                carRecord.setCostId(0);
                 carRecord.setIsSale(0);
                 carRecord.setSaleId(0);
-                carRecord.setIsSf(0);
-                carRecord.setSfId(0);
                 carRecordService.createCarRecord(carRecord);
                 session.setAttribute("tip", "ok 采购录入成功！");
 
@@ -285,26 +237,7 @@ public class CarPurchaseController extends BaseController {
                 carDossier.setCarRecordId(carRecord.getId());
                 carDossier.setDisplayStatus(ContextType.DISPLAY_STATUS_SHOW);
                 carDossierService.createCarDossier(carDossier);
-
-                //批量采购操作
-                if (isBath == 1) {
-                    carBathService.modCarRecordId(bathId, carRecord.getId(), 1);
-                }
             } else if (action.equals(MOD_ACTION)) {
-                //批量采购操作
-                CarRecord oldCarRecord = carRecordService.getCarRecordById(id);
-                if (oldCarRecord.getIsBath() == 0 && isBath == 0) {
-                } else if (oldCarRecord.getIsBath() == 0 && isBath == 1) {
-                    carBathService.modCarRecordId(bathId, oldCarRecord.getId(), 1);
-                } else if (oldCarRecord.getIsBath() == 1 && isBath == 0) {
-                    carBathService.modCarRecordId(oldCarRecord.getBathId(), oldCarRecord.getId(), 0);
-                } else if (oldCarRecord.getIsBath() == 1 && isBath == 1) {
-                    if (oldCarRecord.getBathId().intValue() != bathId) {
-                        carBathService.modCarRecordId(oldCarRecord.getBathId(), oldCarRecord.getId(), 0);
-                        carBathService.modCarRecordId(bathId, oldCarRecord.getId(), 1);
-                    }
-                }
-
                 carRecord.setId(id);
                 carRecordService.updateCarRecord(carRecord);
                 session.setAttribute(TIP, "ok 采购修改成功！");

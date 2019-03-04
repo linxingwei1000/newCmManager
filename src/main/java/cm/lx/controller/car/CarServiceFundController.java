@@ -2,7 +2,7 @@ package cm.lx.controller.car;
 
 import cm.lx.controller.BaseController;
 import cm.lx.bean.entity.ServiceFund;
-import cm.lx.service.CarSfService;
+import cm.lx.service.CarSaleInfoService;
 import cm.lx.service.ServiceFundService;
 import cm.lx.util.TimeUtils;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class CarServiceFundController extends BaseController {
     Logger logger = LoggerFactory.getLogger(CarServiceFundController.class);
 
     @Resource
-    CarSfService carSfService;
+    CarSaleInfoService carSaleInfoService;
 
     @Resource
     ServiceFundService serviceFundService;
@@ -42,7 +42,7 @@ public class CarServiceFundController extends BaseController {
         List<ServiceFund> list = serviceFundService.getServiceFundList();
 
         //总服务基金
-        Double allServiceFund = carSfService.getServiceMoney();
+        Double allServiceFund = carSaleInfoService.getServiceMoney();
         if (allServiceFund == null) {
             allServiceFund = 0.0;
         }

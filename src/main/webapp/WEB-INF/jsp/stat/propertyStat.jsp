@@ -47,18 +47,6 @@
 <hr/>
 <div class="container">
     <form class="form-horizontal" action="statPropertyData" method="get">
-        <!--<div class="form-group">
-            <div class="col-sm-2">
-                <select class="form-control" name="searchKey" id="searchKey" onchange="show(this)">
-                    <option value="">未选中</option>
-                    <option value="purchasePerson">采购人</option>
-                    <option value="salePerson">销售人</option>
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <input class="form-control" type="text" name="searchValue" id="searchValue" value="${searchValue }" placeholder="请输入,可选项" autocomplete="off"/>
-            </div>
-        </div>-->
         <div class="form-group">
             <label class="col-sm-2 control-label">时间段：</label>
             <div class="col-sm-3">
@@ -105,7 +93,6 @@
                 <th>客户年龄占比</th>
                 <th>客户性别占比</th>
                 <th>获客渠道占比</th>
-                <th>购车用途占比</th>
                 <th>付款方式占比</th>
             </tr>
             <tr>
@@ -156,11 +143,6 @@
                 </td>
                 <td>
                     <c:forEach items="${propertyStat.consumerResourceMap}" var="map">
-                        <c:out value="${map.key}"></c:out>:<c:out value="${map.value}"></c:out><br>
-                    </c:forEach>
-                </td>
-                <td>
-                    <c:forEach items="${propertyStat.purchaseUseMap}" var="map">
                         <c:out value="${map.key}"></c:out>:<c:out value="${map.value}"></c:out><br>
                     </c:forEach>
                 </td>

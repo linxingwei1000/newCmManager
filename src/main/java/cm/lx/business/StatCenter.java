@@ -6,6 +6,7 @@ import cm.lx.bean.stat.OtherStat;
 import cm.lx.bean.stat.PropertyStat;
 import cm.lx.common.ContextType;
 import cm.lx.bean.entity.*;
+import cm.lx.enums.CarPropertyEnum;
 import cm.lx.service.*;
 import cm.lx.util.TimeUtils;
 import cm.lx.util.Utils;
@@ -19,8 +20,8 @@ import java.util.Map;
 
 public class StatCenter {
 
-    public static MoneyStat statMoneyData(CarCostService carCostService,
-                                          CarSfService carSfService,
+    public static MoneyStat statMoneyData(CarSaleSetupService carSaleSetupService,
+                                          CarMoneyRecordService carMoneyRecordService,
                                           CarSaleInfoService carSaleInfoService,
                                           List<CarRecord> list, List<MoneyStat> moneyStatList) {
         int allCarNum = list.size();
@@ -78,23 +79,50 @@ public class StatCenter {
                 moneyStat.setSaleAgent("是");
             }
 
-            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
-            moneyStat.setPreSetup(carCost.getPreSaleFee());
-            moneyStat.setAfterSetup(carCost.getAfterSaleFee());
-            preSetup += carCost.getPreSaleFee();
-            afterSetup += carCost.getAfterSaleFee();
+            Double preAllFee = 0.0;
+            List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
+            for (CarSaleSetup carSaleSetup : carSaleSetups) {
+                preAllFee += carSaleSetup.getSetupFee();
+            }
+            moneyStat.setPreSetup(preAllFee);
 
-            moneyStat.setPurchaseCost(carCost.getMentionFee() + carCost.getMentionSubsidy() + carCost.getTravelFee() + carCost.getPutFee() + carCost.getPutSubsidy() +
-                    carCost.getCrossingFee() + carCost.getMailFee() + carCost.getFreightFee() + carCost.getBillingFee() + carCost.getOilFee() +
-                    carCost.getCattleFee() + carCost.getExpenseFee() + carCost.getOtherFee());
+            Double afterAllFee = 0.0;
+            carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.AFTER_SETUP_TYPE);
+            for (CarSaleSetup carSaleSetup : carSaleSetups) {
+                afterAllFee += carSaleSetup.getSetupFee();
+            }
+            moneyStat.setAfterSetup(afterAllFee);
+
+            preSetup += preAllFee;
+            afterSetup += afterAllFee;
+
+            Double allCost = 0.0;
+            List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
+            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
+                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                    allCost += carMoneyRecord.getMoney();
+                }
+            }
+            moneyStat.setPurchaseCost(allCost);
+
             purchaseCost += moneyStat.getPurchaseCost();
 
-            CarSf carSf = carSfService.getCarSfById(carRecord.getSfId());
-            moneyStat.setSaleSetup(carSf.getSaleFee());
-            saleSetup += carSf.getSaleFee();
+            Double saleAllFee = 0.0;
+            carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
+            for (CarSaleSetup carSaleSetup : carSaleSetups) {
+                saleAllFee += carSaleSetup.getSetupFee();
+            }
+            moneyStat.setSaleSetup(saleAllFee);
+            saleSetup += saleAllFee;
 
-            moneyStat.setSaleCost(carSf.getTransferFee() + carSf.getTransferSubsidy() + carSf.getTransferCrossingFee() + carSf.getTransferBillingFee() +
-                    carSf.getTransferOilFee() + carSf.getCattleFee() + carSf.getRubbing() + carSf.getRemoveCard() + carSf.getServiceFee());
+            Double allSf = 0.0;
+            carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
+            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
+                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                    allSf += carMoneyRecord.getMoney();
+                }
+            }
+            moneyStat.setSaleCost(allSf + carSaleInfo.getServiceFee());
             saleCost += moneyStat.getSaleCost();
 
             moneyStatList.add(moneyStat);
@@ -122,8 +150,8 @@ public class StatCenter {
     public static void statMoneyFlowData(MortgageRebateService mortgageRebateService,
                                          MoneyManagerService moneyManagerService,
                                          CarRecordService carRecordService,
-                                         CarCostService carCostService,
-                                         CarSfService carSfService,
+                                         CarSaleSetupService carSaleSetupService,
+                                         CarMoneyRecordService carMoneyRecordService,
                                          CarSaleInfoService carSaleInfoService,
                                          MortgageRecordService mortgageRecordService,
                                          CacheCenter cacheCenter, MoneyFlowStat moneyFlowStat, Long et) {
@@ -188,13 +216,21 @@ public class StatCenter {
                 continue;
             }
 
-            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
-            if (carCost == null) {
-                continue;
+            Double preAllFee = 0.0;
+            List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
+            for (CarSaleSetup carSaleSetup : carSaleSetups) {
+                preAllFee += carSaleSetup.getSetupFee();
             }
-            stockMoney += carRecord.getPaidMoney() + carCost.getMentionFee() + carCost.getMentionSubsidy() + carCost.getTravelFee() + carCost.getPutFee() + carCost.getPutSubsidy() +
-                    carCost.getCrossingFee() + carCost.getMailFee() + carCost.getFreightFee() + carCost.getBillingFee() + carCost.getOilFee() + carCost.getCattleFee() +
-                    carCost.getExpenseFee() + carCost.getOtherFee() + carCost.getPreSaleFee();
+
+            Double allCost = 0.0;
+            List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
+            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
+                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                    allCost += carMoneyRecord.getMoney();
+                }
+            }
+            stockMoney += carRecord.getPaidMoney() + preAllFee + allCost;
+
             i++;
         }
         //车均库存
@@ -211,21 +247,39 @@ public class StatCenter {
                 continue;
             }
 
-            CarCost carCost = carCostService.getCarCostById(carRecord.getCostId());
-            if (carCost != null) {
-                saleMoney += carRecord.getPaidMoney() + carCost.getMentionFee() + carCost.getMentionSubsidy() + carCost.getTravelFee() + carCost.getPutFee() + carCost.getPutSubsidy() +
-                        carCost.getCrossingFee() + carCost.getMailFee() + carCost.getFreightFee() + carCost.getBillingFee() + carCost.getOilFee() + carCost.getCattleFee() +
-                        carCost.getExpenseFee() + carCost.getOtherFee() + carCost.getPreSaleFee();
+            Double preAllFee = 0.0;
+            List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
+            for (CarSaleSetup carSaleSetup : carSaleSetups) {
+                preAllFee += carSaleSetup.getSetupFee();
             }
 
-            CarSf carSf = carSfService.getCarSfById(carRecord.getSfId());
-            if (carSf != null) {
-                carSf.addAll();
-                saleMoney += carSf.getAllSf() + carSf.getSaleFee();
+            Double allCost = 0.0;
+            List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
+            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
+                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                    allCost += carMoneyRecord.getMoney();
+                }
+            }
+            saleMoney += carRecord.getPaidMoney() + preAllFee + allCost;
+
+            Double allSf = 0.0;
+            carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
+            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
+                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
+                    allSf += carMoneyRecord.getMoney();
+                }
             }
 
+            Double saleAllFee = 0.0;
+            carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
+            for (CarSaleSetup carSaleSetup : carSaleSetups) {
+                saleAllFee += carSaleSetup.getSetupFee();
+            }
 
             CarSaleInfo carSaleInfo = carSaleInfoService.getCarSaleInfoById(carRecord.getSaleId());
+            Double serviceFee = carSaleInfo!=null?carSaleInfo.getServiceFee():0.0;
+            saleMoney += allSf + serviceFee + saleAllFee;
+
             if (carSaleInfo != null) {
                 saleMoney -= carSaleInfo.getPaidMoney();
                 if (carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ)) {
@@ -282,7 +336,6 @@ public class StatCenter {
         Map<Integer, Double> consumerAgeMap = new HashMap<Integer, Double>();
         Map<String, Double> consumerSexMap = new HashMap<String, Double>();
         Map<Integer, Double> consumerResourceMap = new HashMap<Integer, Double>();
-        Map<Integer, Double> purchaseUseMap = new HashMap<Integer, Double>();
         Map<String, Double> saleTypeMap = new HashMap<String, Double>();
         for (CarRecord carRecord : list) {
             //车辆级别
@@ -317,9 +370,6 @@ public class StatCenter {
             //获客渠道
             consumerResourceMap.put(carSaleInfo.getConsumerResource(), removeNull(consumerResourceMap.get(carSaleInfo.getConsumerResource())) + 1);
 
-            //购车用途
-            purchaseUseMap.put(carSaleInfo.getPurchaseUse(), removeNull(purchaseUseMap.get(carSaleInfo.getPurchaseUse())) + 1);
-
             //付款方式
             key = carSaleInfo.getSaleType().equals(ContextType.SALE_TYPE_AJ) ? "按揭" : "全款";
             saleTypeMap.put(key, removeNull(saleTypeMap.get(key)) + 1);
@@ -335,7 +385,6 @@ public class StatCenter {
         propertyStat.setConsumerAgeMap(install(cacheCenter, consumerAgeMap.entrySet().iterator(), list.size()));
         propertyStat.setConsumerSexMap(installStringKey(consumerSexMap.entrySet().iterator(), list.size()));
         propertyStat.setConsumerResourceMap(install(cacheCenter, consumerResourceMap.entrySet().iterator(), list.size()));
-        propertyStat.setPurchaseUseMap(install(cacheCenter, purchaseUseMap.entrySet().iterator(), list.size()));
         propertyStat.setSaleTypeMap(installStringKey(saleTypeMap.entrySet().iterator(), list.size()));
     }
 
@@ -400,10 +449,10 @@ public class StatCenter {
 
 
     private static Map<String, Double> install(CacheCenter cacheCenter, Iterator<Map.Entry<Integer, Double>> it, Integer allNum) {
-        Map<String, Double> map = new HashMap<String, Double>();
+        Map<String, Double> map = new HashMap<>();
         while (it.hasNext()) {
             Map.Entry<Integer, Double> entry = it.next();
-            String key = entry.getKey() == 0 ? ContextType.CAR_PROPERTY_DEFAULT : cacheCenter.getCarPropertyById(entry.getKey()).getPropertyValue();
+            String key = entry.getKey() == 0 ? CarPropertyEnum.CAR_PROPERTY_DEFAULT.getDesc() : cacheCenter.getCarPropertyById(entry.getKey()).getPropertyValue();
             Double value = entry.getValue() == 0 ? 0.0 : Utils.saveTwoSeat(entry.getValue() / allNum);
             map.put(key, value);
         }

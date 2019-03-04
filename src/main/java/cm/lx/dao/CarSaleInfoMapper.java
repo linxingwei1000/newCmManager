@@ -10,4 +10,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CarSaleInfoMapper extends BaseMapper<CarSaleInfo> {
+
+    /**
+     * 获取总服务基金
+     * @return
+     */
+    Double getServiceMoney();
 }

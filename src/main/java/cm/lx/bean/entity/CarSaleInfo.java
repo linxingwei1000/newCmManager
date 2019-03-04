@@ -59,9 +59,6 @@ public class CarSaleInfo {
     @TableField(value = "consumer_resource")
     Integer consumerResource;
 
-    @TableField(value = "purchase_use")
-    Integer purchaseUse;
-
     @TableField(value = "consumer_name")
     String consumerName;
     @TableField(value = "consumer_sex")
@@ -85,6 +82,12 @@ public class CarSaleInfo {
     @TableField(value = "mortgage_id")
     Integer mortgageId;
 
+    @TableField(value = "is_produce")
+    Integer isProduce;
+
+    @TableField(value = "service_fee")
+    Double serviceFee;
+
     Long ctime;
 
     Long utime;
@@ -97,9 +100,6 @@ public class CarSaleInfo {
 
     @TableField(exist = false)
     String strConsumerResource;
-
-    @TableField(exist = false)
-    String strPurchaseUse;
 
     @TableField(exist = false)
     String strConsumerAge;
@@ -235,14 +235,6 @@ public class CarSaleInfo {
         this.consumerResource = consumerResource;
     }
 
-    public Integer getPurchaseUse() {
-        return purchaseUse;
-    }
-
-    public void setPurchaseUse(Integer purchaseUse) {
-        this.purchaseUse = purchaseUse;
-    }
-
     public String getConsumerName() {
         return consumerName;
     }
@@ -307,6 +299,22 @@ public class CarSaleInfo {
         this.mortgageId = mortgageId;
     }
 
+    public Integer getIsProduce() {
+        return isProduce;
+    }
+
+    public void setIsProduce(Integer isProduce) {
+        this.isProduce = isProduce;
+    }
+
+    public Double getServiceFee() {
+        return serviceFee;
+    }
+
+    public void setServiceFee(Double serviceFee) {
+        this.serviceFee = serviceFee;
+    }
+
     public Long getCtime() {
         return ctime;
     }
@@ -347,14 +355,6 @@ public class CarSaleInfo {
         this.strConsumerProperty = strConsumerProperty;
     }
 
-    public String getStrPurchaseUse() {
-        return strPurchaseUse;
-    }
-
-    public void setStrPurchaseUse(String strPurchaseUse) {
-        this.strPurchaseUse = strPurchaseUse;
-    }
-
     public String getStrConsumerResource() {
         return strConsumerResource;
     }
@@ -383,7 +383,6 @@ public class CarSaleInfo {
         headers.add("应付金额");
         headers.add("客户属性");
         headers.add("获客渠道");
-        headers.add("购车用途");
         headers.add("客户姓名");
         headers.add("客户性别");
         headers.add("客户年龄段");
@@ -404,7 +403,6 @@ public class CarSaleInfo {
         carRecordExport.setPayMoney(payMoney);
         carRecordExport.setConsumerProperty(strConsumerProperty);
         carRecordExport.setConsumerResource(strConsumerResource);
-        carRecordExport.setPurchaseUse(strPurchaseUse);
         carRecordExport.setConsumerName(consumerName);
         carRecordExport.setConsumerSex(consumerSex==1?"男":"女");
         carRecordExport.setConsumerAge(strConsumerAge);

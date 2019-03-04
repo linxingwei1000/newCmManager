@@ -11,10 +11,8 @@ public class CarRecordExport {
     String frameNum;
     String keyNum;
     String purchasePerson;
-    String insidePerson;
-    String insideProportion;
     String outsidePerson;
-    String outsideProportion;
+    Double outsideMoney;
     String carLine;
     String carLevel;
     String carBrand;
@@ -151,21 +149,6 @@ public class CarRecordExport {
         this.purchasePerson = purchasePerson;
     }
 
-    public String getInsidePerson() {
-        return insidePerson;
-    }
-
-    public void setInsidePerson(String insidePerson) {
-        this.insidePerson = insidePerson;
-    }
-
-    public String getInsideProportion() {
-        return insideProportion;
-    }
-
-    public void setInsideProportion(String insideProportion) {
-        this.insideProportion = insideProportion;
-    }
 
     public String getOutsidePerson() {
         return outsidePerson;
@@ -175,12 +158,12 @@ public class CarRecordExport {
         this.outsidePerson = outsidePerson;
     }
 
-    public String getOutsideProportion() {
-        return outsideProportion;
+    public Double getOutsideMoney() {
+        return outsideMoney;
     }
 
-    public void setOutsideProportion(String outsideProportion) {
-        this.outsideProportion = outsideProportion;
+    public void setOutsideMoney(Double outsideMoney) {
+        this.outsideMoney = outsideMoney;
     }
 
     public String getCarLine() {

@@ -77,9 +77,10 @@
                         <c:if test="${ cp.propertyKey == 'CAR_PURCHASE_TYPE' }">采购类别</c:if>
                         <c:if test="${ cp.propertyKey == 'CAR_CONSUMER_PROPERTY' }">客户属性</c:if>
                         <c:if test="${ cp.propertyKey == 'CAR_CONSUMER_RESOURCE' }">获客渠道</c:if>
-                        <c:if test="${ cp.propertyKey == 'CAR_PURCHASE_USE' }">购车用途</c:if>
                         <c:if test="${ cp.propertyKey == 'CONSUMER_GENERATION' }">客户年龄段</c:if>
                         <c:if test="${ cp.propertyKey == 'BUSINESS_TYPE' }">保险业务类型</c:if>
+                        <c:if test="${ cp.propertyKey == 'MONEY_RECORD_COST' }">成本录入</c:if>
+                        <c:if test="${ cp.propertyKey == 'MONEY_RECORD_SALE' }">销售录入</c:if>
                     </td>
                     <td>${cp.propertyValue}</td>
                     <td>

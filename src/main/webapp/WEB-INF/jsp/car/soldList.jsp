@@ -170,18 +170,11 @@
                                                     <div class="col-sm-1"></div>
                                                     <label class="col-sm-3 control-label">订金：${cp.carRecord.deposit}</label>
                                                 </div>
-                                                <c:if test="${cp.carRecord.insidePerson != ''}">
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">内部合伙人：${cp.carRecord.insidePerson}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">内部合伙比例：${cp.carRecord.insideProportion}</label>
-                                                    </div>
-                                                </c:if>
                                                 <c:if test="${cp.carRecord.outsidePerson != ''}">
                                                     <div class="form-group row">
                                                         <label class="col-sm-4 control-label">外部合伙人：${cp.carRecord.outsidePerson}</label>
                                                         <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">外部合伙比例：${cp.carRecord.outsideProportion}</label>
+                                                        <label class="col-sm-4 control-label">外部合伙金额：${cp.carRecord.outsideMoney}</label>
                                                     </div>
                                                 </c:if>
                                                 <div class="form-group row">
@@ -254,69 +247,34 @@
                             <c:if test="${sessionScope.account.department == 3&& sessionScope.account.userType == 3}">******</c:if>
                             <c:if test="${(sessionScope.account.department == 3&& sessionScope.account.userType != 3)
                             ||sessionScope.account.department != 3}">
-                                ${cp.carCost.allCost}，<a href="#costDetail-${cp.carCost.id}" data-toggle="modal"><i class="icon-trash"></i> 查看详情</a>
-                                <div id="costDetail-${cp.carCost.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                ${cp.allCost}，<a href="#CarMoneyCost-${cp.carRecord.id}" data-toggle="modal"><i class="icon-trash"></i> 查看详情</a>
+                                <div id="CarMoneyCost-${cp.carRecord.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                <h4 class="modal-title" id="myCostLabel">售前费用详情</h4>
+                                                <h4 class="modal-title" id="CarMoneyCostLabel">售前费用详情</h4>
                                             </div>
                                             <div class="modal-body">
+                                                <c:forEach var="pl" items="${cp.costList}" varStatus="status">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-4 control-label">${pl.linkName}：${pl.money}，备注：${pl.moneyDesc}</label>
+                                                    </div>
+                                                </c:forEach>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">提车经办人：${cp.carCost.carPickPerson}</label>
+                                                    <label class="col-sm-4 control-label">其他费用：${cp.otherAllFee}</label>
+                                                    <c:forEach var="oi" items="${cp.otherList}" varStatus="status">
+                                                        <div class="form-group row">
+                                                            <label class="col-sm-6 control-label">${oi.setupName}：${oi.setupFee}</label>
+                                                        </div>
+                                                    </c:forEach>
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">提档费：${cp.carCost.mentionFee}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">提档补贴：${cp.carCost.mentionSubsidy }</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">提车过路费：${cp.carCost.crossingFee}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">差旅费：${cp.carCost.travelFee }</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">入档费：${cp.carCost.putFee}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">入档补贴：${cp.carCost.putSubsidy}</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">邮递费：${cp.carCost.mailFee}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">运费：${cp.carCost.freightFee}</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">提车开票费：${cp.carCost.billingFee}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">提车加邮费：${cp.carCost.oilFee}</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">黄牛费：${cp.carCost.cattleFee}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">保险费：${cp.carCost.expenseFee}</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">其他费用：${cp.carCost.otherFee}</label>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">售前整备费：${cp.carCost.preSaleFee }</label>
+                                                    <label class="col-sm-4 control-label">售前整备费：${cp.preAllFee }</label>
                                                     <div class="col-sm-5">
                                                         <c:forEach var="pl" items="${cp.preList}" varStatus="status">
                                                             <div class="form-group row">
-                                                                <label class="col-sm-6 control-label">项目：${pl.setupName}</label>
-                                                                <label class="col-sm-6 control-label">金额：${pl.setupFee}</label>
-                                                            </div>
-                                                        </c:forEach>
-                                                    </div>
-                                                </div>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">其他收入：${cp.carCost.otherIncomeFee }</label>
-                                                    <div class="col-sm-5">
-                                                        <c:forEach var="oi" items="${cp.otherList}" varStatus="status">
-                                                            <div class="form-group row">
-                                                                <label class="col-sm-6 control-label">项目：${oi.setupName}</label>
-                                                                <label class="col-sm-6 control-label">金额：${oi.setupFee}</label>
+                                                                <label class="col-sm-4 control-label">${pl.setupName}:${pl.setupFee}</label>
                                                             </div>
                                                         </c:forEach>
                                                     </div>
@@ -365,8 +323,6 @@
 
                                                 </div>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">购车用途：${cp.carSaleInfo.strPurchaseUse}</label>
-                                                    <div class="col-sm-1"></div>
                                                     <label class="col-sm-4 control-label">客户名称：${cp.carSaleInfo.consumerName}</label>
                                                 </div>
                                                 <div class="form-group row">
@@ -383,6 +339,9 @@
                                                     <label class="col-sm-4 control-label">付款方式：<c:if test="${cp.carSaleInfo.saleType == 1}">全款</c:if><c:if test="${cp.carSaleInfo.saleType == 2}">按揭</c:if></label>
                                                     <div class="col-sm-1"></div>
                                                 </div>
+                                                <div class="form-group row">
+                                                    <label class="col-sm-4 control-label">是否产生售后服务基金：<c:if test="${cp.carSaleInfo.isProduce == 1}">是</c:if><c:if test="${cp.carSaleInfo.isProduce == 0}">否</c:if></label>
+                                                </div
                                                 <c:if test="${cp.carSaleInfo.saleType == 2}">
                                                     <div class="form-group row">
                                                         <label class="col-sm-4 control-label">对接按揭专员：${cp.carSaleInfo.mortgageRecord.mortgageCommissioner}</label>
@@ -433,55 +392,34 @@
                             <c:if test="${sessionScope.account.department == 3&& sessionScope.account.userType == 3}">******</c:if>
                             <c:if test="${(sessionScope.account.department == 3&& sessionScope.account.userType != 3)
                             ||sessionScope.account.department != 3}">
-                                ${cp.carSf.allSf}，<a href="#sfDetail-${cp.carSf.id}" data-toggle="modal"><i class="icon-trash"></i> 查看详情</a>
-                                <div id="sfDetail-${cp.carSf.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                <div class="modal-dialog" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title" id="mySfLabel">销售费用信息</h4>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">过户费：${cp.carSf.transferFee}</label>
-                                                <div class="col-sm-1"></div>
-                                                <label class="col-sm-4 control-label">售后服务基金：${cp.carSf.serviceFee }</label>
+                                ${cp.allSf}，<a href="#sfDetail-${cp.carRecord.id}" data-toggle="modal"><i class="icon-trash"></i> 查看详情</a>
+                                <div id="sfDetail-${cp.carRecord.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="mySfLabel">销售费用信息</h4>
                                             </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">过户补贴：${cp.carSf.transferSubsidy}</label>
-                                                <div class="col-sm-1"></div>
-                                                <label class="col-sm-4 control-label">过户过路费：${cp.carSf.transferCrossingFee }</label>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">过户开票费：${cp.carSf.transferBillingFee}</label>
-                                                <div class="col-sm-1"></div>
-                                                <label class="col-sm-4 control-label">过户加油费：${cp.carSf.transferOilFee}</label>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">拆牌拓印：${cp.carSf.removeCard}</label>
-                                                <div class="col-sm-1"></div>
-                                                <label class="col-sm-4 control-label">其他费用：${cp.carSf.rubbing}</label>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">过户黄牛费：${cp.carSf.cattleFee}</label>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">是否产生售后服务基金：<c:if test="${cp.carSf.isProduce == 1}">是</c:if><c:if test="${cp.carSf.isProduce == 0}">否</c:if></label>
-                                            </div>
-                                            <div class="form-group row">
-                                                <label class="col-sm-4 control-label">销售整备费：${cp.carSf.saleFee }</label>
-                                                <div class="col-sm-5">
-                                                    <c:forEach var="pl" items="${cp.saleList}" varStatus="status">
-                                                        <div class="form-group row">
-                                                            <label class="col-sm-6 control-label">项目：${pl.setupName}</label>
-                                                            <label class="col-sm-6 control-label">金额：${pl.setupFee}</label>
-                                                        </div>
-                                                    </c:forEach>
+                                            <div class="modal-body">
+                                                <c:forEach var="pl" items="${cp.sfList}" varStatus="status">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-4 control-label">${pl.linkName}：${pl.money}，备注：${pl.moneyDesc}</label>
+                                                    </div>
+                                                </c:forEach>
+                                                <div class="form-group row">
+                                                    <label class="col-sm-4 control-label">销售整备费：${cp.saleAllFee}</label>
+                                                    <div class="col-sm-5">
+                                                        <c:forEach var="pl" items="${cp.saleList}" varStatus="status">
+                                                            <div class="form-group row">
+                                                                <label class="col-sm-6 control-label">${pl.setupName}：${pl.setupFee}</label>
+                                                            </div>
+                                                        </c:forEach>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <label>版权所有© 2018 车猫</label>
+                                            <div class="modal-footer">
+                                                <label>版权所有© 2018 车猫</label>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -565,8 +503,8 @@
                             <c:if test="${sessionScope.account.department == 3&& sessionScope.account.userType == 3}">******</c:if>
                             <c:if test="${(sessionScope.account.department == 3&& sessionScope.account.userType != 3)
                             ||sessionScope.account.department != 3}">
-                                ${cp.carCost.afterSaleFee}<a href="#CarSaleSetupAfter-${cp.carCost.id}" data-toggle="modal"><i class="icon-trash"></i> ，明细</a>
-                                <div id="CarSaleSetupAfter-${cp.carCost.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                ${cp.afterAllFee}<a href="#CarSaleSetupAfter-${cp.carRecord.id}" data-toggle="modal"><i class="icon-trash"></i> ，明细</a>
+                                <div id="CarSaleSetupAfter-${cp.carRecord.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
                                 <div class="modal-dialog" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -576,10 +514,7 @@
                                         <div class="modal-body">
                                             <c:forEach var="pl" items="${cp.afterList}" varStatus="status">
                                                 <div class="form-group row">
-                                                    <label class="col-sm-4 control-label">项目：${pl.setupName}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-4 control-label">金额：${pl.setupFee}</label>
-                                                    <!--<a href="carSaleSetupAction?id=${pl.id}&action=2&carCostId=${pl.carCostId}&setupType=2"><i class="icon-lock"></i> 修改</a>-->
+                                                    <label class="col-sm-4 control-label">${pl.setupName}：${pl.setupFee}</label>
                                                     <c:if test="${sessionScope.account.department != 3}">
                                                         <a href="#confirmDialog" data-toggle="modal" data-url="carSaleSetupDelete?id=${pl.id}&carCostId=${pl.carCostId}&setupType=2" data-title="删除记录"
                                                            data-tip="确认要删除记录嘛？" class="confirm-trigger"><i class="icon-trash"></i> 删除</a>
@@ -590,7 +525,7 @@
                                                 <div class="col-sm-2"></div>
                                                 <c:if test="${sessionScope.account.department != 3}">
                                                     <div class="col-sm-4">
-                                                        <a href="carSaleSetupAction?carCostId=${cp.carCost.id }&action=1&setupType=2"><i class="icon-trash"></i> 添加售后整备</a>
+                                                        <a href="carSaleSetupAction?carCostId=${cp.carRecord.id }&action=1&setupType=2"><i class="icon-trash"></i> 添加售后整备</a>
                                                     </div>
                                                 </c:if>
                                             </div>

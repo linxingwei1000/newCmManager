@@ -68,6 +68,7 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="icon-search icon-white"></i> 查询
                 </button>
+                <a href="carStockReset"><i class="icon-trash"></i> 重置</a>
             </div>
         </div>
     </form>
@@ -151,18 +152,11 @@
                                                     <div class="col-sm-1"></div>
                                                     <label class="col-sm-4 control-label">已付/采购价：${cp.carRecord.paidMoney }/${cp.carRecord.purchaseMoney }</label>
                                                 </div>
-                                                <c:if test="${cp.carRecord.insidePerson != ''}">
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">内部合伙人：${cp.carRecord.insidePerson}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">内部合伙比例：${cp.carRecord.insideProportion}</label>
-                                                    </div>
-                                                </c:if>
                                                 <c:if test="${cp.carRecord.outsidePerson != ''}">
                                                     <div class="form-group row">
                                                         <label class="col-sm-4 control-label">外部合伙人：${cp.carRecord.outsidePerson}</label>
                                                         <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">外部合伙比例：${cp.carRecord.outsideProportion}</label>
+                                                        <label class="col-sm-4 control-label">外部合伙金额：${cp.carRecord.outsideMoney}</label>
                                                     </div>
                                                 </c:if>
                                                 <div class="form-group row">
@@ -239,142 +233,113 @@
                         <td>
                             <c:if test="${sessionScope.account.userType == 3 && sessionScope.account.department == 3}">*******</c:if>
                             <c:if test="${sessionScope.account.userType == 1 || sessionScope.account.userType == 2||(sessionScope.account.userType == 3 && sessionScope.account.department != 3)}">
-                                <c:if test="${cp.carRecord.isCost == 0}">否，<a href="carCostAction?recordId=${cp.carRecord.id }&action=1"><i class="icon-lock"></i> 录入</a></c:if>
-                                <c:if test="${cp.carRecord.isCost == 1}">${cp.carCost.allCost - cp.carCost.preSaleFee}，<a href="#costDetail-${cp.carCost.id}" data-toggle="modal"><i class="icon-trash"></i> 查看详情</a>
-                                    <div id="costDetail-${cp.carCost.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                    <h4 class="modal-title" id="myCostLabel">提车成本信息</h4>
-                                                </div>
-                                                <div class="modal-body">
+                                ${cp.allCost}，<a href="#CarMoneyCost-${cp.carRecord.id}" data-toggle="modal"><i class="icon-trash"></i> 明细</a>
+                                <div id="CarMoneyCost-${cp.carRecord.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="CarMoneyCostLabel">成本录入明细</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <c:forEach var="pl" items="${cp.costList}" varStatus="status">
                                                     <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">提车经办人：${cp.carCost.carPickPerson}</label>
+                                                        <label class="col-sm-4 control-label">${pl.linkName}：${pl.money}，备注：${pl.moneyDesc}</label>
+                                                        <a href="#confirmDialog" data-toggle="modal" data-url="carMoneyDelete?id=${pl.id}&carRecordId=${pl.carRecordId}&setupType=12" data-title="删除记录"
+                                                           data-tip="确认要删除记录嘛？" class="confirm-trigger"><i class="icon-trash"></i> 删除</a>
                                                     </div>
+                                                </c:forEach>
+                                                <c:if test="${sessionScope.account.department != 3}">
                                                     <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">提档费：${cp.carCost.mentionFee}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">提档补贴：${cp.carCost.mentionSubsidy }</label>
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-4">
+                                                            <a href="carMoneyAction?carRecordId=${cp.carRecord.id }&action=1&setupType=12"><i class="icon-trash"></i> 添加成本录入</a>
+                                                        </div>
                                                     </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">提车过路费：${cp.carCost.crossingFee}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">差旅费：${cp.carCost.travelFee }</label>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">入档费：${cp.carCost.putFee}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">入档补贴：${cp.carCost.putSubsidy}</label>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">邮递费：${cp.carCost.mailFee}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">运费：${cp.carCost.freightFee}</label>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">提车开票费：${cp.carCost.billingFee}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">提车加油费：${cp.carCost.oilFee}</label>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">黄牛费：${cp.carCost.cattleFee}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">保险费：${cp.carCost.expenseFee}</label>
-                                                    </div>
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">其他费用：${cp.carCost.otherFee}</label>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <label>版权所有© 2018 车猫</label>
-                                                </div>
+                                                </c:if>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <label>版权所有© 2018 车猫</label>
                                             </div>
                                         </div>
                                     </div>
-                                </c:if>
+                                </div>
                             </c:if>
                         </td>
                         <td>
                             <c:if test="${sessionScope.account.userType == 3 && sessionScope.account.department == 3}">*******</c:if>
                             <c:if test="${sessionScope.account.userType == 1 || sessionScope.account.userType == 2||(sessionScope.account.userType == 3 && sessionScope.account.department != 3)}">
-                                <c:if test="${cp.carRecord.isCost == 0}">成本未录入，不可填</c:if>
-                                <c:if test="${cp.carRecord.isCost == 1}">${cp.carCost.preSaleFee}，<a href="#CarSaleSetupPre-${cp.carCost.id}" data-toggle="modal"><i class="icon-trash"></i> 明细</a>
-                                    <div id="CarSaleSetupPre-${cp.carCost.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                    <h4 class="modal-title" id="CarSaleSetupPreLabel">售前整备明细</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <c:forEach var="pl" items="${cp.preList}" varStatus="status">
-                                                        <div class="form-group row">
-                                                            <label class="col-sm-4 control-label">项目：${pl.setupName}</label>
-                                                            <div class="col-sm-1"></div>
-                                                            <label class="col-sm-4 control-label">金额：${pl.setupFee}</label>
-                                                            <!--<a href="carSaleSetupAction?id=${pl.id}&action=2&carCostId=${pl.carCostId}&setupType=1"><i class="icon-lock"></i> 修改</a>-->
-                                                            <a href="#confirmDialog" data-toggle="modal" data-url="carSaleSetupDelete?id=${pl.id}&carCostId=${pl.carCostId}&setupType=1" data-title="删除记录"
-                                                               data-tip="确认要删除记录嘛？" class="confirm-trigger"><i class="icon-trash"></i> 删除</a>
+                                ${cp.preAllFee}，<a href="#CarSaleSetupPre-${cp.carRecord.id}" data-toggle="modal"><i class="icon-trash"></i> 明细</a>
+                                <div id="CarSaleSetupPre-${cp.carRecord.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="CarSaleSetupPreLabel">售前整备明细</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <c:forEach var="pl" items="${cp.preList}" varStatus="status">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-4 control-label">项目：${pl.setupName}</label>
+                                                        <div class="col-sm-1"></div>
+                                                        <label class="col-sm-4 control-label">金额：${pl.setupFee}</label>
+                                                        <a href="#confirmDialog" data-toggle="modal" data-url="carSaleSetupDelete?id=${pl.id}&carCostId=${pl.carCostId}&setupType=1" data-title="删除记录"
+                                                           data-tip="确认要删除记录嘛？" class="confirm-trigger"><i class="icon-trash"></i> 删除</a>
+                                                    </div>
+                                                </c:forEach>
+                                                <c:if test="${sessionScope.account.department != 3}">
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-4">
+                                                            <a href="carSaleSetupAction?carCostId=${cp.carRecord.id }&action=1&setupType=1"><i class="icon-trash"></i> 添加售前整备</a>
                                                         </div>
-                                                    </c:forEach>
-                                                    <c:if test="${sessionScope.account.department != 3}">
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-2"></div>
-                                                            <div class="col-sm-4">
-                                                                <a href="carSaleSetupAction?carCostId=${cp.carCost.id }&action=1&setupType=1"><i class="icon-trash"></i> 添加售前整备</a>
-                                                            </div>
-                                                        </div>
-                                                    </c:if>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <label>版权所有© 2018 车猫</label>
-                                                </div>
+                                                    </div>
+                                                </c:if>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <label>版权所有© 2018 车猫</label>
                                             </div>
                                         </div>
                                     </div>
-                                </c:if>
+                                </div>
                             </c:if>
                         </td>
                         <td>
                             <c:if test="${sessionScope.account.userType == 3 && sessionScope.account.department == 3}">*******</c:if>
                             <c:if test="${sessionScope.account.userType == 1 || sessionScope.account.userType == 2||(sessionScope.account.userType == 3 && sessionScope.account.department != 3)}">
-                                <c:if test="${cp.carRecord.isCost == 0}">成本未录入，不可填</c:if>
-                                <c:if test="${cp.carRecord.isCost == 1}">${cp.carCost.otherIncomeFee}，<a href="#CarOtherIncome-${cp.carCost.id}" data-toggle="modal"><i class="icon-trash"></i> 明细</a>
-                                    <div id="CarOtherIncome-${cp.carCost.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                                    <h4 class="modal-title" id="CarOtherIncomeLabel">车辆其他收入明细</h4>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <c:forEach var="pl" items="${cp.otherList}" varStatus="status">
-                                                        <div class="form-group row">
-                                                            <label class="col-sm-4 control-label">项目：${pl.setupName}</label>
-                                                            <div class="col-sm-1"></div>
-                                                            <label class="col-sm-4 control-label">金额：${pl.setupFee}</label>
-                                                            <!--<a href="carSaleSetupAction?id=${pl.id}&action=2&carCostId=${pl.carCostId}&setupType=3"><i class="icon-lock"></i> 修改</a>-->
-                                                            <a href="#confirmDialog" data-toggle="modal" data-url="carSaleSetupDelete?id=${pl.id}&carCostId=${pl.carCostId}&setupType=3" data-title="删除记录"
-                                                               data-tip="确认要删除记录嘛？" class="confirm-trigger"><i class="icon-trash"></i> 删除</a>
+                                ${cp.otherAllFee}，<a href="#CarOtherIncome-${cp.carRecord.id}" data-toggle="modal"><i class="icon-trash"></i> 明细</a>
+                                <div id="CarOtherIncome-${cp.carRecord.id}" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title" id="CarOtherIncomeLabel">车辆其他收入明细</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <c:forEach var="pl" items="${cp.otherList}" varStatus="status">
+                                                    <div class="form-group row">
+                                                        <label class="col-sm-4 control-label">项目：${pl.setupName}</label>
+                                                        <div class="col-sm-1"></div>
+                                                        <label class="col-sm-4 control-label">金额：${pl.setupFee}</label>
+                                                        <a href="#confirmDialog" data-toggle="modal" data-url="carSaleSetupDelete?id=${pl.id}&carCostId=${pl.carCostId}&setupType=3" data-title="删除记录"
+                                                           data-tip="确认要删除记录嘛？" class="confirm-trigger"><i class="icon-trash"></i> 删除</a>
+                                                    </div>
+                                                </c:forEach>
+                                                <c:if test="${sessionScope.account.department != 3}">
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-2"></div>
+                                                        <div class="col-sm-4">
+                                                            <a href="carSaleSetupAction?carCostId=${cp.carRecord.id }&action=1&setupType=3"><i class="icon-trash"></i> 添加其他收入</a>
                                                         </div>
-                                                    </c:forEach>
-                                                    <c:if test="${sessionScope.account.department != 3}">
-                                                        <div class="form-group row">
-                                                            <div class="col-sm-2"></div>
-                                                            <div class="col-sm-4">
-                                                                <a href="carSaleSetupAction?carCostId=${cp.carCost.id }&action=1&setupType=3"><i class="icon-trash"></i> 添加其他收入</a>
-                                                            </div>
-                                                        </div>
-                                                    </c:if>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <label>版权所有© 2018 车猫</label>
-                                                </div>
+                                                    </div>
+                                                </c:if>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <label>版权所有© 2018 车猫</label>
                                             </div>
                                         </div>
                                     </div>
-                                </c:if>
+                                </div>
                             </c:if>
                         </td>
                         <td>
@@ -411,7 +376,6 @@
                             </div>
                             <c:if test="${(sessionScope.account.userType == 3||sessionScope.account.userType == 2) && sessionScope.account.department != 4 && sessionScope.account.department != 5}">*******</c:if>
                             <c:if test="${sessionScope.account.userType == 1 || sessionScope.account.department == 4|| sessionScope.account.department == 5}">
-                                <a href="carCostAction?id=${cp.carCost.id }&action=2&recordId=${cp.carRecord.id }"><i class="icon-trash"></i> 成本修改</a>
                                 <a href="#saleDialog" data-toggle="modal" data-url="carStatusChange?id=${cp.carRecord.id }&changeType=1" data-title="车辆销售"
                                        data-tip="成本录入和售前整备是否已填，确认要销售嘛？" class="sale-trigger"><i class="icon-trash"></i> 车辆销售</a>
                             </c:if>

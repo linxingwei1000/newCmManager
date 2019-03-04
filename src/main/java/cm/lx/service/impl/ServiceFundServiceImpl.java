@@ -3,6 +3,7 @@ package cm.lx.service.impl;
 import cm.lx.dao.ServiceFundMapper;
 import cm.lx.bean.entity.ServiceFund;
 import cm.lx.service.ServiceFundService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -44,7 +45,9 @@ public class ServiceFundServiceImpl implements ServiceFundService {
 
     @Override
     public List<ServiceFund> getServiceFundList() {
-        return serviceFundMapper.selectList(null);
+        QueryWrapper<ServiceFund> query = new QueryWrapper<>();
+        query.orderByDesc("use_date");
+        return serviceFundMapper.selectList(query);
     }
 
 }

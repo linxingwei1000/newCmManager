@@ -5,6 +5,7 @@ import cm.lx.bean.entity.InsuranceBusiness;
 import cm.lx.business.CacheCenter;
 import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
+import cm.lx.enums.CarPropertyEnum;
 import cm.lx.service.InsuranceBusinessService;
 import cm.lx.service.InsuranceService;
 import cm.lx.util.TimeUtils;
@@ -39,7 +40,8 @@ public class InsuranceController extends BaseController {
     InsuranceBusinessService insuranceBusinessService;
 
     private void initPropertyData(ModelAndView mav) {
-        mav.addObject(ContextType.BUSINESS_TYPE, cacheCenter.getCarPropertyByKey(ContextType.BUSINESS_TYPE));
+        String desc = CarPropertyEnum.BUSINESS_TYPE.getDesc();
+        mav.addObject(desc, cacheCenter.getCarPropertyByKey(desc));
     }
 
     private List<Insurance> prepareData(List<Insurance> list) {
@@ -334,7 +336,7 @@ public class InsuranceController extends BaseController {
                         resultList.add(insurance);
                     }
                 } else if (searchKey.equals("syxDate")) {
-                    if (insurance.getList().size() == 0){
+                    if (insurance.getList().size() == 0) {
                         continue;
                     }
                     List<InsuranceBusiness> temp = new ArrayList<>();
@@ -347,14 +349,14 @@ public class InsuranceController extends BaseController {
                         insurance.setList(temp);
                         resultList.add(insurance);
                     }
-                }else if(searchKey.equals("businessType")){
-                    if (insurance.getList().size() == 0){
+                } else if (searchKey.equals("businessType")) {
+                    if (insurance.getList().size() == 0) {
                         continue;
                     }
                     List<InsuranceBusiness> temp = new ArrayList<>();
                     for (InsuranceBusiness insuranceBusiness : insurance.getList()) {
-                        if(insuranceBusiness.getBusinessType()==0) continue;
-                        if(cacheCenter.getCarPropertyById(insuranceBusiness.getBusinessType()).getPropertyValue().equals(searchValue)){
+                        if (insuranceBusiness.getBusinessType() == 0) continue;
+                        if (cacheCenter.getCarPropertyById(insuranceBusiness.getBusinessType()).getPropertyValue().equals(searchValue)) {
                             temp.add(insuranceBusiness);
                         }
                     }

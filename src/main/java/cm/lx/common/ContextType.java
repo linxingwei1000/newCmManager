@@ -2,32 +2,13 @@ package cm.lx.common;
 
 public class ContextType {
 
-    public final static Integer PURCHASE_CG = 1;                        //采购
-    public final static Integer PURCHASE_JS = 2;                        //寄售
-    public final static Integer PURCHASE_BM = 3;                        //帮买
-    public final static Integer PURCHASE_MB = 4;                        //帮买
-
-    public final static String CAR_LINE = "CAR_LINE";                                   //车系
-    public final static String CAR_LEVEL = "CAR_LEVEL";                                 //车级
-    public final static String CAR_CHANNEL = "CAR_CHANNEL";                             //来源渠道
-    public final static String CAR_TAKE_TYPE = "CAR_TAKE_TYPE";                         //提车方式
-    public final static String CAR_STATUS = "CAR_STATUS";                               //车况
-    public final static String CAR_PURCHASE_TYPE = "CAR_PURCHASE_TYPE";                 //车辆买入方式
-    public final static String CAR_CONSUMER_PROPERTY = "CAR_CONSUMER_PROPERTY";         //客户属性
-    public final static String CAR_CONSUMER_RESOURCE = "CAR_CONSUMER_RESOURCE";         //获客渠道
-    public final static String CAR_PURCHASE_USE = "CAR_PURCHASE_USE";                   //购车用途
-    public final static String CONSUMER_GENERATION = "CONSUMER_GENERATION";             //客户年龄段
-    public final static String BUSINESS_TYPE = "BUSINESS_TYPE";             //保险业务类型
-
-    public final static String CAR_PROPERTY_DEFAULT = "未填选";                         //车辆属性缺省值
-
-    public final static String CAR_BATH_IDS = "CAR_BATH_IDS";               //批量采购ids
-
-
     public final static Integer RECORD_STATUS_PURCHASE = 1;             //车辆买入
     public final static Integer RECORD_STATUS_STOCK = 2;                //车辆库存
     public final static Integer RECORD_STATUS_SALE = 3;                //车辆销售中
     public final static Integer RECORD_STATUS_SOLD = 4;                //车辆已售
+
+//    public final static Integer MONEY_RECORD_COST = 1;                 //成本录入
+//    public final static Integer MONEY_RECORD_SALE = 2;                 //销售录入
 
     public final static Integer REMARK_TYPE_PURCHASE = 1;             //备注车辆买入
     public final static Integer REMARK_TYPE_STOCK = 2;                //备注车辆库存

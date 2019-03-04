@@ -1,9 +1,13 @@
 package cm.lx.controller.money;
 
+import cm.lx.bean.ContextBean;
+import cm.lx.bean.entity.Account;
 import cm.lx.bean.entity.MoneyManager;
+import cm.lx.business.CacheCenter;
 import cm.lx.business.StatCenter;
 import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
+import cm.lx.enums.SearchCacheEnum;
 import cm.lx.service.MoneyManagerService;
 import cm.lx.util.TimeUtils;
 import cm.lx.util.Utils;
@@ -25,7 +29,8 @@ public class MoneyController extends BaseController {
     @Resource
     MoneyManagerService moneyManagerService;
 
-    private List<MoneyManager> cacheList = new ArrayList<>();
+    @Resource
+    CacheCenter cacheCenter;
 
     private List<MoneyManager> dealMoneyOther(List<MoneyManager> list) {
         for (MoneyManager moneyManager : list) {
@@ -38,6 +43,34 @@ public class MoneyController extends BaseController {
         return list;
     }
 
+    private String getCacheKey(Integer moneyType, Account account){
+        Integer code;
+        switch (moneyType) {
+            case 1:
+                code = SearchCacheEnum.CASH_SEARCH_CACHE.getCode();
+                break;
+            case 2:
+                code = SearchCacheEnum.BANK_SEARCH_CACHE.getCode();
+                break;
+            case 3:
+                code = SearchCacheEnum.POSS_SEARCH_CACHE.getCode();
+                break;
+            default:
+                code = 0;
+        }
+        return code + "-" + account.getId();
+    }
+
+    @RequestMapping(value = "/moneyReset", method = {RequestMethod.GET, RequestMethod.POST})
+    public ModelAndView carStockReset(@RequestParam(value = "moneyType", required = false, defaultValue = "") Integer moneyType,
+                                      HttpSession session) {
+        ModelAndView mav = new ModelAndView();
+
+        cacheCenter.delUserSearchResult(getCacheKey(moneyType, (Account) session.getAttribute("account")));
+        mav.setViewName("redirect:/moneyView?moneyType=" + moneyType);
+        return mav;
+    }
+
     @RequestMapping(value = "/moneyView")
     public ModelAndView moneyOtherView(@RequestParam(value = "moneyType", required = false, defaultValue = "") Integer moneyType,
                                        HttpSession session) {
@@ -46,19 +79,28 @@ public class MoneyController extends BaseController {
         }
         ModelAndView mav = new ModelAndView();
         mav.setViewName("money/list");
-        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(moneyType);
 
-        if (moneyType.equals(ContextType.MONEY_TYPE_CASH)
-                || moneyType.equals(ContextType.MONEY_TYPE_BANK)
-                || moneyType.equals(ContextType.MONEY_TYPE_POSS)) {
-            //截取前20个
-            list = list.size() > 20 ? list.subList(0, 20) : list;
-            mav.addObject("balance", StatCenter.statDifferentMoneyType(moneyType, moneyManagerService));
+        List<Integer> ids = cacheCenter.getUserSearchResult(getCacheKey(moneyType, (Account) session.getAttribute("account")));
+
+        List<MoneyManager> list;
+        if(ids!=null){
+            list = new ArrayList<>();
+            for(Integer id: ids){
+                list.add(moneyManagerService.getMoneyManagerById(id));
+            }
+        }else{
+            list = moneyManagerService.getMoneyManagerListByType(moneyType);
+
+            if (moneyType.equals(ContextType.MONEY_TYPE_CASH)
+                    || moneyType.equals(ContextType.MONEY_TYPE_BANK)
+                    || moneyType.equals(ContextType.MONEY_TYPE_POSS)) {
+                //截取前20个
+                list = list.size() > 20 ? list.subList(0, 20) : list;
+                mav.addObject("balance", StatCenter.statDifferentMoneyType(moneyType, moneyManagerService));
+            }
         }
 
-        cacheList.clear();
-        cacheList = dealMoneyOther(list);
-        mav.addObject(DATA, cacheList);
+        mav.addObject(DATA, dealMoneyOther(list));
         mav.addObject("moneyType", moneyType);
         mav.addObject(TIP, session.getAttribute("tip"));
         return mav;
@@ -247,27 +289,35 @@ public class MoneyController extends BaseController {
         mav.addObject("etime", etime);
         mav.addObject("moneyType", moneyType);
 
+        boolean conditionLess = false;
         //判断条件
         if (searchKey.equals("actionPerson") || searchKey.equals("actionDesc")) {
             if (StringUtils.isEmpty(searchValue1)) {
                 mav.addObject(TIP, "条件1必填");
-                mav.addObject(DATA, cacheList);
-                return mav;
+                conditionLess = true;
             }
         }
 
         if (searchKey.equals("actionMoney")) {
             if (StringUtils.isEmpty(searchValue1) || StringUtils.isEmpty(searchValue2)) {
                 mav.addObject(TIP, "条件1，条件2都必填");
-                mav.addObject(DATA, cacheList);
-                return mav;
+                conditionLess = true;
             }
 
             if (Double.valueOf(searchValue1) > Double.valueOf(searchValue2)) {
                 mav.addObject(TIP, "条件2金额必须比条件1金额高");
-                mav.addObject(DATA, cacheList);
-                return mav;
+                conditionLess = true;
             }
+        }
+
+        if(conditionLess){
+            List<Integer> ids = cacheCenter.getUserSearchResult(getCacheKey(moneyType, (Account) session.getAttribute("account")));
+            List<MoneyManager> list = new ArrayList<>();
+            for(Integer id: ids){
+                list.add(moneyManagerService.getMoneyManagerById(id));
+            }
+            mav.addObject(DATA, dealMoneyOther(list));
+            return mav;
         }
 
         Long bt = StringUtils.isEmpty(btime) ? 0L : TimeUtils.transformDateToTimetag(btime, TimeUtils.FORMAT_ONE);
@@ -296,6 +346,11 @@ public class MoneyController extends BaseController {
         }
 
         mav.addObject(DATA, temp);
+
+        //加入缓存
+        List<Integer> ids = new ArrayList<>();
+        temp.forEach(e -> ids.add(e.getId()));
+        cacheCenter.setUserSearchResult(getCacheKey(moneyType, (Account) session.getAttribute("account")), ids);
 
         //计算总和
         Double balance = 0.0;

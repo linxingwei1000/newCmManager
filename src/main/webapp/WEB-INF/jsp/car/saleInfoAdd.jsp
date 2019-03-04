@@ -98,12 +98,11 @@
                     <option value="${cp.id}">${cp.propertyValue}</option>
                 </c:forEach>
             </select>
-            <select class="form-control  col-xs-2" name="purchaseUse" id="purchaseUse" onchange="">
-                <option value="0">购车用途</option>
-                <c:forEach var="cp" items="${CAR_PURCHASE_USE}" varStatus="status">
-                    <option value="${cp.id}">${cp.propertyValue}</option>
-                </c:forEach>
-            </select>
+        </div>
+        <div class="form-group form-inline row">
+            <label class="control-label col-xs-2">是否产生售后服务基金：</label>
+            <label class="radio inline col-xs-2"><input type="radio" name="isProduce" value="1" <c:if test="${ isProduce == 1 }">checked="checked"</c:if>/>是</label>
+            <label class="radio inline col-xs-2"><input type="radio" name="isProduce" value="0" <c:if test="${ isProduce == 0 }">checked="checked"</c:if>/>否</label>
         </div>
         <div class="form-group form-inline row">
             <label class="control-label col-xs-2 " for="saleType">付款方式：</label>
@@ -208,13 +207,6 @@
     for (var i = 0; i < consumerResource.options.length; i++) {
         if (consumerResource.options[i].value == '${consumerResource}') {
             consumerResource.options[i].selected = true;
-        }
-    }
-
-    var purchaseUse = document.getElementById('purchaseUse');
-    for (var i = 0; i < purchaseUse.options.length; i++) {
-        if (purchaseUse.options[i].value == '${purchaseUse}') {
-            purchaseUse.options[i].selected = true;
         }
     }
 

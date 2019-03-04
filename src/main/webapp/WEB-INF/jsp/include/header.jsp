@@ -44,7 +44,6 @@
                             <c:if test="${sessionScope.account.userType == 1
                             || (sessionScope.account.userType == 2 && sessionScope.account.department != 3) }">
                                 <li class="level_2"><a href="carPropertyView">车辆属性</a></li>
-                                <li class="level_2"><a href="carBathView">批量采购</a></li>
                             </c:if>
                             <c:if test="${sessionScope.account.userType == 1
                             || sessionScope.account.userType ==2 }">

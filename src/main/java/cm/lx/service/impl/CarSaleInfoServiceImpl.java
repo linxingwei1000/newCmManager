@@ -40,4 +40,9 @@ public class CarSaleInfoServiceImpl implements CarSaleInfoService {
         return carSaleInfoMapper.selectById(id);
 
     }
+
+    @Override
+    public Double getServiceMoney() {
+        return carSaleInfoMapper.getServiceMoney();
+    }
 }

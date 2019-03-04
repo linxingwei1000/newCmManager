@@ -57,7 +57,6 @@
                     <th>采购日期</th>
                     <th>采购人</th>
                     <th>车辆信息</th>
-                    <th>是否批量</th>
                     <th>展厅标价</th>
                     <th>全款权限底价</th>
                     <th>按揭权限底价</th>
@@ -88,18 +87,11 @@
                                                 <h4 class="modal-title" id="myModalLabel">车辆信息</h4>
                                             </div>
                                             <div class="modal-body">
-                                                <c:if test="${cp.insidePerson != ''}">
-                                                    <div class="form-group row">
-                                                        <label class="col-sm-4 control-label">内部合伙人：${cp.insidePerson}</label>
-                                                        <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">内部合伙比例：${cp.insideProportion}</label>
-                                                    </div>
-                                                </c:if>
                                                 <c:if test="${cp.outsidePerson != ''}">
                                                     <div class="form-group row">
                                                         <label class="col-sm-4 control-label">外部合伙人：${cp.outsidePerson}</label>
                                                         <div class="col-sm-1"></div>
-                                                        <label class="col-sm-4 control-label">外部合伙比例：${cp.outsideProportion}</label>
+                                                        <label class="col-sm-4 control-label">外部合伙金额：${cp.outsideMoney}</label>
                                                     </div>
                                                 </c:if>
                                                 <div class="form-group row">
@@ -169,7 +161,6 @@
                                 </div>
                             </c:if>
                         </td>
-                        <td><c:if test="${cp.isBath == 0 }">否</c:if><c:if test="${cp.isBath == 1 }">是</c:if></td>
                         <td>${cp.hallMoney}</td>
                         <td>${cp.qAuthorityMoney}</td>
                         <td>${cp.aAuthorityMoney}</td>

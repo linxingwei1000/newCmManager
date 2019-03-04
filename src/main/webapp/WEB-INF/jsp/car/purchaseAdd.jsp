@@ -52,18 +52,11 @@
             <input class="form-control  col-xs-4" type="text" name="purchasePerson" id="purchasePerson" placeholder="请输入采购人姓名" value="${purchasePerson}" autocomplete="off"/>
         </div>
         <div class="form-group form-inline row">
-            <label class="control-label col-xs-2 " for="insidePerson">内部合伙人：</label>
-            <input class="form-control  col-xs-3" type="text" name="insidePerson" id="insidePerson" placeholder="请输入" value="${insidePerson}" autocomplete="off"/>
-            <div class="col-xs-1"></div>
-            <label class="control-label col-xs-2 " for="insideProportion">内部合伙比例：</label>
-            <input class="form-control  col-xs-3" type="text" name="insideProportion" id="insideProportion" placeholder="请输入" value="${insideProportion}" autocomplete="off"/>
-        </div>
-        <div class="form-group form-inline row">
             <label class="control-label col-xs-2 " for="outsidePerson">外部合伙人：</label>
             <input class="form-control  col-xs-3" type="text" name="outsidePerson" id="outsidePerson" placeholder="请输入" value="${outsidePerson}" autocomplete="off"/>
             <div class="col-xs-1"></div>
-            <label class="control-label col-xs-2 " for="outsideProportion">外部合伙比例：</label>
-            <input class="form-control  col-xs-3" type="text" name="outsideProportion" id="outsideProportion" placeholder="请输入" value="${outsideProportion}" autocomplete="off"/>
+            <label class="control-label col-xs-2 " for="outsideMoney">外部合伙金额：</label>
+            <input class="form-control  col-xs-3" type="text" name="outsideMoney" id="outsideMoney" placeholder="请输入" value="${outsideMoney}" autocomplete="off"/>
         </div>
         <div class="form-group form-inline row">
             <label class="control-label col-xs-2 " for="carNewSale">新车指导价：</label>
@@ -141,20 +134,6 @@
             <input class="form-control  col-xs-1" type="text" name="carRunNum" id="carRunNum" placeholder="如3.6这样输入" value="${carRunNum}" autocomplete="off"/>
         </div>
         <div class="form-group form-inline row">
-            <label class="control-label col-xs-2 " for="isBath">是否批量：</label>
-            <select class="form-control  col-xs-2" name="isBath" id="isBath" onchange="show(this)">
-                <option value="0">否</option>
-                <option value="1">是</option>
-            </select>
-            <div class="col-xs-1"></div>
-            <select class="form-control  col-xs-2" name="bathId" id="bathId" style="display: none" onchange="">
-                <option value="0">未选中</option>
-                <c:forEach var="cp" items="${CAR_BATH_IDS}" varStatus="status">
-                    <option value="${cp.id}">${cp.bathName}</option>
-                </c:forEach>
-            </select>
-        </div>
-        <div class="form-group form-inline row">
             <div class="col-xs-2"></div>
             <select class="form-control  col-xs-2" name="carLine" id="carLine" onchange="">
                 <option value="0">车系</option>
@@ -216,18 +195,6 @@
 </div>
 
 <script language="javascript">
-
-    function show(obj) {
-        var id = obj.id;
-        if (id == "isBath") {
-            if (obj.value == "1" ) {
-                document.getElementById("bathId").style.display = "block";
-            } else {
-                document.getElementById("bathId").style.display = "none";
-            }
-        }
-    }
-
     var carLine = document.getElementById('carLine');
     for (var i = 0; i < carLine.options.length; i++) {
         if (carLine.options[i].value == '${carLine}') {
@@ -267,28 +234,6 @@
     for (var i = 0; i < purchaseType.options.length; i++) {
         if (purchaseType.options[i].value == '${purchaseType}') {
             purchaseType.options[i].selected = true;
-        }
-    }
-
-    var isBath = document.getElementById('isBath');
-    for (var i = 0; i < isBath.options.length; i++) {
-        if (isBath.options[i].value == '${isBath}') {
-            isBath.options[i].selected = true;
-        }
-
-        if (isBath.options[i].value == '1') {
-            document.getElementById("bathId").style.display = "block";
-        }
-
-        if (isBath.options[i].value == '0') {
-            document.getElementById("bathId").style.display = "none";
-        }
-    }
-
-    var bathId = document.getElementById('bathId');
-    for (var i = 0; i < bathId.options.length; i++) {
-        if (bathId.options[i].value == '${bathId}') {
-            bathId.options[i].selected = true;
         }
     }
 
