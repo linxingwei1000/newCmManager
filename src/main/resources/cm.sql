@@ -124,6 +124,7 @@ insert into cm_car_property(property_key,property_value)values('CAR_TAKE_TYPE','
 insert into cm_car_property(property_key,property_value)values('CAR_STATUS','精品');
 insert into cm_car_property(property_key,property_value)values('CAR_STATUS','涉水');
 
+drop table newcm.cm_car_money_record;
 create table newcm.cm_car_money_record(
   id int(8) primary key auto_increment,
   car_record_id int(8) not null default 0 comment '采购记录表ID',
@@ -134,6 +135,7 @@ create table newcm.cm_car_money_record(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_car_sale_setup;
 create table newcm.cm_car_sale_setup(
   id int(8) primary key auto_increment,
   car_cost_id  int(8) not null default 0 comment '成本录入表ID',
@@ -143,6 +145,7 @@ create table newcm.cm_car_sale_setup(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_car_sale_info;
 create table newcm.cm_car_sale_info(
   id int(8) primary key auto_increment,
   sale_person varchar(64) not null default '' comment '销售员',
@@ -173,6 +176,7 @@ create table newcm.cm_car_sale_info(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_car_paid_record;
 create table newcm.cm_car_paid_record(
   id int(8) primary key auto_increment,
   car_record_id int(8) not null default 0 comment '采购记录表ID',
@@ -182,6 +186,7 @@ create table newcm.cm_car_paid_record(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_car_pay_money_assist;
 create table newcm.cm_car_pay_money_assist(
   id int(8) primary key auto_increment,
   car_sale_info_id  int(8) not null default 0 comment '销售信息表ID',
@@ -192,6 +197,7 @@ create table newcm.cm_car_pay_money_assist(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_mortgage_record;
 create table newcm.cm_mortgage_record(
   id int(8) primary key auto_increment,
   delegate_person varchar(64) default '' comment '委托对象',
@@ -227,7 +233,7 @@ create table newcm.cm_mortgage_record(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
+drop table newcm.cm_mortgage_log;
 create table newcm.cm_mortgage_log(
   id int(8) primary key auto_increment,
   action_person varchar(64) default '' comment '委托人或业务员',
@@ -266,7 +272,7 @@ create table newcm.cm_mortgage_log(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
+drop table newcm.cm_insurance;
 create table newcm.cm_insurance(
   id int(8) primary key auto_increment,
   business_person varchar(64) not null default '' comment '业务员',
@@ -286,6 +292,7 @@ create table newcm.cm_insurance(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_insurance_business;
 create table newcm.cm_insurance_business(
   id int(8) primary key auto_increment,
   business_type tinyint(4) not null default 0 comment '保险业务类型，对应配置表',
@@ -306,6 +313,7 @@ create table newcm.cm_insurance_business(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_service_fund;
 create table newcm.cm_service_fund(
   id int(8) primary key auto_increment,
   use_date bigint(20) default 0 not null comment '使用日期',
@@ -316,6 +324,7 @@ create table newcm.cm_service_fund(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_new_car;
 create table newcm.cm_new_car(
   id int(8) primary key auto_increment,
   car_brand varchar(64) not null default '' comment '车辆品牌',
@@ -350,6 +359,7 @@ create table newcm.cm_new_car(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_new_car_finance;
 create table newcm.cm_new_car_finance(
   id int(8) primary key auto_increment,
   finance_company varchar(64) not null default '' comment '金融公司',
@@ -374,7 +384,7 @@ create table newcm.cm_new_car_finance(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
+drop table newcm.cm_money_manager;
 create table newcm.cm_money_manager(
   id int(8) primary key auto_increment,
   action_person varchar(64) not null default '' comment '经办人或项目',
@@ -388,7 +398,7 @@ create table newcm.cm_money_manager(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
+drop table newcm.cm_wages_assist;
 create table newcm.cm_wages_assist(
   id int(8) primary key auto_increment,
   sale_date bigint(20) default 0 not null comment '销售日期',
@@ -403,6 +413,7 @@ create table newcm.cm_wages_assist(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_wages;
 create table newcm.cm_wages(
   id int(8) primary key auto_increment,
   staff varchar(64) not null default '' comment '员工',
@@ -429,6 +440,7 @@ create table newcm.cm_wages(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+drop table newcm.cm_car_dossier;
 create table newcm.cm_car_dossier(
   id int(8) primary key auto_increment,
   car_record_id int(8) not null default 0 comment '采购记录表ID',
@@ -459,7 +471,7 @@ create table newcm.cm_car_dossier(
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-
+drop table newcm.cm_mortgage_rebate;
 create table newcm.cm_mortgage_rebate (
   id int(8) primary key auto_increment,
   car_model varchar(64) default '' comment '车型',
