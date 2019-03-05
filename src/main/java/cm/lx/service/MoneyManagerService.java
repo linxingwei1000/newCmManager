@@ -18,5 +18,7 @@ public interface MoneyManagerService {
 
     MoneyManager getMoneyManagerById(Integer id);
 
+    List<MoneyManager> getMoneyManagerByIds(List<Integer> ids);
+
     List<MoneyManager> getMoneyManagerListByType(Integer type);
 }

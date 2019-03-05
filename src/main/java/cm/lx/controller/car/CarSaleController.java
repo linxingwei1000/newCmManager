@@ -705,18 +705,9 @@ public class CarSaleController extends BaseController {
             @RequestParam(value = "recordStatus", required = false, defaultValue = "") Integer recordStatus,
             HttpSession session) {
         ModelAndView mav = new ModelAndView();
-        if (recordStatus.equals(ContextType.RECORD_STATUS_PURCHASE)) {
-            mav.setViewName("redirect:/carPurchaseView");
-        } else if (recordStatus.equals(ContextType.RECORD_STATUS_STOCK)) {
-            mav.setViewName("redirect:/carStockView");
-        } else if (recordStatus.equals(ContextType.RECORD_STATUS_SALE)) {
-            mav.setViewName("redirect:/carSaleView");
-        } else if (recordStatus.equals(ContextType.RECORD_STATUS_SOLD)) {
-            mav.setViewName("redirect:/carSoldView");
-        }
+        ToolUtil.setMavViewByCarRecordStatus(mav, recordStatus);
 
         CarRecord carRecord = carRecordService.getCarRecordById(id);
-
 
         //删除费用相关
         carMoneyRecordService.deleteByCarRecordId(id);

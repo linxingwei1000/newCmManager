@@ -25,21 +25,34 @@ public class StatCenter {
                                           CarSaleInfoService carSaleInfoService,
                                           List<CarRecord> list, List<MoneyStat> moneyStatList) {
         int allCarNum = list.size();
-        double grossProfit = 0;             //车均毛利润
-        double vehiclePremium = 0;          //车均溢价
-        int ajCarNum = 0;                   //按揭车数量
-        double ajGrossProfit = 0;           //按揭车均毛利润
-        double ajVehiclePremium = 0;        //按揭车均溢价
-        int qkCarNum = 0;                   //全款车数量
-        double qkGrossProfit = 0;           //全款车均毛利润
-        double qkVehiclePremium = 0;         //全款车均溢价
-        double saleAgent = 0;                  //销售中介车辆总数
-        double preSetup = 0;                //售前整备费
-        double saleSetup = 0;               //销售整备费
-        double afterSetup = 0;              //售后整备费
-        double purchaseCost = 0;                    //采购成本
-        double saleCost = 0;                    //销售成本
-
+        //车均毛利润
+        double grossProfit = 0;
+        //车均溢价
+        double vehiclePremium = 0;
+        //按揭车数量
+        int ajCarNum = 0;
+        //按揭车均毛利润
+        double ajGrossProfit = 0;
+        //按揭车均溢价
+        double ajVehiclePremium = 0;
+        //全款车数量
+        int qkCarNum = 0;
+        //全款车均毛利润
+        double qkGrossProfit = 0;
+        //全款车均溢价
+        double qkVehiclePremium = 0;
+        //销售中介车辆总数
+        double saleAgent = 0;
+        //售前整备费
+        double preSetup = 0;
+        //销售整备费
+        double saleSetup = 0;
+        //售后整备费
+        double afterSetup = 0;
+        //采购成本
+        double purchaseCost = 0;
+        //销售成本
+        double saleCost = 0;
 
         for (CarRecord carRecord : list) {
             double tempGrossProfit = Double.valueOf(carRecord.getGrossProfit());
@@ -79,55 +92,23 @@ public class StatCenter {
                 moneyStat.setSaleAgent("是");
             }
 
-            Double preAllFee = 0.0;
-            List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
-            for (CarSaleSetup carSaleSetup : carSaleSetups) {
-                preAllFee += carSaleSetup.getSetupFee();
-            }
-            moneyStat.setPreSetup(preAllFee);
+            moneyStat.setPreSetup(ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.PRE_SETUP_TYPE).left());
+            moneyStat.setAfterSetup(ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.AFTER_SETUP_TYPE).left());
+            preSetup += moneyStat.getPreSetup();
+            afterSetup += moneyStat.getAfterSetup();
 
-            Double afterAllFee = 0.0;
-            carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.AFTER_SETUP_TYPE);
-            for (CarSaleSetup carSaleSetup : carSaleSetups) {
-                afterAllFee += carSaleSetup.getSetupFee();
-            }
-            moneyStat.setAfterSetup(afterAllFee);
-
-            preSetup += preAllFee;
-            afterSetup += afterAllFee;
-
-            Double allCost = 0.0;
-            List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
-            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                    allCost += carMoneyRecord.getMoney();
-                }
-            }
-            moneyStat.setPurchaseCost(allCost);
-
+            moneyStat.setPurchaseCost(ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, null, carRecord.getId(),CarPropertyEnum.MONEY_RECORD_COST.getDesc()).left());
             purchaseCost += moneyStat.getPurchaseCost();
 
-            Double saleAllFee = 0.0;
-            carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
-            for (CarSaleSetup carSaleSetup : carSaleSetups) {
-                saleAllFee += carSaleSetup.getSetupFee();
-            }
-            moneyStat.setSaleSetup(saleAllFee);
-            saleSetup += saleAllFee;
+            moneyStat.setSaleSetup(ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.SALE_TYPE).left());
+            saleSetup += moneyStat.getSaleSetup();
 
-            Double allSf = 0.0;
-            carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
-            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                    allSf += carMoneyRecord.getMoney();
-                }
-            }
+            Double allSf = ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, null, carRecord.getId(),CarPropertyEnum.MONEY_RECORD_COST.getDesc()).left();
             moneyStat.setSaleCost(allSf + carSaleInfo.getServiceFee());
             saleCost += moneyStat.getSaleCost();
 
             moneyStatList.add(moneyStat);
         }
-
         //统计数据
         MoneyStat moneyStat = new MoneyStat();
         moneyStat.setCarModel("平均");
@@ -156,15 +137,15 @@ public class StatCenter {
                                          MortgageRecordService mortgageRecordService,
                                          CacheCenter cacheCenter, MoneyFlowStat moneyFlowStat, Long et) {
 
-        moneyFlowStat.setCash(statDifferentMoneyType(ContextType.MONEY_TYPE_CASH, moneyManagerService));
-        moneyFlowStat.setBank(statDifferentMoneyType(ContextType.MONEY_TYPE_BANK, moneyManagerService));
-        moneyFlowStat.setPoss(statDifferentMoneyType(ContextType.MONEY_TYPE_POSS, moneyManagerService));
-        moneyFlowStat.setBasic(statDifferentMoneyType(ContextType.MONEY_TYPE_BASIC, moneyManagerService));
-        moneyFlowStat.setReceivable(statDifferentMoneyType(ContextType.MONEY_TYPE_RECEIVABLE, moneyManagerService));
-        moneyFlowStat.setCooperate(statDifferentMoneyType(ContextType.MONEY_TYPE_COOPERATE, moneyManagerService));
+        moneyFlowStat.setCash(ToolUtil.statDifferentMoneyType(ContextType.MONEY_TYPE_CASH, moneyManagerService));
+        moneyFlowStat.setBank(ToolUtil.statDifferentMoneyType(ContextType.MONEY_TYPE_BANK, moneyManagerService));
+        moneyFlowStat.setPoss(ToolUtil.statDifferentMoneyType(ContextType.MONEY_TYPE_POSS, moneyManagerService));
+        moneyFlowStat.setBasic(ToolUtil.statDifferentMoneyType(ContextType.MONEY_TYPE_BASIC, moneyManagerService));
+        moneyFlowStat.setReceivable(ToolUtil.statDifferentMoneyType(ContextType.MONEY_TYPE_RECEIVABLE, moneyManagerService));
+        moneyFlowStat.setCooperate(ToolUtil.statDifferentMoneyType(ContextType.MONEY_TYPE_COOPERATE, moneyManagerService));
 
         //借款特殊处理
-        statLoanData(ContextType.MONEY_TYPE_LOAN, moneyManagerService, moneyFlowStat, et);
+        statLoanData(moneyManagerService, moneyFlowStat, et);
 
         Double house = 0.0;
         List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(ContextType.MONEY_TYPE_HOUSE);
@@ -196,13 +177,13 @@ public class StatCenter {
             if (carRecord.getPurchaseType() == 0) {
                 continue;
             }
-            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售")) {
+            if ("寄售".equals(cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue())) {
                 continue;
             }
             purchaseMoney += carRecord.getPaidMoney();
         }
 
-        Double stockMoney = 0.0;
+        double stockMoney = 0.0;
         Integer dayNum = 0;
         carList = carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_STOCK);
         int i = 0;
@@ -211,28 +192,17 @@ public class StatCenter {
             if (carRecord.getPurchaseType() == 0) {
                 continue;
             }
-            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售") ||
-                    cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("帮卖")) {
+            if ("寄售".equals(cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue()) ||
+                    "帮卖".equals(cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue())) {
                 continue;
             }
 
-            Double preAllFee = 0.0;
-            List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
-            for (CarSaleSetup carSaleSetup : carSaleSetups) {
-                preAllFee += carSaleSetup.getSetupFee();
-            }
-
-            Double allCost = 0.0;
-            List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
-            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                    allCost += carMoneyRecord.getMoney();
-                }
-            }
+            Double preAllFee = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.PRE_SETUP_TYPE).left();
+            Double allCost = ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, null, carRecord.getId(),CarPropertyEnum.MONEY_RECORD_COST.getDesc()).left();
             stockMoney += carRecord.getPaidMoney() + preAllFee + allCost;
-
             i++;
         }
+
         //车均库存
         moneyFlowStat.setStockTime(Utils.saveTwoSeat(carList.size() == 0 ? dayNum.doubleValue() : dayNum.doubleValue() / i));
 
@@ -242,42 +212,20 @@ public class StatCenter {
             if (carRecord.getPurchaseType() == 0) {
                 continue;
             }
-            if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("寄售") ||
-                    cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals("帮卖")) {
+            if ("寄售".equals(cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue()) ||
+                    "帮卖".equals(cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue())) {
                 continue;
             }
 
-            Double preAllFee = 0.0;
-            List<CarSaleSetup> carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
-            for (CarSaleSetup carSaleSetup : carSaleSetups) {
-                preAllFee += carSaleSetup.getSetupFee();
-            }
-
-            Double allCost = 0.0;
-            List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
-            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                    allCost += carMoneyRecord.getMoney();
-                }
-            }
+            Double preAllFee = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.PRE_SETUP_TYPE).left();
+            Double allCost = ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, null, carRecord.getId(),CarPropertyEnum.MONEY_RECORD_COST.getDesc()).left();
             saleMoney += carRecord.getPaidMoney() + preAllFee + allCost;
 
-            Double allSf = 0.0;
-            carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
-            for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-                if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                    allSf += carMoneyRecord.getMoney();
-                }
-            }
-
-            Double saleAllFee = 0.0;
-            carSaleSetups = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
-            for (CarSaleSetup carSaleSetup : carSaleSetups) {
-                saleAllFee += carSaleSetup.getSetupFee();
-            }
+            Double allSf = ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, null, carRecord.getId(),CarPropertyEnum.MONEY_RECORD_SALE.getDesc()).left();
+            Double saleAllFee = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.SALE_TYPE).left();
 
             CarSaleInfo carSaleInfo = carSaleInfoService.getCarSaleInfoById(carRecord.getSaleId());
-            Double serviceFee = carSaleInfo!=null?carSaleInfo.getServiceFee():0.0;
+            double serviceFee = carSaleInfo != null ? carSaleInfo.getServiceFee() : 0.0;
             saleMoney += allSf + serviceFee + saleAllFee;
 
             if (carSaleInfo != null) {
@@ -293,24 +241,11 @@ public class StatCenter {
                 moneyFlowStat.getHouse() + moneyFlowStat.getBackMoney() + moneyFlowStat.getReceivable())).add(moneyFlowStat.getGoods()));
     }
 
-    public static Double statDifferentMoneyType(Integer type, MoneyManagerService moneyManagerService) {
+    private static void statLoanData(MoneyManagerService moneyManagerService, MoneyFlowStat moneyFlowStat, long et) {
         Double temp = 0.0;
-        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(type);
-        for (MoneyManager moneyManager : list) {
-            if (moneyManager.getActionType().equals(ContextType.MONEY_MANAGER_IN)) {
-                temp += moneyManager.getActionFee();
-            } else {
-                temp -= moneyManager.getActionFee();
-            }
-        }
-        return Utils.saveTwoSeat(temp);
-    }
+        double lx = 0.0;
 
-    private static void statLoanData(Integer type, MoneyManagerService moneyManagerService, MoneyFlowStat moneyFlowStat, long et) {
-        Double temp = 0.0;
-        Double lx = 0.0;
-
-        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(type);
+        List<MoneyManager> list = moneyManagerService.getMoneyManagerListByType(ContextType.MONEY_TYPE_LOAN);
         for (MoneyManager moneyManager : list) {
             if (moneyManager.getActionType().equals(ContextType.MONEY_MANAGER_IN)) {
                 temp += moneyManager.getActionFee();
@@ -326,17 +261,17 @@ public class StatCenter {
 
     public static void statProperty(CarSaleInfoService carSaleInfoService,
                                     CacheCenter cacheCenter, List<CarRecord> list, PropertyStat propertyStat) {
-        Map<Integer, Double> carLevelMap = new HashMap<Integer, Double>();
-        Map<Integer, Double> carTakeTypeMap = new HashMap<Integer, Double>();
-        Map<Integer, Double> purchaseTypeMap = new HashMap<Integer, Double>();
-        Map<Integer, Double> carChannelMap = new HashMap<Integer, Double>();
-        Map<Integer, Double> carLineMap = new HashMap<Integer, Double>();
-        Map<String, Double> carBrandMap = new HashMap<String, Double>();
-        Map<Integer, Double> consumerPropertyMap = new HashMap<Integer, Double>();
-        Map<Integer, Double> consumerAgeMap = new HashMap<Integer, Double>();
-        Map<String, Double> consumerSexMap = new HashMap<String, Double>();
-        Map<Integer, Double> consumerResourceMap = new HashMap<Integer, Double>();
-        Map<String, Double> saleTypeMap = new HashMap<String, Double>();
+        Map<Integer, Double> carLevelMap = new HashMap<>(list.size());
+        Map<Integer, Double> carTakeTypeMap = new HashMap<>(list.size());
+        Map<Integer, Double> purchaseTypeMap = new HashMap<>(list.size());
+        Map<Integer, Double> carChannelMap = new HashMap<>(list.size());
+        Map<Integer, Double> carLineMap = new HashMap<>(list.size());
+        Map<String, Double> carBrandMap = new HashMap<>(list.size());
+        Map<Integer, Double> consumerPropertyMap = new HashMap<>(list.size());
+        Map<Integer, Double> consumerAgeMap = new HashMap<>(list.size());
+        Map<String, Double> consumerSexMap = new HashMap<>(list.size());
+        Map<Integer, Double> consumerResourceMap = new HashMap<>(list.size());
+        Map<String, Double> saleTypeMap = new HashMap<>(list.size());
         for (CarRecord carRecord : list) {
             //车辆级别
             carLevelMap.put(carRecord.getCarLevel(), removeNull(carLevelMap.get(carRecord.getCarLevel())) + 1);
@@ -406,11 +341,11 @@ public class StatCenter {
 
     public static void statInsuranceData(List<Insurance> list, OtherStat otherStat) {
         Double allRenewal = 0.0;
-        Map<String, Double> insuranceMap = new HashMap<String, Double>();
+        Map<String, Double> insuranceMap = new HashMap<>(list.size());
         Double allQzxFee = 0.0;
-        Map<String, Double> insuranceBusinessQzxMap = new HashMap<String, Double>();
+        Map<String, Double> insuranceBusinessQzxMap = new HashMap<>(list.size());
         Double allSyxFee = 0.0;
-        Map<String, Double> insuranceBusinessSyxMap = new HashMap<String, Double>();
+        Map<String, Double> insuranceBusinessSyxMap = new HashMap<>(list.size());
         for (Insurance insurance : list) {
             String key;
             switch (insurance.getDealRenewal()) {
@@ -460,7 +395,7 @@ public class StatCenter {
     }
 
     private static Map<String, Double> installStringKey(Iterator<Map.Entry<String, Double>> it, Integer allNum) {
-        Map<String, Double> map = new HashMap<String, Double>();
+        Map<String, Double> map = new HashMap<>();
         while (it.hasNext()) {
             Map.Entry<String, Double> entry = it.next();
             String key = entry.getKey();
@@ -471,7 +406,7 @@ public class StatCenter {
     }
 
     private static Map<String, String> installStringKeyAndValue(Iterator<Map.Entry<String, Double>> it, Double num) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         while (it.hasNext()) {
             Map.Entry<String, Double> entry = it.next();
             String key = entry.getKey();

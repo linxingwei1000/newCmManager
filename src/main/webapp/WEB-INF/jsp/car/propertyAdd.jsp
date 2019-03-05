@@ -42,36 +42,67 @@
 </c:if>
 
 <div class="container">
-    <form class="form" action="carPropertyAction" method="post">
+    <form action="carPropertyAction" method="post" class="form-horizontal">
         <hr/>
-        <div class="form-group form-inline row">
+        <div class="form-group">
             <label class="control-label col-xs-2">属性名：</label>
-            <div class="form-group form-inline row">
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_LINE" <c:if test="${ propertyKey == 'CAR_LINE' }">checked="checked"</c:if>/>车系</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_LEVEL" <c:if test="${ propertyKey == 'CAR_LEVEL' }">checked="checked"</c:if>/>车级</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_CHANNEL" <c:if test="${ propertyKey == 'CAR_CHANNEL' }">checked="checked"</c:if>/>来源渠道</label>
-            </div>
-            <div class="form-group form-inline row">
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_TAKE_TYPE" <c:if test="${ propertyKey == 'CAR_TAKE_TYPE' }">checked="checked"</c:if>/>提车方式</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_STATUS" <c:if test="${ propertyKey == 'CAR_STATUS' }">checked="checked"</c:if>/>车况</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_PURCHASE_TYPE" <c:if test="${ propertyKey == 'CAR_PURCHASE_TYPE' }">checked="checked"</c:if>/>采购类别</label>
-            </div>
-            <div class="form-group form-inline row">
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_CONSUMER_PROPERTY" <c:if test="${ propertyKey == 'CAR_CONSUMER_PROPERTY' }">checked="checked"</c:if>/>客户属性</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CAR_CONSUMER_RESOURCE" <c:if test="${ propertyKey == 'CAR_CONSUMER_RESOURCE' }">checked="checked"</c:if>/>获客渠道</label>
-            </div>
-            <div class="form-group form-inline row">
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="CONSUMER_GENERATION" <c:if test="${ propertyKey == 'CONSUMER_GENERATION' }">checked="checked"</c:if>/>客户年龄段</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="BUSINESS_TYPE" <c:if test="${ propertyKey == 'BUSINESS_TYPE' }">checked="checked"</c:if>/>保险业务类型</label>
-            </div>
-            <div class="form-group form-inline row">
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="MONEY_RECORD_COST" <c:if test="${ propertyKey == 'MONEY_RECORD_COST' }">checked="checked"</c:if>/>成本录入</label>
-                <label class="radio inline col-xs-2"><input type="radio" name="propertyKey" value="MONEY_RECORD_SALE" <c:if test="${ propertyKey == 'MONEY_RECORD_SALE' }">checked="checked"</c:if>/>销售录入</label>
+            <div class="col-xs-10">
+                <div class="form-group">
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_LINE" <c:if test="${ propertyKey == 'CAR_LINE' }">checked="checked"</c:if>/>车系
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_LEVEL" <c:if test="${ propertyKey == 'CAR_LEVEL' }">checked="checked"</c:if>/>车级
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_CHANNEL" <c:if test="${ propertyKey == 'CAR_CHANNEL' }">checked="checked"</c:if>/>来源渠道
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_TAKE_TYPE" <c:if test="${ propertyKey == 'CAR_TAKE_TYPE' }">checked="checked"</c:if>/>提车方式
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_STATUS" <c:if test="${ propertyKey == 'CAR_STATUS' }">checked="checked"</c:if>/>车况
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_PURCHASE_TYPE" <c:if test="${ propertyKey == 'CAR_PURCHASE_TYPE' }">checked="checked"</c:if>/>采购类别
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_CONSUMER_PROPERTY" <c:if test="${ propertyKey == 'CAR_CONSUMER_PROPERTY' }">checked="checked"</c:if>/>客户属性
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CAR_CONSUMER_RESOURCE" <c:if test="${ propertyKey == 'CAR_CONSUMER_RESOURCE' }">checked="checked"</c:if>/>获客渠道
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="CONSUMER_GENERATION" <c:if test="${ propertyKey == 'CONSUMER_GENERATION' }">checked="checked"</c:if>/>客户年龄段
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="BUSINESS_TYPE" <c:if test="${ propertyKey == 'BUSINESS_TYPE' }">checked="checked"</c:if>/>保险业务类型
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="MONEY_RECORD_COST" <c:if test="${ propertyKey == 'MONEY_RECORD_COST' }">checked="checked"</c:if>/>成本录入
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="MONEY_RECORD_SALE" <c:if test="${ propertyKey == 'MONEY_RECORD_SALE' }">checked="checked"</c:if>/>销售录入
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="MONEY_RECORD_SALE" <c:if test="${ propertyKey == 'MONEY_RECORD_SALE' }">checked="checked"</c:if>/>销售录入
+                    </label>
+                    <label class="col-xs-2">
+                        <input type="radio" name="propertyKey" value="BANK_NAME" <c:if test="${ propertyKey == 'BANK_NAME' }">checked="checked"</c:if>/>银行名称
+                    </label>
+                </div>
             </div>
         </div>
-        <div class="form-group form-inline row">
-            <label class="control-label col-xs-2 " for="propertyValue">属性值：</label>
-            <input class="form-control  col-xs-4" type="text" name="propertyValue" id="propertyValue" placeholder="请输入" value="${propertyValue}" autocomplete="off"/>
+
+        <div class="form-group">
+            <label class="control-label col-xs-2" for="propertyValue">属性值：</label>
+            <div class="col-xs-4">
+                <input class="form-control" type="text" name="propertyValue" id="propertyValue" placeholder="请输入" value="${propertyValue}" autocomplete="off"/>
+            </div>
         </div>
         <div class="hidden">
             <input type="text" name="action" id="action" value="${action}" autocomplete="off"/>
@@ -80,7 +111,7 @@
         </div>
         <hr/>
         <div class="control-group">
-            <label class="control-label">&nbsp;</label>
+            <label class="control-label col-xs-2">&nbsp;</label>
             <div class="controls">
                 <input type="submit" value="保存" class="btn btn-primary"/>
                 <a href="carPropertyView" class="btn btn-small"><i class="icon-share-alt icon-share-alt-white"></i> 返回</a>

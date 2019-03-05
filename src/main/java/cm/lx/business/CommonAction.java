@@ -5,8 +5,6 @@ import cm.lx.bean.entity.*;
 
 public class CommonAction {
 
-
-
     public static Double calculatePayMoney(Double saleMoney, Double tempMoney, MortgageRecord mortgageRecord) {
         Double payMoney = saleMoney + tempMoney;
         if (mortgageRecord != null) {

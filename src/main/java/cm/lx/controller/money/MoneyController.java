@@ -1,10 +1,9 @@
 package cm.lx.controller.money;
 
-import cm.lx.bean.ContextBean;
 import cm.lx.bean.entity.Account;
 import cm.lx.bean.entity.MoneyManager;
 import cm.lx.business.CacheCenter;
-import cm.lx.business.StatCenter;
+import cm.lx.business.ToolUtil;
 import cm.lx.common.ContextType;
 import cm.lx.controller.BaseController;
 import cm.lx.enums.SearchCacheEnum;
@@ -39,11 +38,15 @@ public class MoneyController extends BaseController {
             if (moneyManager.getActionEndDate() != null) {
                 moneyManager.setStrActionEndDate(TimeUtils.transformTimetagToDate(moneyManager.getActionEndDate(), TimeUtils.FORMAT_ONE));
             }
+
+            if (moneyManager.getLinkId() != 0) {
+                moneyManager.setLinkDesc(cacheCenter.getCarPropertyById(moneyManager.getLinkId()).getPropertyValue());
+            }
         }
         return list;
     }
 
-    private String getCacheKey(Integer moneyType, Account account){
+    private String getCacheKey(Integer moneyType, Account account) {
         Integer code;
         switch (moneyType) {
             case 1:
@@ -83,12 +86,9 @@ public class MoneyController extends BaseController {
         List<Integer> ids = cacheCenter.getUserSearchResult(getCacheKey(moneyType, (Account) session.getAttribute("account")));
 
         List<MoneyManager> list;
-        if(ids!=null){
-            list = new ArrayList<>();
-            for(Integer id: ids){
-                list.add(moneyManagerService.getMoneyManagerById(id));
-            }
-        }else{
+        if (ids != null) {
+            list = moneyManagerService.getMoneyManagerByIds(ids);
+        } else {
             list = moneyManagerService.getMoneyManagerListByType(moneyType);
 
             if (moneyType.equals(ContextType.MONEY_TYPE_CASH)
@@ -96,7 +96,7 @@ public class MoneyController extends BaseController {
                     || moneyType.equals(ContextType.MONEY_TYPE_POSS)) {
                 //截取前20个
                 list = list.size() > 20 ? list.subList(0, 20) : list;
-                mav.addObject("balance", StatCenter.statDifferentMoneyType(moneyType, moneyManagerService));
+                mav.addObject("balance", ToolUtil.statDifferentMoneyType(moneyType, moneyManagerService));
             }
         }
 
@@ -116,18 +116,22 @@ public class MoneyController extends BaseController {
             @RequestParam(value = "actionPerson", required = false, defaultValue = "") String actionPerson,
             @RequestParam(value = "actionDesc", required = false, defaultValue = "") String actionDesc,
             @RequestParam(value = "actionFee", required = false, defaultValue = "") Double actionFee,
-            @RequestParam(value = "actionType", required = false, defaultValue = "") Integer actionType) {
+            @RequestParam(value = "actionType", required = false, defaultValue = "") Integer actionType,
+            @RequestParam(value = "bankNameId", required = false, defaultValue = "") Integer bankNameId) {
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName("money/add");
         mav.addObject("action", action);
         mav.addObject("moneyType", moneyType);
+        ToolUtil.initCarPropertyData(mav, cacheCenter);
 
         mav.addObject("actionDate", actionDate);
         mav.addObject("actionPerson", actionPerson);
         mav.addObject("actionDesc", actionDesc);
         mav.addObject("actionFee", actionFee);
         mav.addObject("actionType", actionType);
+        mav.addObject("bankNameId", bankNameId);
+
         if (over == null) {
             if (id != null) {
                 MoneyManager moneyManager = moneyManagerService.getMoneyManagerById(id);
@@ -137,6 +141,7 @@ public class MoneyController extends BaseController {
                 mav.addObject("actionDesc", moneyManager.getActionDesc());
                 mav.addObject("actionFee", moneyManager.getActionFee());
                 mav.addObject("actionType", moneyManager.getActionType());
+                mav.addObject("bankNameId", moneyManager.getLinkId());
             }
             return mav;
         } else {
@@ -156,6 +161,15 @@ public class MoneyController extends BaseController {
                 mav.addObject(TIP, "科目必填！");
                 return mav;
             }
+
+            if (moneyType.equals(ContextType.MONEY_TYPE_BANK)) {
+                if (bankNameId == null || bankNameId == 0) {
+                    mav.addObject(TIP, "银行流水中银行名必选！");
+                    return mav;
+                }
+            }
+
+
             MoneyManager moneyManager = new MoneyManager();
             moneyManager.setActionDate(TimeUtils.transformDateToTimetag(actionDate, TimeUtils.FORMAT_ONE));
             moneyManager.setActionPerson(actionPerson);
@@ -163,6 +177,7 @@ public class MoneyController extends BaseController {
             moneyManager.setActionFee(actionFee);
             moneyManager.setActionType(actionType);
             moneyManager.setMoneyType(moneyType);
+            moneyManager.setLinkId(bankNameId == null ? 0 : bankNameId);
             mav.clear();
             if (action.equals(CREATE_ACTION)) {
                 moneyManager.setActionEndDate(0L);
@@ -310,10 +325,10 @@ public class MoneyController extends BaseController {
             }
         }
 
-        if(conditionLess){
+        if (conditionLess) {
             List<Integer> ids = cacheCenter.getUserSearchResult(getCacheKey(moneyType, (Account) session.getAttribute("account")));
             List<MoneyManager> list = new ArrayList<>();
-            for(Integer id: ids){
+            for (Integer id : ids) {
                 list.add(moneyManagerService.getMoneyManagerById(id));
             }
             mav.addObject(DATA, dealMoneyOther(list));

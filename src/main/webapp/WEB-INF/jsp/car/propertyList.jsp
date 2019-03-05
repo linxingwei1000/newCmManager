@@ -81,6 +81,7 @@
                         <c:if test="${ cp.propertyKey == 'BUSINESS_TYPE' }">保险业务类型</c:if>
                         <c:if test="${ cp.propertyKey == 'MONEY_RECORD_COST' }">成本录入</c:if>
                         <c:if test="${ cp.propertyKey == 'MONEY_RECORD_SALE' }">销售录入</c:if>
+                        <c:if test="${ cp.propertyKey == 'BANK_NAME' }">银行名称</c:if>
                     </td>
                     <td>${cp.propertyValue}</td>
                     <td>

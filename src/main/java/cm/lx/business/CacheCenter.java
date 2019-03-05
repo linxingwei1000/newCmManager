@@ -72,7 +72,6 @@ public class CacheCenter implements InitializingBean {
 
     /**
      * 缓存查询结果
-     *
      */
     public void setUserSearchResult(String key, List<Integer> list) {
         userSearchResult.put(key, list);
@@ -80,7 +79,6 @@ public class CacheCenter implements InitializingBean {
 
     /**
      * 清除查询结果
-     *
      */
     public void delUserSearchResult(String key) {
         userSearchResult.remove(key);
@@ -160,7 +158,6 @@ public class CacheCenter implements InitializingBean {
         userSearchResult = new ConcurrentHashMap<>();
     }
 
-    //获取车辆属性
     public List<CarProperty> getCarPropertyByKey(String key) {
         if (key != null) {
             return carPropertyKeyMap.get(key);
@@ -169,7 +166,6 @@ public class CacheCenter implements InitializingBean {
         }
     }
 
-    //获取车辆属性
     public CarProperty getCarPropertyById(Integer id) {
         return carPropertyMap.get(id);
     }
@@ -186,9 +182,7 @@ public class CacheCenter implements InitializingBean {
         return false;
     }
 
-    //更新车辆配置
     public void updateCarProperty(CarProperty carProperty) {
-        Long curTime = System.currentTimeMillis();
         if (carProperty.getId() != null) {
             carPropertyService.updateCarPropertyById(carProperty);
 
@@ -200,7 +194,6 @@ public class CacheCenter implements InitializingBean {
         initCarProperty();
     }
 
-    //删除车辆配置
     public void deleteCarProperty(Integer id) {
         carPropertyService.deleteCarPropertyById(id);
 
@@ -209,62 +202,59 @@ public class CacheCenter implements InitializingBean {
         initCarProperty();
     }
 
-    //获取车辆组合信息
+    /**
+     * 获取车辆组合
+     */
     public List<ContextBean> getCarRecordCombinationInfo(List<CarRecord> list) {
         List<ContextBean> resultList = new ArrayList<>();
         if (list != null && list.size() != 0) {
             for (CarRecord carRecord : list) {
-                ContextBean contextBean = contextBeanMap.get(carRecord.getId());
-
-                //说明缓存被刷，重新刷
-                if (contextBean == null) {
-                    contextBean = initCarRecordInfo(carRecord);
-                    contextBeanMap.put(carRecord.getId(), initCarRecordInfo(carRecord));
-                }
-                resultList.add(contextBean);
+                resultList.add(returnContextBeanAndFixCache(carRecord));
             }
         }
         return resultList;
     }
 
-    //获取车辆组合信息
+    /**
+     * 获取车辆组合
+     */
     public List<ContextBean> getCarRecordCombinationInfoByIds(List<Integer> list) {
         List<ContextBean> resultList = new ArrayList<>();
         if (list != null && list.size() != 0) {
             for (Integer id : list) {
-                ContextBean contextBean = contextBeanMap.get(id);
-
-                //说明缓存被刷，重新刷
-                if (contextBean == null) {
-                    CarRecord carRecord = carRecordService.getCarRecordById(id);
-                    contextBean = initCarRecordInfo(carRecord);
-                    contextBeanMap.put(carRecord.getId(), initCarRecordInfo(carRecord));
-                }
-                resultList.add(contextBean);
+                CarRecord carRecord = carRecordService.getCarRecordById(id);
+                resultList.add(returnContextBeanAndFixCache(carRecord));
             }
         }
         return resultList;
     }
 
-    //获取车辆信息
+    /**
+     * 获取车辆信息
+     */
     public List<CarRecord> getCarRecordInfo(List<CarRecord> list) {
         List<CarRecord> resultList = new ArrayList<>();
         if (list != null && list.size() != 0) {
             for (CarRecord carRecord : list) {
-                ContextBean contextBean = contextBeanMap.get(carRecord.getId());
-
-                //说明缓存被刷，重新刷
-                if (contextBean == null) {
-                    contextBean = initCarRecordInfo(carRecord);
-                    contextBeanMap.put(carRecord.getId(), initCarRecordInfo(carRecord));
-                }
-                resultList.add(contextBean.getCarRecord());
+                resultList.add(returnContextBeanAndFixCache(carRecord).getCarRecord());
             }
         }
         return resultList;
     }
 
-    //有更新删除缓存
+    private ContextBean returnContextBeanAndFixCache(CarRecord carRecord){
+        ContextBean contextBean = contextBeanMap.get(carRecord.getId());
+        //说明缓存被刷，重新刷
+        if (contextBean == null) {
+            contextBean = initCarRecordInfo(carRecord);
+            contextBeanMap.put(carRecord.getId(), initCarRecordInfo(carRecord));
+        }
+        return contextBean;
+    }
+
+    /**
+     * 删除车辆缓存
+     */
     public void deleteCarRecordInfo(Integer cid) {
         contextBeanMap.remove(cid);
     }
@@ -295,9 +285,7 @@ public class CacheCenter implements InitializingBean {
 
 
     private ContextBean initCarRecordInfo(CarRecord carRecord) {
-
         carRecord.setStrPurchaseDate(TimeUtils.transformTimetagToDate(carRecord.getPurchaseDate(), TimeUtils.FORMAT_ONE));
-
         carRecord.setStrCarLine(transform(carRecord.getCarLine(), carRecord.getId()));
         carRecord.setStrCarLevel(transform(carRecord.getCarLevel(), carRecord.getId()));
         carRecord.setStrCarStatus(transform(carRecord.getCarStatus(), carRecord.getId()));
@@ -318,44 +306,24 @@ public class CacheCenter implements InitializingBean {
         contextBean.setCarRecord(carRecord);
 
         //成本录入细节
-        Double allCost = 0.0;
-        List<CarMoneyRecord> carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
-        for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-            if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                CarProperty carProperty = getCarPropertyById(carMoneyRecord.getLinkId());
-                carMoneyRecord.setLinkName(carProperty.getPropertyValue());
-                allCost += carMoneyRecord.getMoney();
-            }
-        }
-        contextBean.setAllCost(allCost);
-        contextBean.setCostList(carMoneyRecords);
+        TwoTuple<Double, List<CarMoneyRecord>> twoTuple = ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, this, carRecord.getId(), CarPropertyEnum.MONEY_RECORD_COST.getDesc());
+        contextBean.setAllCost(twoTuple.left());
+        contextBean.setCostList(twoTuple.right());
 
         //获取售前整备明细
-        Double preAllFee = 0.0;
-        List<CarSaleSetup> preList = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.PRE_SETUP_TYPE);
-        for (CarSaleSetup carSaleSetup : preList) {
-            preAllFee += carSaleSetup.getSetupFee();
-        }
-        contextBean.setPreAllFee(preAllFee);
-        contextBean.setPreList(preList);
+        TwoTuple<Double, List<CarSaleSetup>> setupTuple = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.PRE_SETUP_TYPE);
+        contextBean.setPreAllFee(setupTuple.left());
+        contextBean.setPreList(setupTuple.right());
 
         //车辆其他收入明细
-        Double otherAllFee = 0.0;
-        preList = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.OTHER_INCOME);
-        for (CarSaleSetup carSaleSetup : preList) {
-            otherAllFee += carSaleSetup.getSetupFee();
-        }
-        contextBean.setOtherAllFee(otherAllFee);
-        contextBean.setOtherList(preList);
+        setupTuple = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.OTHER_INCOME);
+        contextBean.setOtherAllFee(setupTuple.left());
+        contextBean.setOtherList(setupTuple.right());
 
         //获取售后整备明细
-        Double afterAllFee = 0.0;
-        preList = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.AFTER_SETUP_TYPE);
-        for (CarSaleSetup carSaleSetup : preList) {
-            afterAllFee += carSaleSetup.getSetupFee();
-        }
-        contextBean.setAfterAllFee(afterAllFee);
-        contextBean.setAfterList(preList);
+        setupTuple = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.AFTER_SETUP_TYPE);
+        contextBean.setAfterAllFee(setupTuple.left());
+        contextBean.setAfterList(setupTuple.right());
 
         //获取销售信息
         CarSaleInfo carSaleInfo = null;
@@ -366,36 +334,22 @@ public class CacheCenter implements InitializingBean {
             }
             dealCarSaleInfo(carSaleInfo);
             contextBean.setCarSaleInfo(carSaleInfo);
-
             contextBean.setMoneyAssistList(carPayMoneyAssistService.getCarPayMoneyAssistListByLinkId(carSaleInfo.getId()));
-            //设置页面显示类型
-            //mav.addObject("saleType", carSaleInfo.getSaleType());
         }
 
         //获取销售成本信息
-        Double allSf = 0.0;
-        carMoneyRecords = carMoneyRecordService.getCarMoneyRecordListByCarRecordIdAndType(carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
-        for (CarMoneyRecord carMoneyRecord : carMoneyRecords) {
-            if (carMoneyRecord.getLinkId() != null && carMoneyRecord.getLinkId() != 0) {
-                CarProperty carProperty = getCarPropertyById(carMoneyRecord.getLinkId());
-                carMoneyRecord.setLinkName(carProperty.getPropertyValue());
-                allSf += carMoneyRecord.getMoney();
-            }
-        }
-        if(carSaleInfo !=null){
+        twoTuple = ToolUtil.getCarMoneyRecordTuple(carMoneyRecordService, this, carRecord.getId(), CarPropertyEnum.MONEY_RECORD_SALE.getDesc());
+        Double allSf = twoTuple.left();
+        if (carSaleInfo != null) {
             allSf += carSaleInfo.getServiceFee();
         }
-        contextBean.setAllSf(allSf);
-        contextBean.setSfList(carMoneyRecords);
+        contextBean.setAllSf(twoTuple.left() + allSf);
+        contextBean.setSfList(twoTuple.right());
 
         //车辆销售整备费用
-        Double saleAllFee = 0.0;
-        preList = carSaleSetupService.getCarSaleSetupByIdAndType(carRecord.getId(), ContextType.SALE_TYPE);
-        for (CarSaleSetup carSaleSetup : preList) {
-            saleAllFee += carSaleSetup.getSetupFee();
-        }
-        contextBean.setSaleAllFee(saleAllFee);
-        contextBean.setSaleList(preList);
+        setupTuple = ToolUtil.getCarSaleSetupTuple(carSaleSetupService, carRecord.getId(), ContextType.SALE_TYPE);
+        contextBean.setSaleAllFee(setupTuple.left());
+        contextBean.setSaleList(setupTuple.right());
 
         //获取每辆车售后工资相关信息
         if (carRecord.getExpenseId() != null && carRecord.getExpenseId() != 0) {
@@ -408,7 +362,6 @@ public class CacheCenter implements InitializingBean {
         contextBean.setBackList(carPaidRecordService.getCarPaidRecordByLinkIdAndType(carRecord.getId(), ContextType.PAY_RECORD_BACK));
 
         return contextBean;
-
     }
 
     private String transform(Integer key, Integer cid) {

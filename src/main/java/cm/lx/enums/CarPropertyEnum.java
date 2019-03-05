@@ -79,6 +79,11 @@ public enum CarPropertyEnum {
      * 销售录入
      */
     MONEY_RECORD_SALE(13, "MONEY_RECORD_SALE"),
+
+    /**
+     * 银行流水银行配置
+     */
+    BANK_NAME(14, "BANK_NAME"),
     ;
 
     private Integer code;

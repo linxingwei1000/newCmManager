@@ -384,6 +384,7 @@ create table newcm.cm_money_manager(
   action_fee double default 0 comment '金额',
   action_type tinyint(4) default 0 comment '科目：1.支出或贷，2.收入或借',
   money_type tinyint(4) not null default 0 comment '资金类型',
+  link_id int(8) default 0 comment '额外关联id',
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

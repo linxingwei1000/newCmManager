@@ -99,6 +99,12 @@
             <c:if test="${moneyType==2}">
                 <label class="radio inline col-xs-2"><input type="radio" name="actionType" value="1" <c:if test="${ actionType == 1 }">checked="checked"</c:if>/>银行支出</label>
                 <label class="radio inline col-xs-2"><input type="radio" name="actionType" value="2" <c:if test="${ actionType == 2 }">checked="checked"</c:if>/>银行收入</label>
+                <select class="form-control  col-xs-2" name="bankNameId" id="bank-name" onchange="">
+                    <option value="0">银行</option>
+                    <c:forEach var="cp" items="${BANK_NAME}" varStatus="status">
+                        <option value="${cp.id}">${cp.propertyValue}</option>
+                    </c:forEach>
+                </select>
             </c:if>
             <c:if test="${moneyType==3}">
                 <label class="radio inline col-xs-2"><input type="radio" name="actionType" value="1" <c:if test="${ actionType == 1 }">checked="checked"</c:if>/>poss机提现</label>
@@ -163,6 +169,13 @@
 </div>
 
 <script language="javascript">
+    var bankName = document.getElementById('bank-name');
+    for (var i = 0; i < bankName.options.length; i++) {
+        if (bankName.options[i].value == '${bankNameId}') {
+            bankName.options[i].selected = true;
+        }
+    }
+
     var actionDesc = document.getElementById('actionDesc');
     actionDesc.innerHTML = '${actionDesc}';
 </script>

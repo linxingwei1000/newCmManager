@@ -44,6 +44,13 @@ public class MoneyManagerServiceImpl implements MoneyManagerService {
     }
 
     @Override
+    public List<MoneyManager> getMoneyManagerByIds(List<Integer> ids) {
+        QueryWrapper<MoneyManager> query = new QueryWrapper<>();
+        query.in("id", ids);
+        return moneyManagerMapper.selectList(query);
+    }
+
+    @Override
     public List<MoneyManager> getMoneyManagerListByType(Integer type) {
         QueryWrapper<MoneyManager> query = new QueryWrapper<>();
         if (type != null) {

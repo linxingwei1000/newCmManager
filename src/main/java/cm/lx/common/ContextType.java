@@ -7,9 +7,6 @@ public class ContextType {
     public final static Integer RECORD_STATUS_SALE = 3;                //车辆销售中
     public final static Integer RECORD_STATUS_SOLD = 4;                //车辆已售
 
-//    public final static Integer MONEY_RECORD_COST = 1;                 //成本录入
-//    public final static Integer MONEY_RECORD_SALE = 2;                 //销售录入
-
     public final static Integer REMARK_TYPE_PURCHASE = 1;             //备注车辆买入
     public final static Integer REMARK_TYPE_STOCK = 2;                //备注车辆库存
     public final static Integer REMARK_TYPE_SALE = 3;                //备注车辆销售中

@@ -32,6 +32,10 @@ public class MoneyManager {
     @TableField(value = "money_type")
     Integer moneyType;
 
+    @TableField(value = "link_id")
+    Integer linkId;
+
+
     Long ctime;
 
     Long utime;
@@ -41,6 +45,9 @@ public class MoneyManager {
 
     @TableField(exist = false)
     String strActionEndDate;
+
+    @TableField(exist = false)
+    String linkDesc;
 
     public Integer getId() {
         return id;
@@ -106,6 +113,14 @@ public class MoneyManager {
         this.moneyType = moneyType;
     }
 
+    public Integer getLinkId() {
+        return linkId;
+    }
+
+    public void setLinkId(Integer linkId) {
+        this.linkId = linkId;
+    }
+
     public Long getCtime() {
         return ctime;
     }
@@ -136,5 +151,13 @@ public class MoneyManager {
 
     public void setStrActionEndDate(String strActionEndDate) {
         this.strActionEndDate = strActionEndDate;
+    }
+
+    public String getLinkDesc() {
+        return linkDesc;
+    }
+
+    public void setLinkDesc(String linkDesc) {
+        this.linkDesc = linkDesc;
     }
 }

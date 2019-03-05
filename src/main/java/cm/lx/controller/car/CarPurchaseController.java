@@ -243,13 +243,7 @@ public class CarPurchaseController extends BaseController {
                 session.setAttribute(TIP, "ok 采购修改成功！");
             }
 
-            if (recordStatus.equals(ContextType.RECORD_STATUS_PURCHASE)) {
-                mav.setViewName("redirect:/carPurchaseView");
-            } else if (recordStatus.equals(ContextType.RECORD_STATUS_STOCK)) {
-                mav.setViewName("redirect:/carStockView");
-            } else if (recordStatus.equals(ContextType.RECORD_STATUS_SALE)) {
-                mav.setViewName("redirect:/carSaleView");
-            }
+            ToolUtil.setMavViewByCarRecordStatus(mav, recordStatus);
             return mav;
         }
     }

@@ -26,9 +26,6 @@
     <c:if test="${moneyType==7}">
         <title>基本户管理</title>
     </c:if>
-    <c:if test="${moneyType==8}">
-        <title>房租平台广告管理</title>
-    </c:if>
     <script type="text/javascript" src="js/nimble.js"></script>
     <script type="text/javascript" src="js/nimble_editable.js"></script>
 </head>
@@ -196,7 +193,8 @@
             <c:forEach var="da" items="${dataList }" varStatus="status">
                 <tr>
                     <td>${da.strActionDate}</td>
-                    <td>${da.actionPerson}</td>
+                    <td>${da.actionPerson}
+                    </td>
                     <c:if test="${moneyType==1||moneyType==2||moneyType==3}">
                         <c:if test="${da.actionType == 1}">
                             <td>--</td>
@@ -228,7 +226,7 @@
                             </c:if>
                         </td>
                     </c:if>
-                    <td>${da.actionDesc}</td>
+                    <td><c:if test="${moneyType==2}">账户银行：${da.linkDesc}，</c:if>${da.actionDesc}</td>
                     <td>
                         <a href="moneyAction?id=${da.id }&action=2&moneyType=${moneyType}"><i class="icon-lock"></i> 编辑</a>
                         <a href="#confirmDialog" data-toggle="modal"
