@@ -85,7 +85,8 @@ public class CarRecordServiceImpl implements CarRecordService {
     }
 
     @Override
-    public List<CarRecord> searchCarRecord(Integer recordStatus, String searchKey, String searchValue, String btime, String etime, String zbtime, String zetime) {
+    public List<CarRecord> searchCarRecord(Integer recordStatus, String searchKey, String searchValue,
+                                           String searchDate, String btime, String etime, String zbtime, String zetime) {
 
         Long bt = StringUtils.isEmpty(btime) ? 0L : TimeUtils.transformDateToTimetag(btime, TimeUtils.FORMAT_ONE);
         Long et = StringUtils.isEmpty(etime) ? System.currentTimeMillis() : TimeUtils.transformDateToTimetag(etime, TimeUtils.FORMAT_ONE);
@@ -93,6 +94,7 @@ public class CarRecordServiceImpl implements CarRecordService {
 
         Long zbt = StringUtils.isEmpty(zbtime) ? 0L : TimeUtils.transformDateToTimetag(zbtime, TimeUtils.FORMAT_ONE);
         Long zet = StringUtils.isEmpty(zetime) ? System.currentTimeMillis() + 365 * 24 * 60 * 60 * 1000 : TimeUtils.transformDateToTimetag(zetime, TimeUtils.FORMAT_ONE);
+
 
         QueryWrapper<CarRecord> query = new QueryWrapper<>();
         query.eq("record_status", recordStatus);
@@ -102,9 +104,34 @@ public class CarRecordServiceImpl implements CarRecordService {
             query.between("purchase_date", zbt, zet);
         }
 
+        QueryWrapper<CarSaleInfo> saleInfoQuery = new QueryWrapper<>();
+
+        boolean isSaleInfo = false;
+
+        //一重搜索条件
+        if(!StringUtils.isEmpty(searchKey)){
+            if(searchKey.equals("sale_person")){
+                saleInfoQuery.like("sale_person", searchValue);
+                isSaleInfo = true;
+            }else{
+                query.like(searchKey, searchValue);
+            }
+        }
+
+        //二重搜索条件
+        if(!StringUtils.isEmpty(searchDate)) {
+            if (searchDate.equals("sale_date")) {
+                query.eq("is_sale", 1);
+                saleInfoQuery.between("sale_date", bt, et);
+                isSaleInfo = true;
+            }else{
+                query.between("purchase_date", bt, et);
+            }
+        }
+
+        //查找sql
         List<CarRecord> list;
-        if (searchKey.equals("sale_date")) {
-            query.eq("is_sale", 1);
+        if(isSaleInfo){
             list = carRecordMapper.selectList(query);
 
             Map<Integer, CarRecord> map = new HashMap<>(list.size());
@@ -113,9 +140,6 @@ public class CarRecordServiceImpl implements CarRecordService {
             }
 
             List<CarRecord> resultList = new ArrayList<>();
-
-            QueryWrapper<CarSaleInfo> saleInfoQuery = new QueryWrapper<>();
-            saleInfoQuery.between("sale_date", bt, et);
             List<CarSaleInfo> carSaleInfos = carSaleInfoMapper.selectList(saleInfoQuery);
             for (CarSaleInfo carSaleInfo : carSaleInfos) {
                 CarRecord carRecord = map.get(carSaleInfo.getId());
@@ -123,12 +147,8 @@ public class CarRecordServiceImpl implements CarRecordService {
                     resultList.add(carRecord);
                 }
             }
-
             list = resultList;
-        } else {
-            if (!StringUtils.isEmpty(searchKey)) {
-                query.like(searchKey, searchValue);
-            }
+        }else{
             list = carRecordMapper.selectList(query);
         }
 

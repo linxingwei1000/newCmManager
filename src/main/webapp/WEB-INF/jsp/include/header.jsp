@@ -63,6 +63,7 @@
                             <c:if test="${ sessionScope.account.department != 3}">
                                 <li class="level_2"><a href="carServiceFundView">售后服务基金</a></li>
                             </c:if>
+                            <li class="level_2"><a href="carFormulaView">自定义公式</a></li>
                         </ul>
                     </li>
                 </c:if>

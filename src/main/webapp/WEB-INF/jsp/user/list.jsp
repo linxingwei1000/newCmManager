@@ -58,14 +58,13 @@
     <c:otherwise>
         <table class="table table-striped table-bordered table-condensed table-hover">
             <colgroup>
-                <col width="5%"/>
+                <col width="6%"/>
                 <col width="12%"/>
                 <col width="12%"/>
-                <col width="12%"/>
-                <col width="12%"/>
-                <col width="12%"/>
-                <col width="12%"/>
-                <col width="23%"/>
+                <col width="15%"/>
+                <col width="15%"/>
+                <col width="15%"/>
+                <col width="25%"/>
             </colgroup>
             <tr>
                 <th>编号</th>
@@ -74,7 +73,6 @@
                 <th>姓名</th>
                 <th>手机</th>
                 <th>部门</th>
-                <th>采购提成比例</th>
                 <th>操作</th>
             </tr>
             <c:forEach var="Account" items="${dataList }" varStatus="status">
@@ -100,7 +98,6 @@
                     <td>${Account.name}</td>
                     <td>${Account.phone}</td>
                     <td>${Account.departmentName}</td>
-                    <td>${Account.purchaseCommission}%</td>
                     <td>
                         <c:choose>
                             <c:when test="${Account.accountNum == sessionScope.account.accountNum }">

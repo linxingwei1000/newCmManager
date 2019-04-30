@@ -76,8 +76,6 @@ public class CarPurchaseController extends BaseController {
             @RequestParam(value = "carOutColour", required = false, defaultValue = "") String carOutColour,
             @RequestParam(value = "carInsideColour", required = false, defaultValue = "") String carInsideColour,
             @RequestParam(value = "carRunNum", required = false, defaultValue = "") String carRunNum,
-            @RequestParam(value = "carLine", required = false, defaultValue = "") Integer carLine,
-            @RequestParam(value = "carLevel", required = false, defaultValue = "") Integer carLevel,
             @RequestParam(value = "carChannel", required = false, defaultValue = "") Integer carChannel,
             @RequestParam(value = "carTakeType", required = false, defaultValue = "") Integer carTakeType,
             @RequestParam(value = "carStatus", required = false, defaultValue = "") Integer carStatus,
@@ -114,8 +112,6 @@ public class CarPurchaseController extends BaseController {
         mav.addObject("carOutColour", carOutColour);
         mav.addObject("carInsideColour", carInsideColour);
         mav.addObject("carRunNum", carRunNum);
-        mav.addObject("carLine", carLine);
-        mav.addObject("carLevel", carLevel);
         mav.addObject("carChannel", carChannel);
         mav.addObject("carTakeType", carTakeType);
         mav.addObject("carStatus", carStatus);
@@ -150,8 +146,6 @@ public class CarPurchaseController extends BaseController {
                 mav.addObject("carOutColour", carRecord.getCarOutColour());
                 mav.addObject("carInsideColour", carRecord.getCarInsideColour());
                 mav.addObject("carRunNum", carRecord.getCarRunNum());
-                mav.addObject("carLine", carRecord.getCarLine());
-                mav.addObject("carLevel", carRecord.getCarLevel());
                 mav.addObject("carChannel", carRecord.getCarChannel());
                 mav.addObject("carTakeType", carRecord.getCarTakeType());
                 mav.addObject("carStatus", carRecord.getCarStatus());
@@ -205,8 +199,6 @@ public class CarPurchaseController extends BaseController {
             carRecord.setCarOutColour(carOutColour);
             carRecord.setCarInsideColour(carInsideColour);
             carRecord.setCarRunNum(carRunNum);
-            carRecord.setCarLine(carLine);
-            carRecord.setCarLevel(carLevel);
             carRecord.setCarStatus(carStatus);
             carRecord.setCarStatusDesc(carStatusDesc);
             carRecord.setCarConfig(carConfig == null ? "" : carConfig);

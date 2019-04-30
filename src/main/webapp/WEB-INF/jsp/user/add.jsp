@@ -79,12 +79,6 @@
             <input class="form-control  col-xs-4" type="text" name="phone" id="phone" placeholder="请输入手机"
                    value="${phone }" autocomplete="off"/>
         </div>
-        <div class="form-group form-inline row">
-            <label class="control-label col-xs-2 " for="purchaseCommission">采购提成比例：</label>
-            <input class="form-control  col-xs-3" type="text" name="purchaseCommission" id="purchaseCommission" placeholder="请输入数字"
-                   value="${purchaseCommission }" autocomplete="off"/>
-            <label class="control-label col-xs-2 " for="purchaseCommission">%</label>
-        </div>
         <hr/>
         <div class="control-group">
             <label class="control-label">&nbsp;</label>

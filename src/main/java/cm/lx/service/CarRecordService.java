@@ -22,5 +22,5 @@ public interface CarRecordService {
 
     List<CarRecord> getCarRecordByRecordStatus(Integer recordStatus);
 
-    List<CarRecord> searchCarRecord(Integer recordStatus, String searchKey, String searchValue, String btime, String etime, String zbtime, String zetime);
+    List<CarRecord> searchCarRecord(Integer recordStatus, String searchKey, String searchValue, String searchDate, String btime, String etime, String zbtime, String zetime);
 }

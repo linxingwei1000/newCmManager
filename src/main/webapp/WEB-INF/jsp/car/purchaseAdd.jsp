@@ -91,7 +91,7 @@
             <input class="form-control  col-xs-3" type="text" name="carModel" id="carModel" placeholder="请输入" value="${carModel}" autocomplete="off"/>
         </div>
         <div class="form-group form-inline row">
-            <label class="control-label col-xs-2 " for="frameNum">车架号：</label>
+            <label class="control-label col-xs-2 " for="frameNum">*车架号：</label>
             <input class="form-control  col-xs-4" type="text" name="frameNum" id="frameNum" placeholder="请输入车架号" value="${frameNum}" autocomplete="off"/>
         </div>
         <div class="form-group form-inline row">
@@ -135,18 +135,6 @@
         </div>
         <div class="form-group form-inline row">
             <div class="col-xs-2"></div>
-            <select class="form-control  col-xs-2" name="carLine" id="carLine" onchange="">
-                <option value="0">车系</option>
-                <c:forEach var="cp" items="${CAR_LINE}" varStatus="status">
-                    <option value="${cp.id}">${cp.propertyValue}</option>
-                </c:forEach>
-            </select>
-            <select class="form-control  col-xs-2" name="carLevel" id="carLevel" onchange="">
-                <option value="0">车辆类别</option>
-                <c:forEach var="cp" items="${CAR_LEVEL}" varStatus="status">
-                    <option value="${cp.id}">${cp.propertyValue}</option>
-                </c:forEach>
-            </select>
             <select class="form-control  col-xs-2" name="carChannel" id="carChannel" onchange="">
                 <option value="0">车源渠道</option>
                 <c:forEach var="cp" items="${CAR_CHANNEL}" varStatus="status">
@@ -195,20 +183,6 @@
 </div>
 
 <script language="javascript">
-    var carLine = document.getElementById('carLine');
-    for (var i = 0; i < carLine.options.length; i++) {
-        if (carLine.options[i].value == '${carLine}') {
-            carLine.options[i].selected = true;
-        }
-    }
-
-    var carLevel = document.getElementById('carLevel');
-    for (var i = 0; i < carLevel.options.length; i++) {
-        if (carLevel.options[i].value == '${carLevel}') {
-            carLevel.options[i].selected = true;
-        }
-    }
-
     var carChannel = document.getElementById('carChannel');
     for (var i = 0; i < carChannel.options.length; i++) {
         if (carChannel.options[i].value == '${carChannel}') {

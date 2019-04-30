@@ -6,7 +6,6 @@ create table newcm.cm_manager_user(
   userType tinyint(4) default 0 comment '用户类型',
   name varchar(64) not null default '' comment '真实姓名',
   phone varchar(64) not null default '' comment '手机',
-  purchase_commission tinyint(4) default 0 comment '采购提成比例',
   active tinyint(4) default 0 comment '是否启用，0：否，1：是',
   ctime bigint(20) default 0 not null comment '创建时间',
   utime bigint(20) default 0 not null comment '更新时间')ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -40,8 +39,6 @@ create table newcm.cm_car_record(
   car_model varchar(64) not null default '' comment '车型',
   key_num varchar(64) not null default '' comment '钥匙编号',
   frame_num varchar(64) default '' comment '车架号',
-  car_line tinyint(4) default 0 comment '车系，对应车系表',
-  car_level tinyint(4) default 0 comment '车辆级别，对应车辆级别表',
   car_displacement varchar(64) default '' comment '排量',
   car_resource varchar(64) default '' comment '车源所在地',
   car_num_resource varchar(64) default '' comment '车牌所在地',

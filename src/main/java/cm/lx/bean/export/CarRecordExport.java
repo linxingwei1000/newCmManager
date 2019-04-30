@@ -13,8 +13,6 @@ public class CarRecordExport {
     String purchasePerson;
     String outsidePerson;
     Double outsideMoney;
-    String carLine;
-    String carLevel;
     String carBrand;
     String carModel;
     String carDisplacement;
@@ -164,22 +162,6 @@ public class CarRecordExport {
 
     public void setOutsideMoney(Double outsideMoney) {
         this.outsideMoney = outsideMoney;
-    }
-
-    public String getCarLine() {
-        return carLine;
-    }
-
-    public void setCarLine(String carLine) {
-        this.carLine = carLine;
-    }
-
-    public String getCarLevel() {
-        return carLevel;
-    }
-
-    public void setCarLevel(String carLevel) {
-        this.carLevel = carLevel;
     }
 
     public String getCarBrand() {

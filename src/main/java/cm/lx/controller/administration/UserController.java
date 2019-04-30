@@ -83,7 +83,6 @@ public class UserController extends BaseController {
             @RequestParam(value = "usertype", required = false, defaultValue = "") Integer usertype,
             @RequestParam(value = "name", required = false, defaultValue = "") String name,
             @RequestParam(value = "phone", required = false, defaultValue = "") String phone,
-            @RequestParam(value = "purchaseCommission", required = false, defaultValue = "") Integer purchaseCommission,
             @RequestParam(value = "department", required = false, defaultValue = "") Integer department) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("user/add");
@@ -122,13 +121,6 @@ public class UserController extends BaseController {
             mav.addObject(TIP, "用户类型为空！");
             return mav;
         }
-        if (purchaseCommission == null) {
-            purchaseCommission = 0;
-        }
-        if (purchaseCommission < 0 || purchaseCommission > 100) {
-            mav.addObject(TIP, "提成比例超出范围！");
-            return mav;
-        }
         Account account = new Account();
         account.setAccountNum(accountNum);
         account.setPassword(MD5Utils.compute(initPassword));
@@ -136,7 +128,6 @@ public class UserController extends BaseController {
         account.setUserType(usertype);
         account.setName(name == null ? "" : name);
         account.setPhone(phone == null ? "" : phone);
-        account.setPurchaseCommission(purchaseCommission);
         account.setActive(1);
         accountService.create(account);
         mav.clear();
@@ -177,7 +168,6 @@ public class UserController extends BaseController {
             @RequestParam(value = "department", required = false, defaultValue = "") Integer department,
             @RequestParam(value = "name", required = false, defaultValue = "") String name,
             @RequestParam(value = "phone", required = false, defaultValue = "") String phone,
-            @RequestParam(value = "purchaseCommission", required = false, defaultValue = "") Integer purchaseCommission,
             HttpSession session) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("user/update");
@@ -186,15 +176,6 @@ public class UserController extends BaseController {
         account.setId(id);
         account.setUserType(usertype);
         account.setDepartment(department);
-        if (purchaseCommission == null) {
-            purchaseCommission = 0;
-        }
-        if (purchaseCommission < 0 || purchaseCommission > 100) {
-            mav.addObject(TIP, "提成比例超出范围！");
-            return mav;
-        }
-        account.setPurchaseCommission(purchaseCommission);
-
         if (!StringUtils.isEmpty(name)) {
             account.setName(name);
         }

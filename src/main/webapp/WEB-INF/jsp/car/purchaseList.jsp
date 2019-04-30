@@ -95,12 +95,6 @@
                                                     </div>
                                                 </c:if>
                                                 <div class="form-group row">
-                                                    <label class="col-sm-3 control-label">车系：${cp.strCarLine}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-3 control-label">车辆类别：${cp.strCarLevel}</label>
-                                                    <div class="col-sm-1"></div>
-                                                </div>
-                                                <div class="form-group row">
                                                     <label class="col-sm-3 control-label">品牌：${cp.carBrand}</label>
                                                     <div class="col-sm-1"></div>
                                                     <label class="col-sm-3 control-label">排量：${cp.carDisplacement}</label>

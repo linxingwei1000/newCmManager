@@ -29,9 +29,6 @@ public class Account {
 
     String phone;
 
-    @TableField(value = "purchase_commission")
-    Integer purchaseCommission;
-
     Integer active;
 
     Long ctime;
@@ -96,14 +93,6 @@ public class Account {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public Integer getPurchaseCommission() {
-        return purchaseCommission;
-    }
-
-    public void setPurchaseCommission(Integer purchaseCommission) {
-        this.purchaseCommission = purchaseCommission;
     }
 
     public Integer getActive() {

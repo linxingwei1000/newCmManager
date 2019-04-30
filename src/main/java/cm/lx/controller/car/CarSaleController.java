@@ -89,7 +89,7 @@ public class CarSaleController extends BaseController {
             list = cacheCenter.getCarRecordCombinationInfoByIds(ids);
             mav.addObject("carNum", list.size());
         }else{
-            list = cacheCenter.getCarRecordCombinationInfo(carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_STOCK));
+            list = cacheCenter.getCarRecordCombinationInfo(carRecordService.getCarRecordByRecordStatus(ContextType.RECORD_STATUS_SOLD));
             mav.addObject("carNum", list.size());
 
             if (list.size() > 10) {
@@ -750,6 +750,7 @@ public class CarSaleController extends BaseController {
             @RequestParam(value = "recordStatus", required = false, defaultValue = "") Integer recordStatus,
             @RequestParam(value = "searchKey", required = false, defaultValue = "") String searchKey,
             @RequestParam(value = "searchValue", required = false, defaultValue = "") String searchValue,
+            @RequestParam(value = "searchDate", required = false, defaultValue = "") String searchDate,
             @RequestParam(value = "btime", required = false, defaultValue = "") String btime,
             @RequestParam(value = "etime", required = false, defaultValue = "") String etime,
             @RequestParam(value = "zbtime", required = false, defaultValue = "") String zbtime,
@@ -760,12 +761,13 @@ public class CarSaleController extends BaseController {
         mav.addObject("recordStatus", recordStatus);
         mav.addObject("searchKey", searchKey);
         mav.addObject("searchValue", searchValue);
+        mav.addObject("searchDate", searchDate);
         mav.addObject("btime", btime);
         mav.addObject("etime", etime);
         mav.addObject("zbtime", zbtime);
         mav.addObject("zetime", zetime);
 
-        List<CarRecord> list = carRecordService.searchCarRecord(recordStatus, searchKey, searchValue, btime, etime, zbtime, zetime);
+        List<CarRecord> list = carRecordService.searchCarRecord(recordStatus, searchKey, searchValue, searchDate, btime, etime, zbtime, zetime);
         mav.addObject("carNum", list.size());
 
         List<Integer> ids = new ArrayList<>();
@@ -959,11 +961,11 @@ public class CarSaleController extends BaseController {
             }
         }
 
-        Account account = accountService.getAccountByRealName(old.getPurchasePerson());
-        Double purchaseCommission = 0.0;
-        if (account != null) {
-            purchaseCommission = Utils.saveTwoSeat((Double.valueOf(carRecord.getGrossProfit()) - carCommission) * account.getPurchaseCommission() / 100);
-        }
+//        Account account = accountService.getAccountByRealName(old.getPurchasePerson());
+//        Double purchaseCommission = 0.0;
+//        if (account != null) {
+//            purchaseCommission = Utils.saveTwoSeat((Double.valueOf(carRecord.getGrossProfit()) - carCommission) * account.getPurchaseCommission() / 100);
+//        }
 
         Double shareDividends = 0.0;
 
@@ -980,7 +982,7 @@ public class CarSaleController extends BaseController {
         wagesAssist.setPurchasePerson(old.getPurchasePerson());
         wagesAssist.setInsidePerson("");
         wagesAssist.setCarCommission(carCommission);
-        wagesAssist.setPurchaseCommission(purchaseCommission);
+        wagesAssist.setPurchaseCommission(0.0);
         wagesAssist.setShareDividends(shareDividends);
         wagesAssist.setCarRecordId(carRecord.getId());
 

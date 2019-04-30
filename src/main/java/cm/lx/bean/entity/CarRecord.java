@@ -32,12 +32,6 @@ public class CarRecord {
     @TableField(value = "outside_money")
     Double outsideMoney;
 
-    @TableField(value = "car_line")
-    Integer carLine;
-
-    @TableField(value = "car_level")
-    Integer carLevel;
-
     @TableField(value = "car_brand")
     String carBrand;
 
@@ -155,12 +149,6 @@ public class CarRecord {
     String strPurchaseDate;
 
     @TableField(exist = false)
-    String strCarLine;
-
-    @TableField(exist = false)
-    String strCarLevel;
-
-    @TableField(exist = false)
     String strCarTakeType;
 
     @TableField(exist = false)
@@ -241,22 +229,6 @@ public class CarRecord {
 
     public void setOutsideMoney(Double outsideMoney) {
         this.outsideMoney = outsideMoney;
-    }
-
-    public Integer getCarLine() {
-        return carLine;
-    }
-
-    public void setCarLine(Integer carLine) {
-        this.carLine = carLine;
-    }
-
-    public Integer getCarLevel() {
-        return carLevel;
-    }
-
-    public void setCarLevel(Integer carLevel) {
-        this.carLevel = carLevel;
     }
 
     public String getCarBrand() {
@@ -515,22 +487,6 @@ public class CarRecord {
         this.utime = utime;
     }
 
-    public String getStrCarLine() {
-        return strCarLine;
-    }
-
-    public void setStrCarLine(String strCarLine) {
-        this.strCarLine = strCarLine;
-    }
-
-    public String getStrCarLevel() {
-        return strCarLevel;
-    }
-
-    public void setStrCarLevel(String strCarLevel) {
-        this.strCarLevel = strCarLevel;
-    }
-
     public String getStrPurchaseDate() {
         return strPurchaseDate;
     }
@@ -635,8 +591,6 @@ public class CarRecord {
         headers.add("采购人");
         headers.add("外部合伙人");
         headers.add("外部合伙金额");
-        headers.add("车系");
-        headers.add("车辆级别");
         headers.add("车辆品牌");
         headers.add("车型");
         headers.add("排量");
@@ -669,8 +623,6 @@ public class CarRecord {
         carRecordExport.setPurchasePerson(this.purchasePerson);
         carRecordExport.setOutsidePerson(this.outsidePerson);
         carRecordExport.setOutsideMoney(this.outsideMoney);
-        carRecordExport.setCarLine(this.strCarLine);
-        carRecordExport.setCarLevel(this.strCarLevel);
         carRecordExport.setCarBrand(this.carBrand);
         carRecordExport.setCarModel(this.carModel);
         carRecordExport.setCarDisplacement(this.carDisplacement);

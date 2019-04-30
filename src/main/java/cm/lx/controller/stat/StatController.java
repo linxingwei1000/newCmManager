@@ -96,16 +96,6 @@ public class StatController extends BaseController {
                     if (cacheCenter.getCarPropertyById(carRecord.getPurchaseType()).getPropertyValue().equals(searchValue)) {
                         resultList.add(carRecord);
                     }
-                } else if (searchKey.equals("carLine")) {
-                    if (carRecord.getCarLine() == 0) continue;
-                    if (cacheCenter.getCarPropertyById(carRecord.getCarLine()).getPropertyValue().equals(searchValue)) {
-                        resultList.add(carRecord);
-                    }
-                } else if (searchKey.equals("carLevel")) {
-                    if (carRecord.getCarLevel() == 0) continue;
-                    if (cacheCenter.getCarPropertyById(carRecord.getCarLevel()).getPropertyValue().equals(searchValue)) {
-                        resultList.add(carRecord);
-                    }
                 } else {
                     resultList.add(carRecord);
                 }

@@ -29,27 +29,18 @@
     <form class="form-horizontal" action="carSearchPurchase" method="get">
         <div class="form-group">
             <div class="col-sm-2">
-                <select class="form-control" name="searchKey" id="searchKey" onchange="show(this)">
+                <select class="form-control" name="searchKey" id="searchKey">
                     <option value="">未选择中</option>
                     <option value="frame_num">车架号</option>
                     <option value="key_num">钥匙编号</option>
                     <option value="car_brand">品牌</option>
                     <option value="car_model">车型</option>
                     <option value="purchase_person">采购人</option>
-                    <option value="inside_person">内部合伙人</option>
                 </select>
             </div>
-            <div class="col-sm-2" id="dsv" style="display: none">
+            <div class="col-sm-2" id="dsv">
                 <input class="form-control" type="text" name="searchValue" id="searchValue" value="${searchValue }" placeholder="请输入" autocomplete="off"/>
             </div>
-            <div class="col-sm-2" id="dbt" style="display: none">
-                <input class="form-control" type="text" name="btime" id="btime" value="${btime }" onclick="new Calendar().show(this);" placeholder="开始日期（必填)" autocomplete="off"/>
-            </div>
-            <div class="col-sm-2" id="det" style="display: none">
-                <input class="form-control" type="text" name="etime" id="etime" value="${etime }" onclick="new Calendar().show(this);" placeholder="结束日期" autocomplete="off"/>
-            </div>
-            <div class="col-sm-2" id="dsOne" style="display: block"></div>
-            <div class="col-sm-2" id="dsTwo" style="display: block"></div>
             <div class="hidden">
                 <input type="text" name="recordStatus" id="recordStatus" value="2" autocomplete="off"/>
             </div>
@@ -159,12 +150,6 @@
                                                         <label class="col-sm-4 control-label">外部合伙金额：${cp.carRecord.outsideMoney}</label>
                                                     </div>
                                                 </c:if>
-                                                <div class="form-group row">
-                                                    <label class="col-sm-3 control-label">车系：${cp.carRecord.strCarLine}</label>
-                                                    <div class="col-sm-1"></div>
-                                                    <label class="col-sm-3 control-label">车辆类别：${cp.carRecord.strCarLevel}</label>
-                                                    <div class="col-sm-1"></div>
-                                                </div>
                                                 <div class="form-group row">
                                                     <label class="col-sm-3 control-label">品牌：${cp.carRecord.carBrand}</label>
                                                     <div class="col-sm-1"></div>
@@ -462,32 +447,6 @@
 
 <script language="javascript">
 
-    function show(obj) {
-        var id = obj.id;
-        if (id == "searchKey") {
-            if (obj.value == "purchase_date" ) {
-                document.getElementById("dsv").style.display = "none";
-                document.getElementById("dbt").style.display = "block";
-                document.getElementById("det").style.display = "block";
-                document.getElementById("dsOne").style.display = "none";
-                document.getElementById("dsTwo").style.display = "none";
-            } else if (obj.value == "frame_num" ||obj.value == "key_num" || obj.value == "car_model"
-                    || obj.value == "purchase_person" ||obj.value == "inside_person"||obj.value == "car_brand" ) {
-                document.getElementById("dsv").style.display = "block";
-                document.getElementById("dbt").style.display = "none";
-                document.getElementById("det").style.display = "none";
-                document.getElementById("dsOne").style.display = "block";
-                document.getElementById("dsTwo").style.display = "none";
-            } else {
-                document.getElementById("dsv").style.display = "none";
-                document.getElementById("dbt").style.display = "none";
-                document.getElementById("det").style.display = "none";
-                document.getElementById("dsOne").style.display = "block";
-                document.getElementById("dsTwo").style.display = "block";
-            }
-        }
-    }
-
     $(function () {
         /*确认*/
         $('.confirm-trigger').click(function () {
@@ -535,31 +494,6 @@
     for (var i = 0; i < searchKey.options.length; i++) {
         if (searchKey.options[i].value == '${searchKey}') {
             searchKey.options[i].selected = true;
-
-            if (searchKey.options[i].value == "purchase_date" ) {
-                document.getElementById("dsv").style.display = "none";
-                document.getElementById("dbt").style.display = "block";
-                document.getElementById("det").style.display = "block";
-                document.getElementById("dsOne").style.display = "none";
-                document.getElementById("dsTwo").style.display = "none";
-            } else if (searchKey.options[i].value == "frame_num"
-                ||searchKey.options[i].value == "key_num"
-                || searchKey.options[i].value == "car_model"
-                || searchKey.options[i].value == "purchase_person"
-                ||searchKey.options[i].value == "inside_person"
-                ||searchKey.options[i].value == "car_brand") {
-                document.getElementById("dsv").style.display = "block";
-                document.getElementById("dbt").style.display = "none";
-                document.getElementById("det").style.display = "none";
-                document.getElementById("dsOne").style.display = "block";
-                document.getElementById("dsTwo").style.display = "none";
-            } else {
-                document.getElementById("dsv").style.display = "none";
-                document.getElementById("dbt").style.display = "none";
-                document.getElementById("det").style.display = "none";
-                document.getElementById("dsOne").style.display = "block";
-                document.getElementById("dsTwo").style.display = "block";
-            }
         }
     }
 </script>

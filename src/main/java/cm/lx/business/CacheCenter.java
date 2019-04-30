@@ -286,8 +286,6 @@ public class CacheCenter implements InitializingBean {
 
     private ContextBean initCarRecordInfo(CarRecord carRecord) {
         carRecord.setStrPurchaseDate(TimeUtils.transformTimetagToDate(carRecord.getPurchaseDate(), TimeUtils.FORMAT_ONE));
-        carRecord.setStrCarLine(transform(carRecord.getCarLine(), carRecord.getId()));
-        carRecord.setStrCarLevel(transform(carRecord.getCarLevel(), carRecord.getId()));
         carRecord.setStrCarStatus(transform(carRecord.getCarStatus(), carRecord.getId()));
         carRecord.setStrCarTakeType(transform(carRecord.getCarTakeType(), carRecord.getId()));
         carRecord.setStrCarChannel(transform(carRecord.getCarChannel(), carRecord.getId()));

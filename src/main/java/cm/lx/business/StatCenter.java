@@ -273,9 +273,6 @@ public class StatCenter {
         Map<Integer, Double> consumerResourceMap = new HashMap<>(list.size());
         Map<String, Double> saleTypeMap = new HashMap<>(list.size());
         for (CarRecord carRecord : list) {
-            //车辆级别
-            carLevelMap.put(carRecord.getCarLevel(), removeNull(carLevelMap.get(carRecord.getCarLevel())) + 1);
-
             //提车方式
             carTakeTypeMap.put(carRecord.getCarTakeType(), removeNull(carTakeTypeMap.get(carRecord.getCarTakeType())) + 1);
 
@@ -284,9 +281,6 @@ public class StatCenter {
 
             //车源渠道
             carChannelMap.put(carRecord.getCarChannel(), removeNull(carChannelMap.get(carRecord.getCarChannel())) + 1);
-
-            //车系
-            carLineMap.put(carRecord.getCarLine(), removeNull(carLineMap.get(carRecord.getCarLine())) + 1);
 
             //品牌
             carBrandMap.put(carRecord.getCarBrand(), removeNull(carBrandMap.get(carRecord.getCarBrand())) + 1);
