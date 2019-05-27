@@ -205,7 +205,7 @@ create table newcm.cm_mortgage_record(
   mortgage_company varchar(64) not null default '' comment '按揭公司',
   loan_fee double not null default 0 comment '贷款金额',
   interest_rate varchar(64) not null default '' comment '利率',
-  mortgage_rebate double not null default '' comment '按揭返点',
+  mortgage_rebate double not null default 0 comment '按揭返点',
   back_fee double not null default 0 comment '返还金额',
   assessment_fee double not null default 0 comment '评估费',
   risk_fee double not null default 0 comment '风险金',

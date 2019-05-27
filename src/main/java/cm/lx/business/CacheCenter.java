@@ -247,7 +247,7 @@ public class CacheCenter implements InitializingBean {
         //说明缓存被刷，重新刷
         if (contextBean == null) {
             contextBean = initCarRecordInfo(carRecord);
-            contextBeanMap.put(carRecord.getId(), initCarRecordInfo(carRecord));
+            contextBeanMap.put(carRecord.getId(), contextBean);
         }
         return contextBean;
     }
@@ -341,7 +341,7 @@ public class CacheCenter implements InitializingBean {
         if (carSaleInfo != null) {
             allSf += carSaleInfo.getServiceFee();
         }
-        contextBean.setAllSf(twoTuple.left() + allSf);
+        contextBean.setAllSf(allSf);
         contextBean.setSfList(twoTuple.right());
 
         //车辆销售整备费用

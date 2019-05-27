@@ -89,9 +89,6 @@
                         <input type="radio" name="propertyKey" value="MONEY_RECORD_SALE" <c:if test="${ propertyKey == 'MONEY_RECORD_SALE' }">checked="checked"</c:if>/>销售录入
                     </label>
                     <label class="col-xs-2">
-                        <input type="radio" name="propertyKey" value="MONEY_RECORD_SALE" <c:if test="${ propertyKey == 'MONEY_RECORD_SALE' }">checked="checked"</c:if>/>销售录入
-                    </label>
-                    <label class="col-xs-2">
                         <input type="radio" name="propertyKey" value="BANK_NAME" <c:if test="${ propertyKey == 'BANK_NAME' }">checked="checked"</c:if>/>银行名称
                     </label>
                 </div>
